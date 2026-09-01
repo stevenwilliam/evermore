@@ -13,7 +13,9 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/stevenwilliam/evermore/internal/adapter/postgres"
+	"github.com/stevenwilliam/evermore/internal/app/auth"
 	"github.com/stevenwilliam/evermore/internal/platform/config"
+	"github.com/stevenwilliam/evermore/internal/platform/security"
 )
 
 // Deps is everything the router needs wired in.
@@ -24,6 +26,8 @@ type Deps struct {
 	Public      fs.FS
 	Logger      *slog.Logger
 	BuildCommit string
+	// Limiter is optional; a nil one gets a fresh per-router limiter.
+	Limiter *Limiter
 }
 
 // NewRouter builds the whole HTTP surface.
@@ -53,6 +57,23 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	ph, err := NewPublicHandler(repo, d.Cfg, d.Templates)
 	if err != nil {
 		return nil, err
+	}
+
+	tokens, err := security.NewTokenIssuer(
+		d.Cfg.JWTSigningKey, "evermore", "evermore-api", d.Cfg.AccessTokenTTL)
+	if err != nil {
+		return nil, err
+	}
+	authSvc := auth.NewService(auth.Options{
+		DB: d.DB, Tokens: tokens, RefreshTTL: d.Cfg.RefreshTokenTTL,
+	})
+	ah := NewAuthHandler(authSvc, tokens, d.Cfg.IsProduction())
+
+	// One limiter per router. Tests build a router per case and must not
+	// inherit another case's counters.
+	limiter := d.Limiter
+	if limiter == nil {
+		limiter = NewLimiter()
 	}
 
 	// --- operational endpoints ---
@@ -87,6 +108,19 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	staticGroup.StaticFS("/images", sub("images"))
 	r.Group("/", cacheControl("public, max-age=31536000, immutable")).
 		StaticFS("/fonts", sub("fonts"))
+
+	// --- API v1 ---
+	api := r.Group("/api/v1")
+	api.Use(Authenticate(tokens, authSvc))
+
+	authGroup := api.Group("/auth")
+	// The endpoints that mint or spend credentials are rate limited hardest:
+	// they are where a brute force or a credential-stuffing run lands.
+	authGroup.POST("/login", RateLimit(limiter, rlLogin), ah.Login)
+	authGroup.POST("/register", RateLimit(limiter, rlRegister), ah.Register)
+	authGroup.POST("/refresh", RateLimit(limiter, rlRefresh), ah.Refresh)
+	authGroup.POST("/logout", ah.Logout)
+	authGroup.GET("/me", RequireAuth(), ah.Me)
 
 	// --- SEO surface ---
 	r.GET("/robots.txt", ph.Robots)
