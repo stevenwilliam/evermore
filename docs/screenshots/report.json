@@ -5,12 +5,155 @@
     "path": "/",
     "status": 200,
     "file": "/home/dev/projects/evermore/docs/screenshots/home-mobile.png",
-    "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "findings": [
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lewati ke konten utama",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Menu minggu ini",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Cara kerja",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Paket",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Untuk kantor",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Wilayah antar",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Masuk",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "button",
+        "text": "Buka menu navigasi\n        ☰",
+        "height": 24
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lihat semua",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Balanced",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Weight Loss",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Muscle Gain",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Special Diet",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Nasi merah rendang jamur",
+        "height": 21
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lihat",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Tumis ayam paprika",
+        "height": 21
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lihat",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lihat paket",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lihat paket",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lihat paket",
+        "height": 17
+      }
+    ],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   },
   {
@@ -19,12 +162,185 @@
     "path": "/menu",
     "status": 200,
     "file": "/home/dev/projects/evermore/docs/screenshots/menu-mobile.png",
-    "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "findings": [
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lewati ke konten utama",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Menu minggu ini",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Cara kerja",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Paket",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Untuk kantor",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Wilayah antar",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Masuk",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "button",
+        "text": "Buka menu navigasi\n        ☰",
+        "height": 24
+      },
+      {
+        "kind": "tap-target",
+        "tag": "input",
+        "text": "",
+        "height": 21
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Semua",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Balanced",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Weight Loss",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Muscle Gain",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Special Diet",
+        "height": 35
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Sel1 Sep",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Rab2 Sep",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Sab5 Sep",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Sen7 Sep",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Sel8 Sep",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Rab9 Sep",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Sab12 Sep",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Nasi merah rendang jamur",
+        "height": 21
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lihat",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Tumis ayam paprika",
+        "height": 21
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lihat",
+        "height": 17
+      }
+    ],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   },
   {
@@ -33,12 +349,101 @@
     "path": "/paket",
     "status": 200,
     "file": "/home/dev/projects/evermore/docs/screenshots/packages-mobile.png",
-    "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "findings": [
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lewati ke konten utama",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Menu minggu ini",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Cara kerja",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Paket",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Untuk kantor",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Wilayah antar",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Masuk",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "button",
+        "text": "Buka menu navigasi\n        ☰",
+        "height": 24
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Beli paket",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Beli paket",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Beli paket",
+        "height": 17
+      }
+    ],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   },
   {
@@ -47,12 +452,83 @@
     "path": "/cara-kerja",
     "status": 200,
     "file": "/home/dev/projects/evermore/docs/screenshots/how-mobile.png",
-    "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "findings": [
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lewati ke konten utama",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Menu minggu ini",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Cara kerja",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Paket",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Untuk kantor",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Wilayah antar",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Masuk",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "button",
+        "text": "Buka menu navigasi\n        ☰",
+        "height": 24
+      }
+    ],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   },
   {
@@ -61,12 +537,83 @@
     "path": "/untuk-kantor",
     "status": 200,
     "file": "/home/dev/projects/evermore/docs/screenshots/corporate-mobile.png",
-    "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "findings": [
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lewati ke konten utama",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Menu minggu ini",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Cara kerja",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Paket",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Untuk kantor",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Wilayah antar",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Masuk",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "button",
+        "text": "Buka menu navigasi\n        ☰",
+        "height": 24
+      }
+    ],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   },
   {
@@ -75,12 +622,83 @@
     "path": "/wilayah-antar",
     "status": 200,
     "file": "/home/dev/projects/evermore/docs/screenshots/coverage-mobile.png",
-    "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "findings": [
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lewati ke konten utama",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Menu minggu ini",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Cara kerja",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Paket",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Untuk kantor",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Wilayah antar",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Masuk",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "button",
+        "text": "Buka menu navigasi\n        ☰",
+        "height": 24
+      }
+    ],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   },
   {
@@ -89,12 +707,83 @@
     "path": "/tidak-ada",
     "status": 404,
     "file": "/home/dev/projects/evermore/docs/screenshots/notfound-mobile.png",
-    "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "findings": [
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Lewati ke konten utama",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Menu minggu ini",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Cara kerja",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Paket",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Untuk kantor",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Wilayah antar",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "a",
+        "text": "Masuk",
+        "height": 17
+      },
+      {
+        "kind": "tap-target",
+        "tag": "button",
+        "text": "Buka menu navigasi\n        ☰",
+        "height": 24
+      }
+    ],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   },
   {
@@ -104,11 +793,27 @@
     "status": 200,
     "file": "/home/dev/projects/evermore/docs/screenshots/home-desktop.png",
     "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   },
   {
@@ -118,11 +823,27 @@
     "status": 200,
     "file": "/home/dev/projects/evermore/docs/screenshots/menu-desktop.png",
     "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   },
   {
@@ -132,11 +853,27 @@
     "status": 200,
     "file": "/home/dev/projects/evermore/docs/screenshots/packages-desktop.png",
     "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   },
   {
@@ -146,11 +883,27 @@
     "status": 200,
     "file": "/home/dev/projects/evermore/docs/screenshots/how-desktop.png",
     "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   },
   {
@@ -160,11 +913,27 @@
     "status": 200,
     "file": "/home/dev/projects/evermore/docs/screenshots/corporate-desktop.png",
     "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   },
   {
@@ -174,11 +943,27 @@
     "status": 200,
     "file": "/home/dev/projects/evermore/docs/screenshots/coverage-desktop.png",
     "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   },
   {
@@ -188,11 +973,27 @@
     "status": 404,
     "file": "/home/dev/projects/evermore/docs/screenshots/notfound-desktop.png",
     "findings": [],
-    "consoleErrors": [],
-    "failedRequests": [],
+    "consoleErrors": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy. It was defined either in the final response or a redirect. Please deliver the response using the HTTPS protocol. You can also use the 'localhost' origin instead. See https://www.w3.org/TR/powerful-features/#potentially-trustworthy-origin and https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR",
+      "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+    ],
+    "failedRequests": [
+      "https://192.168.88.101:8091/css/fonts.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/tokens.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/css/app.css — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/inter/InterVariable.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/fonts/erode/Erode-Bold.woff2 — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/images/evermore-wordmark-light.png — net::ERR_SSL_PROTOCOL_ERROR",
+      "https://192.168.88.101:8091/js/app.js — net::ERR_SSL_PROTOCOL_ERROR"
+    ],
     "fontsUsed": [
-      "Inter",
-      "Erode"
+      "Times New Roman"
     ]
   }
 ]

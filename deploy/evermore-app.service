@@ -1,0 +1,48 @@
+# Evermore — application service.
+#
+# Deliberately NOT named evermore.service: that unit already exists on this
+# host and runs the healthy_catering build on :8090. This one coexists on
+# :8082 behind nginx on :8091 (D20).
+[Unit]
+Description=Evermore API and public site
+Documentation=https://github.com/stevenwilliam/evermore
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=dev
+Group=dev
+WorkingDirectory=/home/dev/projects/evermore
+# Secrets arrive only via the environment file, never from git (CLAUDE.md §4).
+EnvironmentFile=/etc/evermore/app.env
+ExecStart=/home/dev/projects/evermore/bin/evermore serve
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+KillSignal=SIGTERM
+
+# Hardening. The service reads its own directory and writes nothing outside it.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/dev/projects/evermore
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+CapabilityBoundingSet=
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=evermore-app
+
+[Install]
+WantedBy=multi-user.target
