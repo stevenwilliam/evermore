@@ -29,14 +29,14 @@
       </div>
     </div>
     <div>
-      <div class="card" style="background:var(--nourish);border:none">
-        <div class="card-media" style="background:var(--nourish-deep)">foto hero — meal di atas meja</div>
+      <div class="card-media hero-art">
+        <span>foto hero<br>meal di atas meja</span>
       </div>
     </div>
   </div>
 </section>
 
-<section class="section">
+<section class="section band-raised">
   <div class="container">
     <div class="section-head">
       <div>
@@ -75,19 +75,19 @@
   </div>
 </section>
 
-<section class="section" style="background:var(--nourish-deep);color:var(--beige)">
+<section class="section">
   <div class="container">
     <div class="section-head">
       <div>
         <p class="eyebrow">Lebih hemat</p>
-        <h2 style="color:var(--beige)">Bayar sekali, pakai 90 hari</h2>
+        <h2>Bayar sekali, pakai 90 hari</h2>
       </div>
     </div>
     <div class="card-grid">
       {{range .Packages}}
       <article class="card">
         <div class="card-body">
-          {{if .IsFeatured}}<p><span class="pill pill-warn">Paling laris</span></p>{{end}}
+          {{if .IsFeatured}}<p><span class="ribbon-gold">Paling laris</span></p>{{end}}
           <h3>{{.MealCredits}} porsi</h3>
           <p class="meta">{{rupiah .PerMealIDR}} per porsi &middot; berlaku {{.ValidityDays}} hari</p>
           <div class="card-foot">
@@ -98,7 +98,7 @@
       </article>
       {{end}}
     </div>
-    <p class="text-muted" style="color:var(--beige-deep);margin-top:var(--space-5)">
+    <p class="meta" style="margin-top:var(--space-5)">
       Kredit dipakai pada menu apa pun yang sudah terbit. Kredit tidak bisa diuangkan
       dan hangus setelah masa berlaku.
     </p>

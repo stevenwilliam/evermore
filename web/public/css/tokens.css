@@ -39,6 +39,12 @@
    * overscroll gutter from flashing the beige sheet at the edges. */
   --page-bg:       var(--nourish-deep);
   --page-ink:      var(--beige);
+  /* The alternating band. Sections step between --page-bg and this so the page
+   * has rhythm without returning to the beige sheet. Measured on it: beige
+   * 9.41, beige-deep 5.38, white 9.88 — all AA or better (design.md §3).
+   * #2A5749 was the obvious alternative and is REJECTED: muted text lands at
+   * 4.47, under the 4.5 body floor. */
+  --band-raised:   #234A40;
   --bar-bg:        var(--nourish);
   --bar-ink:       var(--beige);
   --card-bg:       var(--surface);

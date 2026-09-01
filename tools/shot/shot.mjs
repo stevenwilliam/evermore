@@ -73,11 +73,23 @@ const probeScript = `(() => {
   // The painted background behind an element: walk up until something is not
   // transparent. Reading only the element's own background is exactly how a
   // collision hides.
+  // Elements that paint a gradient (or any background-image) with NO
+  // background-color are a blind spot: computed backgroundColor is transparent,
+  // so the walk sails past them to whatever is behind, and reports a ratio
+  // against a surface the text is not actually on. Collected and reported
+  // rather than skipped — a guard that quietly ignores a case is not a guard.
+  const gradientBlindSpots = [];
   function paintedBg(el) {
     let n = el;
     while (n && n !== document.documentElement) {
-      const bg = parse(getComputedStyle(n).backgroundColor);
-      if (bg && bg[3] > 0) return bg[3] < 1 ? over(bg, paintedBg(n.parentElement || document.body)) : bg;
+      const cs = getComputedStyle(n);
+      const bg = parse(cs.backgroundColor);
+      const opaque = bg && bg[3] > 0;
+      if (!opaque && cs.backgroundImage && cs.backgroundImage !== 'none') {
+        gradientBlindSpots.push(
+          n.tagName.toLowerCase() + (n.className ? '.' + String(n.className).split(' ')[0] : ''));
+      }
+      if (opaque) return bg[3] < 1 ? over(bg, paintedBg(n.parentElement || document.body)) : bg;
       n = n.parentElement;
     }
     const rootBg = parse(getComputedStyle(document.body).backgroundColor);
@@ -152,6 +164,15 @@ const probeScript = `(() => {
         note: 'on #468973 the bar rule requires >=19px and weight >=700',
       });
     }
+  }
+
+  for (const tag of [...new Set(gradientBlindSpots)]) {
+    findings.push({
+      kind: 'gradient-no-bgcolor', tag,
+      note: 'paints a background-image with no background-color, so its real ' +
+            'contrast cannot be measured. Give it a background-color equal to ' +
+            'the worst stop.',
+    });
   }
 
   // Horizontal overflow: the body must never scroll sideways.
@@ -321,6 +342,8 @@ for (const r of results) {
       console.log(`        bar-rule ${f.px}px/${f.weight} <${f.tag}> "${f.text}"`);
     } else if (f.kind === 'overflow') {
       console.log(`        overflow scrollWidth=${f.scrollWidth} viewport=${f.viewport}`);
+    } else if (f.kind === 'gradient-no-bgcolor') {
+      console.log(`        gradient-blind <${f.tag}> — ${f.note}`);
     } else if (f.kind === 'not-reached') {
       console.log(`        NOT REACHED: wanted ${f.wanted}, landed on ${f.landed} — the page was not probed`);
     } else if (f.kind === 'tap-target') {

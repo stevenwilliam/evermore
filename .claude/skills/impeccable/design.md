@@ -131,6 +131,31 @@ the teal. Both clear 1.4.11. The white glyph on the teal is **4.14**: an icon,
 so 3:1 applies, not 4.5. Do not "fix" the fill; it is WhatsApp's own colour and
 recolouring it stops the mark reading as WhatsApp.
 
+**Orange-deep `#E0782D` as a button fill.** It is decoration as *ink* (2.90 on
+beige, §2), but it can carry a large-text button if the ink is near-black. This
+was settled in D5 and belongs here, where it is looked up:
+
+| Ink on `#E0782D` | Ratio | |
+| --- | ---: | --- |
+| `#000000` | 6.89 | AAA at large size |
+| `#1C3D34` deep ink | 3.90 | AA at large size only |
+| `#FFFAE0` beige | 2.90 | ✗ never — and note it is the SAME 2.90 as orange-on-beige in the table above, because contrast is symmetric. Reversing a failing pair does not rescue it. |
+
+**The raised band `#234A40`.** Sections alternate between the deep ground and
+this band so the page has rhythm without returning to the beige sheet, which
+Steven rejected on 2026-09-01. Both inks clear AA on it:
+
+| Ink | Ratio | |
+| --- | ---: | --- |
+| `#FFFFFF` | 9.88 | AAA |
+| `#FFFAE0` beige | 9.41 | AAA |
+| `#CCBDAA` beige deep | 5.38 | AA — muted text |
+
+> **`#2A5749` was rejected as the band and should not be re-proposed.** It
+> looks like the obvious lighter green and puts beige on it at a comfortable
+> 7.82 — but muted `#CCBDAA` lands at **4.47**, under the 4.5 body floor. The
+> failure is only in the muted ink, which is exactly the one nobody checks.
+
 **Other pairings in use:** deep ink on blue-light **8.15** and on orange-light
 **7.27**.
 

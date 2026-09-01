@@ -13,6 +13,7 @@ Usage:
 
 from __future__ import annotations
 
+import pathlib
 import re
 import sys
 
@@ -101,6 +102,7 @@ NOURISH_DEEP = "#1C3D34"
 NOURISH = "#468973"
 BEIGE = "#FFFAE0"
 WHITE = "#FFFFFF"
+RAISED = "#234A40"   # the alternating band
 
 CHECKS: list[tuple[str, str, str, dict]] = [
     # (label, ink, ground, options)
@@ -140,6 +142,17 @@ CHECKS: list[tuple[str, str, str, dict]] = [
     ("WA beige ring on the deep ground", BEIGE, NOURISH_DEEP, {"non_text": True}),
     ("WA beige ring against the teal", BEIGE, "#128C7E", {"non_text": True}),
     ("WA white glyph on the teal", WHITE, "#128C7E", {"non_text": True}),
+
+    # The raised band. Sections alternate between the deep ground and this so
+    # the page has rhythm without returning to the beige sheet.
+    ("beige on the raised band", BEIGE, RAISED, {}),
+    ("beige-deep on the raised band", "#CCBDAA", RAISED, {}),
+    ("white on the raised band", WHITE, RAISED, {}),
+    # Rejected candidate, kept so nobody re-proposes it: it looks like a good
+    # band and puts muted text at 4.47, which is under the 4.5 body threshold.
+    ("beige-deep on #2A5749 (REJECTED band)", "#CCBDAA", "#2A5749", {}),
+    ("deep ink on the gold ribbon fill", NOURISH_DEEP, "#D4AF37", {}),
+    ("beige ink on orange-deep", BEIGE, "#E0782D", {"large": True}),
 ]
 
 # What design.md §3 records. A drift between the sheet and the arithmetic is
@@ -174,6 +187,12 @@ RECORDED = {
     "WA beige ring on the deep ground": 11.32,
     "WA beige ring against the teal": 3.94,
     "WA white glyph on the teal": 4.14,
+    "beige on the raised band": 9.41,
+    "beige-deep on the raised band": 5.38,
+    "white on the raised band": 9.88,
+    "beige-deep on #2A5749 (REJECTED band)": 4.47,
+    "deep ink on the gold ribbon fill": 5.65,
+    "beige ink on orange-deep": 2.90,
 }
 
 
@@ -204,10 +223,41 @@ def main(argv: list[str]) -> int:
 
     print()
     if drift:
-        print(f"{drift} pairing(s) disagree with design.md §3 — one of them is wrong.")
+        print(f"{drift} pairing(s) disagree with the recorded table — one of them is wrong.")
         return 1
-    print(f"All {len(CHECKS)} pairings match the numbers recorded in design.md §3.")
+
+    # The RECORDED table above is a hand-kept copy of design.md §3, and a
+    # hand-kept copy drifts. The incident log has a guard that silently stopped
+    # guarding because its oracle was stale, so this asserts the sheet and the
+    # arithmetic still agree instead of claiming it.
+    missing = _sheet_drift()
+    if missing:
+        print(f"{len(missing)} ratio(s) are NOT written in design.md §3:")
+        for label, value in missing:
+            print(f"  {value:.2f}  ({label})")
+        print("The arithmetic and the sheet disagree. Update design.md.")
+        return 1
+
+    print(f"All {len(CHECKS)} pairings match, and every ratio appears in design.md §3.")
     return 0
+
+
+def _sheet_drift() -> list[tuple[str, float]]:
+    """Return recorded ratios that do not appear in design.md.
+
+    Deliberately a weak check on strong data: it looks for the NUMBER, not for
+    surrounding prose, because prose wanders and a check that reads prose will
+    eventually be argued into agreeing with the bug.
+    """
+    sheet = pathlib.Path(__file__).resolve().parent.parent / ".claude/skills/impeccable/design.md"
+    if not sheet.exists():
+        return []
+    text = sheet.read_text()
+    out = []
+    for label, value in RECORDED.items():
+        if f"{value:.2f}" not in text:
+            out.append((label, value))
+    return out
 
 
 if __name__ == "__main__":

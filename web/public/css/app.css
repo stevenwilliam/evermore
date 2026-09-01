@@ -207,7 +207,9 @@ a:hover { text-decoration-thickness: 2px; }
   border-radius: var(--radius-lg); overflow: hidden;
   display: flex; flex-direction: column; box-shadow: var(--shadow-sm);
 }
-.card-media { aspect-ratio: 4 / 3; background: var(--nourish); display: grid; place-items: center; color: var(--beige); font-size: var(--text-bar); font-weight: var(--w-eyebrow); }
+/* .card-media is defined ONCE, further down under "media panels". Two rules
+ * of equal specificity setting the same property leave source order deciding,
+ * and the last reorder of this file would silently change the design. */
 .card-body { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); flex: 1; }
 .card-body h3 { margin: 0; }
 /* A card title is the card's primary control on mobile; give it the touch
@@ -526,3 +528,108 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* The table header tints its own surface, so it is a light surface too. */
 .ground-deep th { background: rgba(28, 61, 52, 0.04); color: var(--nourish-deep); }
+
+
+/* ------------------------------------------------------- section rhythm */
+
+/* A section on the raised band. Alternating this with the deep ground gives
+ * the page rhythm without the beige sheet. Both inks clear AA on it (9.41 and
+ * 5.38, design.md §3), so nothing inside needs a special case — which is the
+ * whole reason the band was chosen over the better-looking #2A5749, where
+ * muted text falls to 4.47. */
+.band-raised { background: var(--band-raised); }
+
+/* A hairline between bands, so the step reads as deliberate rather than as a
+ * rendering seam. Decorative, not a control boundary, so --border-subtle is
+ * the right token here. */
+.band-raised + .section,
+.section + .band-raised { border-top: 1px solid var(--border-subtle); }
+
+/* --------------------------------------------------------- media panels */
+
+/* The photo placeholders were flat #468973. A soft two-stop gradient toward
+ * the deep ground gives them depth and stops a row of cards reading as a row
+ * of identical rectangles. Both stops are palette colours, and the label sits
+ * at 19px/700 — the bar rule — because beige on #468973 is 3.93 and is large
+ * text only. */
+.card-media {
+  aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
+  color: var(--beige);
+  /* 19px/700 is the bar rule, and it applies here for the same reason: the
+   * lightest gradient stop is #468973, where beige measures 3.93 — large text
+   * only. A 15px label here would look fine and be an AA failure. */
+  font-size: var(--text-bar);
+  font-weight: var(--w-eyebrow);
+
+  /* background-color is the LIGHTEST stop, not the middle one, for two
+   * reasons. It is the real fallback if the gradient does not paint, and it is
+   * what a contrast checker measures — so the reported number is the worst
+   * case across the gradient rather than a flattering average. */
+  background-color: var(--nourish);
+  background-image: linear-gradient(160deg, var(--nourish) 0%, #2A5749 62%, var(--nourish-deep) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* The brand pattern, held well back so it textures the panel without
+ * competing with the label. */
+.card-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/images/pattern.png");
+  background-size: 220px auto;
+  background-repeat: repeat;
+  opacity: .10;
+  pointer-events: none;
+}
+.card-media > * { position: relative; z-index: 1; }
+
+/* ------------------------------------------------------------ hero art */
+
+/* The hero's right column was an empty green rectangle with a caption in it.
+ * This gives it the same treatment as a meal card plus a taller aspect, so it
+ * reads as intentional art direction rather than a missing image. */
+.hero-art {
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-lg);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: var(--space-6);
+  color: var(--beige);              /* 11.32 on the deep stop, 3.93 on the light
+                                       stop — hence 19px/700 below */
+  font-size: var(--text-bar);
+  font-weight: var(--w-eyebrow);
+  box-shadow: var(--shadow-lg);
+}
+@media (max-width: 1023px) { .hero-art { aspect-ratio: 16 / 10; } }
+
+/* ------------------------------------------------------------- accents */
+
+/* An accent rule under a stat. Orange-light and blue-light are tints that take
+ * deep ink at 7.27 and 8.15; here they are used as 3px rules, which is
+ * decoration and carries no text, so no ink ratio applies. */
+.hero-stat { padding-left: var(--space-3); border-left: 3px solid var(--nourish); }
+.hero-stat:nth-child(1) { border-left-color: var(--orange-light); }
+.hero-stat:nth-child(2) { border-left-color: var(--blue-light); }
+.hero-stat:nth-child(3) { border-left-color: var(--beige); }
+
+/* The featured package's ribbon. Deep ink on the base gold is 5.65 (design.md
+ * §3), and that base is the worst case — the sheet notes the shimmer only ever
+ * lifts it. Kept as a static fill: an animated one is a promise about
+ * something nobody asked for. */
+.ribbon-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--gold);
+  color: var(--nourish-deep);
+  font-size: var(--text-sm);
+  font-weight: var(--w-eyebrow);
+}
+.ribbon-gold::before { content: "\2605"; }   /* a star, so the badge is not colour alone */

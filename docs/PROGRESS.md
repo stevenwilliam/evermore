@@ -58,7 +58,8 @@ described that build; it was replaced on 2026-09-01 when this one started.
 | `go test ./test/... -shuffle=on` | **passes, 6 consecutive runs** — order-independent |
 | Oversell test | 40 concurrent writers vs capacity 20 → **20 win, reserved lands 20/20** |
 | Order numbering | 50 concurrent callers → **50 distinct numbers** |
-| `scripts/contrast.py` | **24/24 pairings match design.md §3** |
+| `scripts/contrast.py` | **34/34 pairings match, and every ratio is verified present in design.md §3** |
+| `tools/shot/guard-test.mjs` | the gradient blind-spot guard **fires on a synthetic defect and stays silent when fixed** |
 | `tools/shot` on the deployed URL | **30/30 clean** — 0 contrast failures, 0 bar-rule violations, no overflow, no undersized tap targets, across public, customer and back-office screens |
 | Full purchase flow on the deployed site | cart Rp 450.000 → order → **Transfer Rp 450.926, BCA 5391184402, suffix 926** |
 | Back office as ops manager | dashboard, menu calendar, payment queue all 200; the **same pages 403 for a customer token** |
@@ -91,6 +92,19 @@ Recorded because each was invisible in the source.
    a field error into a 500.
 8. **A dropped `.Scan`** on `SinglePortionPrice` — caught by the compiler, but
    it is the silent-failure class rule 2 exists for.
+9. **A contrast ratio invented in the design sheet.** While recording the
+   orange-deep button pairings I wrote 1.87 for beige-on-orange. It measures
+   **2.90**. Caught only because the number was measured immediately after
+   being written — a wrong number in that sheet is believed for years.
+10. **`scripts/contrast.py` claimed to check design.md and did not.** It
+    compared against its own hardcoded table while printing "match the numbers
+    recorded in design.md §3". It now verifies the sheet, and found two ratios
+    that had never been written there.
+11. **A gradient is invisible to a contrast probe.** `background-image` leaves
+    `background-color` transparent, so the probe measured text against the
+    white card behind the gradient and reported 1.05:1. The element now carries
+    a real fallback colour, and the probe reports gradient-only backgrounds as
+    a finding instead of walking past them.
 
 ---
 
