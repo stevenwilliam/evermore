@@ -151,6 +151,62 @@ func Route(req Request) (Assignment, error) {
 	}, nil
 }
 
+// Rank returns EVERY eligible kitchen, best first, using the same ordering as
+// Route.
+//
+// Reservation needs the whole list, not just the winner. The free-capacity
+// figure a candidate carries was read outside the row lock, so by the time the
+// lock is taken the preferred kitchen may be full — and the correct response
+// is to try the next kitchen, not to tell the customer there is no capacity
+// anywhere. Route is Rank()[0].
+func Rank(req Request) ([]Assignment, error) {
+	if req.IsReroute {
+		if req.ExistingMode == ModeManual {
+			return nil, ErrManualAssignment
+		}
+		if req.AfterCutOff {
+			return nil, ErrAfterCutOff
+		}
+	}
+
+	portions := req.PortionsNeeded
+	if portions <= 0 {
+		portions = 1
+	}
+
+	var eligible []Candidate
+	for _, c := range req.Candidates {
+		// Capacity is deliberately NOT filtered here: it is re-checked under
+		// the lock. Filtering on a stale read would drop a kitchen that has
+		// since freed up.
+		if c.IsActive && c.ServesSlot && c.OpenThatDay && c.serviceable() {
+			eligible = append(eligible, c)
+		}
+	}
+	if len(eligible) == 0 {
+		return nil, ErrNotServiceable
+	}
+
+	sort.SliceStable(eligible, func(i, j int) bool {
+		if eligible[i].Priority != eligible[j].Priority {
+			return eligible[i].Priority < eligible[j].Priority
+		}
+		if eligible[i].DistanceM != eligible[j].DistanceM {
+			return eligible[i].DistanceM < eligible[j].DistanceM
+		}
+		return eligible[i].Code < eligible[j].Code
+	})
+
+	out := make([]Assignment, 0, len(eligible))
+	for _, c := range eligible {
+		out = append(out, Assignment{
+			KitchenID: c.KitchenID, Code: c.Code, DistanceM: c.DistanceM,
+			Mode: ModeAuto, Reason: reasonFor(c, len(eligible)),
+		})
+	}
+	return out, nil
+}
+
 func reasonFor(c Candidate, n int) string {
 	switch {
 	case n == 1 && c.HasPolygon:
