@@ -1,0 +1,23 @@
+{{define "content"}}
+<section class="section">
+  <div class="container container-narrow">
+    <h1>Masuk</h1>
+    <form class="stack" id="login-form" data-auth-form data-endpoint="/api/v1/auth/login"
+          data-next="{{if .Next}}{{.Next}}{{else}}/app/pesanan{{end}}">
+      <p>
+        <label for="email">Email</label><br>
+        <input class="searchbox" style="width:100%" type="email" id="email" name="email"
+               autocomplete="email" required>
+      </p>
+      <p>
+        <label for="password">Kata sandi</label><br>
+        <input class="searchbox" style="width:100%" type="password" id="password" name="password"
+               autocomplete="current-password" required>
+      </p>
+      <p role="alert" aria-live="polite" data-auth-error class="callout callout-warn" hidden></p>
+      <p><button class="btn btn-solid" type="submit">Masuk</button></p>
+      <p class="meta">Belum punya akun? <a href="/app/daftar">Daftar</a></p>
+    </form>
+  </div>
+</section>
+{{end}}

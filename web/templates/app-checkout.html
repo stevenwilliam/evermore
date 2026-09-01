@@ -1,0 +1,82 @@
+{{define "content"}}
+<section class="section">
+  <div class="container">
+    <ol class="filterbar" style="list-style:none;padding:0;margin-bottom:var(--space-6)">
+      <li><span class="pill pill-ok">1 Keranjang</span></li>
+      <li><span class="pill pill-ok">2 Pengiriman</span></li>
+      <li><span class="pill pill-quiet">3 Pembayaran</span></li>
+    </ol>
+
+    <h1>Ke mana kami antar?</h1>
+
+    {{if .QuoteError}}
+      <div class="callout callout-warn"><p style="margin:0">{{.QuoteError}}</p></div>
+    {{else}}
+    <form method="post" action="/app/checkout" class="hero-grid" style="align-items:start">
+      <input type="hidden" name="idempotency_key" value="{{.IdempotencyKey}}">
+      <div class="stack">
+        <fieldset style="border:none;padding:0;margin:0">
+          <legend class="visually-hidden">Pilih alamat pengantaran</legend>
+          {{range $i, $a := .Addresses}}
+          <label class="card" style="display:block;cursor:pointer;margin-bottom:var(--space-4)">
+            <div class="card-body">
+              <p style="margin:0;display:flex;gap:var(--space-3);align-items:baseline">
+                <input type="radio" name="address_id" value="{{$a.ID}}" {{if $a.IsDefault}}checked{{end}} required>
+                <strong>{{$a.Label}}</strong>
+                {{if $a.IsDefault}}<span class="pill pill-info">Utama</span>{{end}}
+              </p>
+              <p class="meta" style="margin:var(--space-2) 0 0">{{$a.Line}}</p>
+              <p class="meta" style="margin:0">{{$a.Recipient}} &middot; {{$a.Phone}}{{if $a.Note}} &middot; {{$a.Note}}{{end}}</p>
+            </div>
+          </label>
+          {{else}}
+          <div class="callout callout-warn">
+            <p style="margin:0">Belum ada alamat tersimpan. Hubungi kami untuk menambahkannya.</p>
+          </div>
+          {{end}}
+        </fieldset>
+
+        <div class="card">
+          <div class="card-body">
+            <label for="courier_note"><strong>Catatan untuk kurir</strong></label>
+            <input class="searchbox" style="width:100%;margin-top:var(--space-2)" type="text"
+                   id="courier_note" name="courier_note" maxlength="240"
+                   placeholder="Tulis patokan atau pesan singkat">
+          </div>
+        </div>
+
+        <div class="callout callout-info">
+          <p style="margin:0">
+            <strong>Konfirmasi dapur.</strong> Pesanan masuk antrean dapur setelah pembayaran
+            diverifikasi. Kalau satu meal batal, kami hubungi lewat WhatsApp dan kreditkan penuh.
+          </p>
+        </div>
+      </div>
+
+      <aside class="card">
+        <div class="card-body">
+          <h2 style="font-size:var(--text-xl)">Pesanan</h2>
+          <div class="table-wrap">
+            <table>
+              <caption class="visually-hidden">Ringkasan pesanan</caption>
+              <tbody>
+              {{range .Quote.Lines}}
+                <tr><th scope="row">{{.MealName}} · {{.Qty}}</th><td class="num">{{rupiah .LineTotal}}</td></tr>
+              {{end}}
+                <tr><th scope="row">Ongkos kirim</th><td class="num">{{rupiah .Quote.DeliveryFee}}</td></tr>
+                <tr><th scope="row">PPN {{bps .Quote.TaxRateBPS}} (sudah termasuk)</th><td class="num">{{rupiah .Quote.Tax.Tax}}</td></tr>
+                <tr><th scope="row"><strong>Total</strong></th><td class="num"><strong>{{rupiah .Quote.Total}}</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:var(--space-5)">
+            <button class="btn btn-solid" type="submit" {{if not .Addresses}}disabled aria-disabled="true"{{end}}>Lanjut bayar</button>
+          </p>
+          {{if not .Addresses}}<p class="btn-reason">Tidak bisa lanjut: belum ada alamat pengantaran tersimpan.</p>{{end}}
+        </div>
+      </aside>
+    </form>
+    {{end}}
+  </div>
+</section>
+{{end}}

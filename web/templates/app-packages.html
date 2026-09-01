@@ -1,0 +1,68 @@
+{{define "content"}}
+<section class="section">
+  <div class="container">
+    <h1>Paket &amp; kredit</h1>
+
+    {{if .CustomerPackages}}
+    <div class="card-grid">
+      {{range .CustomerPackages}}
+      <article class="card">
+        <div class="card-body">
+          <p><span class="pill {{if eq .Status "ACTIVE"}}pill-ok{{else}}pill-quiet{{end}}">{{.StatusLabel}}</span></p>
+          <h2 style="font-size:var(--text-xl)">{{.Name}}</h2>
+          <p class="price">{{.Balance}}<small>dari {{.Credits}} porsi</small></p>
+          {{if .ExpiresAt}}
+          <p class="meta">Berlaku sampai {{isodate .ExpiresAt}} &middot; {{.DaysLeft}} hari lagi</p>
+          {{end}}
+        </div>
+      </article>
+      {{end}}
+    </div>
+    {{else}}
+      <div class="callout callout-info"><p style="margin:0">Belum ada paket aktif.</p></div>
+    {{end}}
+
+    <div class="callout callout-warn" style="margin-top:var(--space-5)">
+      <p style="margin:0">Kredit hangus setelah masa berlaku dan tidak bisa diuangkan.
+      Pengembalian karena dapur batal selalu masuk sebagai kredit, bukan tunai.</p>
+    </div>
+
+    {{if .Ledger}}
+    <h2 style="margin-top:var(--space-7)">Riwayat kredit</h2>
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Riwayat pergerakan kredit</caption>
+        <thead>
+          <tr><th scope="col">Tanggal</th><th scope="col">Keterangan</th>
+              <th scope="col">Rujukan</th><th scope="col" class="num">Kredit</th></tr>
+        </thead>
+        <tbody>
+        {{range .Ledger}}
+          <tr>
+            <td>{{isodate .OccurredAt}}</td>
+            <td>{{.TypeLabel}}{{if .Note}} · {{.Note}}{{end}}</td>
+            <td>{{.Reference}}</td>
+            <td class="num">{{signed .Qty}}</td>
+          </tr>
+        {{end}}
+        </tbody>
+      </table>
+    </div>
+    {{end}}
+
+    <h2 style="margin-top:var(--space-7)">Butuh lebih banyak?</h2>
+    <div class="card-grid">
+      {{range .Packages}}
+      <article class="card">
+        <div class="card-body">
+          {{if .IsFeatured}}<p><span class="pill pill-warn">Paling laris</span></p>{{end}}
+          <h3>{{.MealCredits}} porsi</h3>
+          <p class="meta">{{rupiah .PerMealIDR}} per porsi &middot; berlaku {{.ValidityDays}} hari</p>
+          <div class="card-foot"><span class="price">{{rupiah .PriceIDR}}</span></div>
+        </div>
+      </article>
+      {{end}}
+    </div>
+  </div>
+</section>
+{{end}}

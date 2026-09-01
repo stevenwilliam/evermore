@@ -14,6 +14,8 @@ import (
 
 	"github.com/stevenwilliam/evermore/internal/adapter/postgres"
 	"github.com/stevenwilliam/evermore/internal/app/auth"
+	"github.com/stevenwilliam/evermore/internal/app/ordering"
+	"github.com/stevenwilliam/evermore/internal/app/payments"
 	"github.com/stevenwilliam/evermore/internal/platform/config"
 	"github.com/stevenwilliam/evermore/internal/platform/security"
 )
@@ -28,6 +30,9 @@ type Deps struct {
 	BuildCommit string
 	// Limiter is optional; a nil one gets a fresh per-router limiter.
 	Limiter *Limiter
+	// Store is the object store for payment proofs. A nil store skips the
+	// upload, which is what the tests use.
+	Store payments.ObjectStore
 }
 
 // NewRouter builds the whole HTTP surface.
@@ -68,6 +73,13 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 		DB: d.DB, Tokens: tokens, RefreshTTL: d.Cfg.RefreshTokenTTL,
 	})
 	ah := NewAuthHandler(authSvc, tokens, d.Cfg.IsProduction())
+
+	orderSvc := ordering.NewService(d.DB, d.Cfg.Location, nil)
+	paySvc := payments.NewService(d.DB, d.Store, d.Cfg.Location, nil)
+	app, err := NewAppHandler(d.DB, repo, orderSvc, paySvc, authSvc, d.Cfg, d.Templates)
+	if err != nil {
+		return nil, err
+	}
 
 	// One limiter per router. Tests build a router per case and must not
 	// inherit another case's counters.
@@ -134,6 +146,33 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	r.GET("/cara-kerja", ph.HowItWorks)
 	r.GET("/untuk-kantor", ph.Corporate)
 	r.GET("/wilayah-antar", ph.Coverage)
+
+	// --- signed-in surface ---
+	//
+	// Authenticate runs on the whole group so a page can render for an
+	// anonymous visitor where that makes sense (the cart) and redirect where
+	// it does not. RequireAuth and RequirePermission are per-route, so every
+	// protected handler declares what it needs.
+	appGroup := r.Group("/app", Authenticate(tokens, authSvc))
+	appGroup.GET("/masuk", app.LoginPage)
+	appGroup.GET("/daftar", app.RegisterPage)
+	appGroup.GET("/keranjang", app.Cart)
+	appGroup.POST("/keranjang/tambah", RateLimit(limiter, rlWrite), app.AddToCart)
+	appGroup.GET("/checkout", app.Checkout)
+	appGroup.POST("/checkout", RequireAuth(), RateLimit(limiter, rlWrite), app.PlaceOrder)
+	appGroup.GET("/pembayaran/:id", app.Payment)
+	appGroup.POST("/pembayaran/:id/bukti", RequireAuth(), RateLimit(limiter, rlWrite), app.UploadProof)
+	appGroup.GET("/pesanan", app.Orders)
+	appGroup.GET("/paket", app.Packages)
+
+	// --- back office ---
+	bo := r.Group("/bo", Authenticate(tokens, authSvc), RequireAuth())
+	bo.GET("", RequirePermission("dashboard.view"), app.Dashboard)
+	bo.GET("/menu", RequirePermission("menu.view"), app.MenuCalendar)
+	bo.POST("/menu/terbitkan", RequirePermission("menu.manage"), RateLimit(limiter, rlWrite), app.PublishMeal)
+	bo.GET("/pembayaran", RequirePermission("payment.view"), app.PaymentQueue)
+	bo.POST("/pembayaran/verifikasi", RequirePermission("payment.verify"), RateLimit(limiter, rlWrite), app.VerifyPayment)
+	bo.POST("/pembayaran/tolak", RequirePermission("payment.verify"), RateLimit(limiter, rlWrite), app.RejectPayment)
 
 	r.NoRoute(ph.NotFound)
 	r.NoMethod(func(c *gin.Context) {

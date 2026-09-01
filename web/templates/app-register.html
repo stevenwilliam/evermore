@@ -1,0 +1,34 @@
+{{define "content"}}
+<section class="section">
+  <div class="container container-narrow">
+    <h1>Daftar</h1>
+    <form class="stack" data-auth-form data-endpoint="/api/v1/auth/register" data-next="/app/masuk">
+      <p>
+        <label for="full_name">Nama lengkap</label><br>
+        <input class="searchbox" style="width:100%" type="text" id="full_name" name="full_name"
+               autocomplete="name" maxlength="120" required>
+      </p>
+      <p>
+        <label for="email">Email</label><br>
+        <input class="searchbox" style="width:100%" type="email" id="email" name="email"
+               autocomplete="email" required>
+      </p>
+      <p>
+        <label for="phone">Nomor WhatsApp</label><br>
+        <input class="searchbox" style="width:100%" type="tel" id="phone" name="phone"
+               autocomplete="tel" placeholder="0812 3456 7890" required>
+        <span class="meta">Boleh ditulis 0812…, +62812… atau 62812…</span>
+      </p>
+      <p>
+        <label for="password">Kata sandi</label><br>
+        <input class="searchbox" style="width:100%" type="password" id="password" name="password"
+               autocomplete="new-password" minlength="12" required>
+        <span class="meta">Minimal 12 karakter.</span>
+      </p>
+      <p role="alert" aria-live="polite" data-auth-error class="callout callout-warn" hidden></p>
+      <p><button class="btn btn-solid" type="submit">Daftar</button></p>
+      <p class="meta">Sudah punya akun? <a href="/app/masuk">Masuk</a></p>
+    </form>
+  </div>
+</section>
+{{end}}

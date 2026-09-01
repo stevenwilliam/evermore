@@ -20,6 +20,7 @@ import { join } from 'node:path';
 const BASE = process.argv[2] || 'http://127.0.0.1:8082';
 const OUT = process.argv[3] || './shots';
 
+// Anonymous pages.
 const PAGES = [
   ['home', '/'],
   ['menu', '/menu'],
@@ -27,8 +28,23 @@ const PAGES = [
   ['how', '/cara-kerja'],
   ['corporate', '/untuk-kantor'],
   ['coverage', '/wilayah-antar'],
+  ['login', '/app/masuk'],
+  ['register', '/app/daftar'],
+  ['cart', '/app/keranjang'],
   ['notfound', '/tidak-ada'],
 ];
+
+// Pages that need a session. Each entry names the account to sign in as, so
+// the back office is probed as staff and the customer pages as a customer.
+const AUTHED_PAGES = [
+  ['app-orders', '/app/pesanan', 'sinta@example.com'],
+  ['app-packages', '/app/paket', 'sinta@example.com'],
+  ['bo-dashboard', '/bo', 'ratna@evermore.co.id'],
+  ['bo-menu', '/bo/menu', 'ratna@evermore.co.id'],
+  ['bo-payments', '/bo/pembayaran', 'ratna@evermore.co.id'],
+];
+
+const PASSWORD = 'Evermore#2026';
 
 const VIEWPORTS = [
   ['mobile', 360, 800],
@@ -202,7 +218,28 @@ for (const [vpName, w, h] of VIEWPORTS) {
     }
   });
 
-  for (const [name, path] of PAGES) {
+  // Sign in through the real API and put the access token on every request,
+  // so the authenticated screens are probed exactly as a user sees them.
+  const signIn = async (email) => {
+    const res = await page.request.post(BASE + '/api/v1/auth/login', {
+      data: { email, password: PASSWORD },
+    });
+    if (!res.ok()) throw new Error(`login as ${email} failed: ${res.status()}`);
+    const body = await res.json();
+    await page.setExtraHTTPHeaders({ Authorization: 'Bearer ' + body.access_token });
+  };
+
+  const allPages = [
+    ...PAGES.map(([n, p]) => [n, p, null]),
+    ...AUTHED_PAGES,
+  ];
+
+  let signedInAs = null;
+  for (const [name, path, asEmail] of allPages) {
+    if (asEmail !== signedInAs) {
+      if (asEmail) { await signIn(asEmail); } else { await page.setExtraHTTPHeaders({}); }
+      signedInAs = asEmail;
+    }
     consoleErrors.length = 0;
     failedRequests.length = 0;
     const resp = await page.goto(BASE + path, { waitUntil: 'networkidle', timeout: 30000 });
@@ -211,9 +248,27 @@ for (const [vpName, w, h] of VIEWPORTS) {
     await page.waitForTimeout(200);
 
     const file = join(OUT, `${name}-${vpName}.png`);
-    await page.screenshot({ path: file, fullPage: true });
+    // The screenshot is best-effort; the computed-style probe below is not.
+    // Capture can fail for reasons that have nothing to do with the page — a
+    // wedged compositor in the environment, for instance — and losing the
+    // probe because of that would lose the half that actually finds defects.
+    // A failure is RECORDED, never swallowed.
+    let shotError = null;
+    try {
+      await page.screenshot({
+        path: file, fullPage: true, animations: 'disabled', timeout: 4000,
+      });
+    } catch (e) {
+      shotError = e.message.split('\n')[0];
+    }
 
+    // A protected page that redirected to the login screen was not probed;
+    // say so rather than reporting a clean login page as a clean dashboard.
+    const landed = new URL(page.url()).pathname;
     const findings = await page.evaluate(probeScript);
+    if (asEmail && landed !== path) {
+      findings.push({ kind: 'not-reached', wanted: path, landed });
+    }
     const fontsUsed = await page.evaluate(() => {
       const set = new Set();
       for (const el of document.querySelectorAll('h1, h2, h3, body, .masthead a')) {
@@ -230,6 +285,7 @@ for (const [vpName, w, h] of VIEWPORTS) {
       consoleErrors: [...consoleErrors],
       failedRequests: [...failedRequests],
       fontsUsed,
+      shotError,
       envNotices: [...envNotices],
     });
     envNotices.clear();
@@ -242,10 +298,12 @@ writeFileSync(join(OUT, 'report.json'), JSON.stringify(results, null, 2));
 
 // --- human-readable summary -------------------------------------------------
 let problems = 0;
+let shotFailures = 0;
 const allNotices = new Set();
 for (const r of results) {
   (r.envNotices || []).forEach(n => allNotices.add(n));
   const bad = r.findings.length + r.consoleErrors.length + r.failedRequests.length;
+  if (r.shotError) shotFailures++;
   problems += bad;
   const flag = bad ? 'FAIL' : ' ok ';
   console.log(`[${flag}] ${r.page.padEnd(10)} ${r.viewport.padEnd(8)} HTTP ${r.status}  fonts=${r.fontsUsed.join('/')}`);
@@ -256,6 +314,8 @@ for (const r of results) {
       console.log(`        bar-rule ${f.px}px/${f.weight} <${f.tag}> "${f.text}"`);
     } else if (f.kind === 'overflow') {
       console.log(`        overflow scrollWidth=${f.scrollWidth} viewport=${f.viewport}`);
+    } else if (f.kind === 'not-reached') {
+      console.log(`        NOT REACHED: wanted ${f.wanted}, landed on ${f.landed} — the page was not probed`);
     } else if (f.kind === 'tap-target') {
       console.log(`        tap-target ${f.height}px <${f.tag}> "${f.text}"`);
     }
@@ -266,6 +326,11 @@ for (const r of results) {
 if (allNotices.size) {
   console.log('\nEnvironment notices (correct behaviour for this host, not defects):');
   for (const n of allNotices) console.log('  - ' + n);
+}
+if (shotFailures) {
+  console.log(`\n!! ${shotFailures} of ${results.length} screenshots could NOT be captured.`);
+  console.log('   The computed-style probe still ran; the images did not.');
+  console.log(`   First error: ${results.find(r => r.shotError).shotError}`);
 }
 console.log(`\n${results.length} page/viewport combinations, ${problems} problem(s).`);
 process.exit(problems ? 1 : 0);

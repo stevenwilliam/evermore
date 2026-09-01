@@ -1,0 +1,74 @@
+{{define "content"}}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow" style="color:var(--ink-muted)">Back office</p>
+        <h1>Jadwal menu</h1>
+        <p>Kalender global lintas dapur. Menu DRAFT tidak bisa dipesan pelanggan.</p>
+      </div>
+      <p>
+        <a class="chip" href="/bo/menu?minggu={{.PrevWeek}}">&lsaquo; Minggu lalu</a>
+        <span class="pill pill-quiet">{{.WeekLabel}}</span>
+        <a class="chip" href="/bo/menu?minggu={{.NextWeek}}">Minggu depan &rsaquo;</a>
+      </p>
+    </div>
+
+    <nav class="filterbar" aria-label="Navigasi back office">
+      <a class="chip" href="/bo">Dasbor</a>
+      <a class="chip is-active" href="/bo/menu">Jadwal menu</a>
+      <a class="chip" href="/bo/pembayaran">Pembayaran</a>
+    </nav>
+
+    {{if .Flash}}
+    <div class="callout callout-info"><p style="margin:0">{{.Flash}}</p></div>
+    {{end}}
+
+    <div class="card-grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+      {{range .MenuWeek}}
+      <article class="card">
+        <div class="card-body">
+          <h2 style="font-size:var(--text-lg)">{{.Weekday}}<br><span class="meta" style="font-family:var(--font-body);font-weight:var(--w-body)">{{.DayMonth}}</span></h2>
+          {{range .Slots}}
+            <p class="meta" style="margin-top:var(--space-3)"><strong>{{.SlotLabel}}</strong> {{.SlotAlias}}</p>
+            {{range .Meals}}
+            <div style="border-top:1px solid var(--border-subtle);padding-top:var(--space-2);margin-top:var(--space-2)">
+              <p style="margin:0">
+                {{if eq .Status "PUBLISHED"}}<span class="pill pill-ok">Terbit</span>
+                {{else}}<span class="pill pill-warn">Draf</span>{{end}}
+              </p>
+              <p style="margin:var(--space-2) 0 0"><strong>{{.Name}}</strong></p>
+              <p class="meta" style="margin:0">
+                {{.DietName}} &middot; {{.Components}} komponen
+                {{if .Complete}}&middot; {{.Kcal}} kkal{{else}}&middot; gizi belum lengkap{{end}}
+              </p>
+              {{if .Quota}}
+              <p class="meta" style="margin:0">
+                {{if .Full}}<span class="pill pill-warn">{{.Used}} / {{.Quota}} penuh</span>
+                {{else}}{{.Used}} / {{.Quota}} terisi{{end}}
+              </p>
+              {{end}}
+              {{if eq .Status "DRAFT"}}
+                {{if .Complete}}
+                <form method="post" action="/bo/menu/terbitkan" style="margin-top:var(--space-2)">
+                  <input type="hidden" name="meal_id" value="{{.ID}}">
+                  <input type="hidden" name="minggu" value="{{$.ThisWeek}}">
+                  <button class="btn btn-solid" type="submit">Terbitkan</button>
+                </form>
+                {{else}}
+                <p><button class="btn btn-outline" type="button" disabled aria-disabled="true">Terbitkan</button></p>
+                <p class="btn-reason">Tidak bisa terbit: gizi salah satu komponen belum diisi.</p>
+                {{end}}
+              {{end}}
+            </div>
+            {{end}}
+          {{else}}
+            <p class="meta">Tidak ada menu.</p>
+          {{end}}
+        </div>
+      </article>
+      {{end}}
+    </div>
+  </div>
+</section>
+{{end}}

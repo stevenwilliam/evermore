@@ -1,0 +1,81 @@
+{{define "content"}}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow" style="color:var(--ink-muted)">Back office</p>
+        <h1>Verifikasi pembayaran</h1>
+        <p>Setiap keputusan tercatat di audit log dengan aktor dan alasan.</p>
+      </div>
+      <p><span class="pill pill-warn">{{len .PayQueue}} menunggu</span></p>
+    </div>
+
+    <nav class="filterbar" aria-label="Navigasi back office">
+      <a class="chip" href="/bo">Dasbor</a>
+      <a class="chip" href="/bo/menu">Jadwal menu</a>
+      <a class="chip is-active" href="/bo/pembayaran">Pembayaran</a>
+    </nav>
+
+    {{if .Flash}}
+    <div class="callout {{if eq .FlashKind "warn"}}callout-warn{{else}}callout-info{{end}}">
+      <p style="margin:0">{{.Flash}}</p>
+    </div>
+    {{end}}
+
+    <form class="filterbar" method="get" action="/bo/pembayaran" role="search">
+      <div class="searchbox">
+        <label class="visually-hidden" for="q">Cari nomor pesanan atau nama pelanggan</label>
+        <input type="search" id="q" name="q" value="{{.Search}}"
+               placeholder="Cari nomor pesanan atau nama…" autocomplete="off">
+      </div>
+      <button class="btn btn-outline" type="submit">Cari</button>
+    </form>
+
+    {{if .PayQueue}}
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Antrean verifikasi pembayaran</caption>
+        <thead>
+          <tr>
+            <th scope="col">Pesanan</th><th scope="col">Pelanggan</th>
+            <th scope="col" class="num">Nominal</th><th scope="col">Menunggu</th>
+            <th scope="col">Kecocokan</th><th scope="col">Tindakan</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{range .PayQueue}}
+          <tr>
+            <td>{{.OrderNumber}}<br><span class="meta">sufiks {{printf "%03d" .Suffix}}</span></td>
+            <td>{{.CustomerName}}<br><span class="meta">{{.CustomerType}}{{if .SenderName}} · pengirim {{.SenderName}}{{end}}</span></td>
+            <td class="num">{{rupiah .ExpectedIDR}}{{if .DeclaredIDR}}<br><span class="meta">dilaporkan {{rupiah .DeclaredIDR}}</span>{{end}}</td>
+            <td>{{duration .WaitingFor}}</td>
+            <td>{{if eq .Match "Cocok"}}<span class="pill pill-ok">{{.Match}}</span>{{else}}<span class="pill pill-warn">{{.Match}}</span>{{end}}</td>
+            <td>
+              <form method="post" action="/bo/pembayaran/verifikasi" style="display:inline">
+                <input type="hidden" name="payment_id" value="{{.PaymentID}}">
+                <button class="btn btn-solid" type="submit">Verifikasi</button>
+              </form>
+              <details style="display:inline-block;margin-left:var(--space-2)">
+                <summary class="chip" style="display:inline-flex">Tolak</summary>
+                <form method="post" action="/bo/pembayaran/tolak" class="card" style="margin-top:var(--space-2);padding:var(--space-3)">
+                  <input type="hidden" name="payment_id" value="{{.PaymentID}}">
+                  <label class="visually-hidden" for="reason-{{.PaymentID}}">Alasan penolakan</label>
+                  <input class="searchbox" style="width:100%" type="text" id="reason-{{.PaymentID}}"
+                         name="reason" placeholder="Alasan penolakan (wajib)" required maxlength="240">
+                  <button class="btn btn-outline" style="margin-top:var(--space-2)" type="submit">Kirim penolakan</button>
+                </form>
+              </details>
+            </td>
+          </tr>
+        {{end}}
+        </tbody>
+      </table>
+    </div>
+    {{else}}
+      <div class="callout">
+        <p style="margin:0"><span class="pill pill-ok">Kosong</span> Tidak ada pembayaran yang menunggu verifikasi.</p>
+      </div>
+    {{end}}
+  </div>
+</section>
+{{end}}

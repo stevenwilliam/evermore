@@ -16,6 +16,9 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/stevenwilliam/evermore/internal/adapter/postgres"
+	"github.com/stevenwilliam/evermore/internal/app/auth"
+	"github.com/stevenwilliam/evermore/internal/app/ordering"
+	"github.com/stevenwilliam/evermore/internal/app/payments"
 	"github.com/stevenwilliam/evermore/internal/domain/money"
 	"github.com/stevenwilliam/evermore/internal/platform/apierror"
 	"github.com/stevenwilliam/evermore/internal/platform/config"
@@ -28,9 +31,8 @@ import (
 // bots and crawlers do not run JavaScript: Open Graph tags and page copy have
 // to be in the served HTML (99-steven-preference.md §13).
 type PublicHandler struct {
+	*renderer
 	repo *postgres.PublicRepo
-	cfg  *config.Config
-	tpl  map[string]*template.Template
 }
 
 // weekdayID and monthID render Indonesian dates. A message catalogue covers
@@ -114,11 +116,56 @@ func tierRange(minQty int, maxQty *int) string {
 	return fmt.Sprintf("%d – %d porsi", minQty, *maxQty)
 }
 
+// bps renders a basis-point rate as a percentage: 1100 -> "11%".
+func bps(v int) string {
+	whole := v / 100
+	frac := v % 100
+	if frac == 0 {
+		return fmt.Sprintf("%d%%", whole)
+	}
+	return fmt.Sprintf("%d,%02d%%", whole, frac)
+}
+
+// duration renders a countdown the way the artifact does: "2 jam 47 menit".
+func duration(d time.Duration) string {
+	if d <= 0 {
+		return "0 menit"
+	}
+	h := int(d.Hours())
+	m := int(d.Minutes()) % 60
+	if h > 0 {
+		return fmt.Sprintf("%d jam %d menit", h, m)
+	}
+	return fmt.Sprintf("%d menit", m)
+}
+
+// isodate renders a business date. It takes a *time.Time so a template can
+// pass a nullable column without a nil check at every call site.
+func isodate(t *time.Time) string {
+	if t == nil || t.IsZero() {
+		return ""
+	}
+	return fmt.Sprintf("%d %s %d", t.Day(), monthShortID[t.Month()], t.Year())
+}
+
+// signed renders a ledger movement with its sign, so +1 and -2 read as
+// movements rather than as quantities.
+func signed(n int) string {
+	if n > 0 {
+		return fmt.Sprintf("+%d", n)
+	}
+	return strconv.Itoa(n)
+}
+
 var funcs = template.FuncMap{
 	"rupiah":    rupiah,
 	"gram":      gram,
 	"role":      roleLabel,
 	"tierRange": tierRange,
+	"bps":       bps,
+	"duration":  duration,
+	"isodate":   isodate,
+	"signed":    signed,
 }
 
 // NewPublicHandler parses every page template against the base layout.
@@ -127,7 +174,29 @@ var funcs = template.FuncMap{
 // Execute, so a single shared root would make the first page render and every
 // later one fail — the exact failure recorded as D18(c) in the decision log.
 func NewPublicHandler(repo *postgres.PublicRepo, cfg *config.Config, fsys fs.FS) (*PublicHandler, error) {
-	pages := []string{"home", "menu", "meal", "packages", "coverage", "how", "corporate", "error"}
+	r, err := newRenderer(cfg, fsys, []string{
+		"home", "menu", "meal", "packages", "coverage", "how", "corporate", "error",
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &PublicHandler{renderer: r, repo: repo}, nil
+}
+
+// renderer owns template parsing and the fields every page's layout needs. It
+// is shared by the public and the signed-in handlers so the masthead, footer
+// and SEO head are defined once.
+type renderer struct {
+	cfg *config.Config
+	tpl map[string]*template.Template
+}
+
+// newRenderer parses each page against the base layout, into its OWN set.
+//
+// html/template refuses Parse after Execute, so a single shared root would
+// make the first page render and every later one fail — the exact failure
+// recorded as D18(c) in the decision log.
+func newRenderer(cfg *config.Config, fsys fs.FS, pages []string) (*renderer, error) {
 	set := make(map[string]*template.Template, len(pages))
 	for _, p := range pages {
 		t, err := template.New("base").Funcs(funcs).ParseFS(fsys,
@@ -142,7 +211,7 @@ func NewPublicHandler(repo *postgres.PublicRepo, cfg *config.Config, fsys fs.FS)
 		}
 		set[p] = t
 	}
-	return &PublicHandler{repo: repo, cfg: cfg, tpl: set}, nil
+	return &renderer{cfg: cfg, tpl: set}, nil
 }
 
 // pageData is the common shape every template's base layout needs.
@@ -188,6 +257,31 @@ type pageData struct {
 	Heading string
 	Message string
 	TraceID string
+
+	// Signed-in surface.
+	Anonymous        bool
+	Next             string
+	Quote            *ordering.Quote
+	QuoteError       string
+	Addresses        []AddressView
+	Orders           []OrderView
+	Payment          *payments.Instructions
+	PaymentLines     []PaymentLine
+	CustomerPackages []PackageView
+	Ledger           []LedgerRow
+	IdempotencyKey   string
+	Principal        *auth.Principal
+
+	// Back office.
+	Dash      *DashboardView
+	PayQueue  []payments.QueueItem
+	MenuWeek  []MenuDay
+	WeekLabel string
+	ThisWeek  string
+	PrevWeek  string
+	NextWeek  string
+	Flash     string
+	FlashKind string
 }
 
 type alternate struct {
@@ -203,7 +297,7 @@ type dayLink struct {
 }
 
 // base fills the fields every page shares.
-func (h *PublicHandler) base(c *gin.Context, params map[string]string, nav, title, desc string) pageData {
+func (h *renderer) base(c *gin.Context, params map[string]string, nav, title, desc string) pageData {
 	// params keys use dots; templates cannot index a dotted key with .Foo, so
 	// the map is re-keyed with underscores for template convenience.
 	tplParams := make(map[string]string, len(params))
@@ -232,7 +326,7 @@ func (h *PublicHandler) base(c *gin.Context, params map[string]string, nav, titl
 	}
 }
 
-func (h *PublicHandler) render(c *gin.Context, page string, status int, data pageData) {
+func (h *renderer) render(c *gin.Context, page string, status int, data pageData) {
 	t, ok := h.tpl[page]
 	if !ok {
 		Fail(c, apierror.Internal(fmt.Errorf("no template %q", page)))
@@ -249,19 +343,19 @@ func (h *PublicHandler) render(c *gin.Context, page string, status int, data pag
 
 // today is the current business date in the operating timezone. Business-day
 // logic converts explicitly and never uses the server's zone (CLAUDE.md §4).
-func (h *PublicHandler) today() time.Time {
+func (h *renderer) today() time.Time {
 	n := time.Now().In(h.cfg.Location)
 	return time.Date(n.Year(), n.Month(), n.Day(), 0, 0, 0, 0, h.cfg.Location)
 }
 
-func (h *PublicHandler) longDate(t time.Time) string {
+func (h *renderer) longDate(t time.Time) string {
 	t = t.In(h.cfg.Location)
 	return fmt.Sprintf("%s, %d %s %d", weekdayID[t.Weekday()], t.Day(), monthID[t.Month()], t.Year())
 }
 
 // cutOffCountdown renders how long is left before the cut-off for tomorrow's
 // service, or empty once it has passed.
-func (h *PublicHandler) cutOffCountdown(params map[string]string) string {
+func (h *renderer) cutOffCountdown(params map[string]string) string {
 	raw := params["order.cutoff_time"]
 	hh, mm, ok := parseHHMM(raw)
 	if !ok {
@@ -620,7 +714,7 @@ func joinKitchens(k []postgres.Kitchen) string {
 
 // --------------------------------------------------------------- JSON-LD
 
-func (h *PublicHandler) orgJSONLD(params map[string]string) template.JS {
+func (h *renderer) orgJSONLD(params map[string]string) template.JS {
 	doc := map[string]any{
 		"@context":      "https://schema.org",
 		"@type":         "Restaurant",
@@ -643,7 +737,7 @@ func (h *PublicHandler) orgJSONLD(params map[string]string) template.JS {
 	return marshalJSONLD(doc)
 }
 
-func (h *PublicHandler) mealJSONLD(m *postgres.MealDetail, params map[string]string) template.JS {
+func (h *renderer) mealJSONLD(m *postgres.MealDetail, params map[string]string) template.JS {
 	doc := map[string]any{
 		"@context":    "https://schema.org",
 		"@type":       "Product",

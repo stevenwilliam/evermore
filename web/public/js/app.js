@@ -18,6 +18,46 @@
     });
   }
 
+  // --- auth forms --------------------------------------------------------
+  // The login and register forms post JSON to the API and then navigate. The
+  // refresh token comes back as an HttpOnly cookie, so nothing sensitive is
+  // ever reachable from JavaScript; the short-lived access token is kept in
+  // memory only, and the page reload re-reads it from a refresh.
+  document.querySelectorAll('[data-auth-form]').forEach(function (form) {
+    var errBox = form.querySelector('[data-auth-error]');
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      if (errBox) { errBox.hidden = true; errBox.textContent = ''; }
+
+      var payload = {};
+      new FormData(form).forEach(function (v, k) { payload[k] = v; });
+
+      fetch(form.getAttribute('data-endpoint'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify(payload)
+      }).then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          return { ok: res.ok, body: body };
+        });
+      }).then(function (r) {
+        if (!r.ok) {
+          var msg = (r.body && r.body.error && r.body.error.message)
+            || 'Tidak bisa diproses. Coba lagi.';
+          if (errBox) { errBox.textContent = msg; errBox.hidden = false; }
+          return;
+        }
+        window.location.assign(form.getAttribute('data-next') || '/');
+      }).catch(function () {
+        if (errBox) {
+          errBox.textContent = 'Jaringan bermasalah. Coba lagi.';
+          errBox.hidden = false;
+        }
+      });
+    });
+  });
+
   // --- debounced live search --------------------------------------------
   // CLAUDE.md §7 wants the search box debounced. The form still submits
   // normally without JS; this filters the already-rendered cards so typing

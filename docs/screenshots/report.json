@@ -12,6 +12,7 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
     "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
@@ -29,6 +30,7 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
     "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
@@ -46,6 +48,7 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
     "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
@@ -63,6 +66,7 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
     "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
@@ -80,6 +84,7 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
     "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
@@ -97,6 +102,61 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "login",
+    "viewport": "mobile",
+    "path": "/app/masuk",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/login-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "register",
+    "viewport": "mobile",
+    "path": "/app/daftar",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/register-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "cart",
+    "viewport": "mobile",
+    "path": "/app/keranjang",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/cart-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
     "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
@@ -114,8 +174,99 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
     "envNotices": [
       "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "app-orders",
+    "viewport": "mobile",
+    "path": "/app/pesanan",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/app-orders-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "app-packages",
+    "viewport": "mobile",
+    "path": "/app/paket",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/app-packages-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "bo-dashboard",
+    "viewport": "mobile",
+    "path": "/bo",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/bo-dashboard-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "bo-menu",
+    "viewport": "mobile",
+    "path": "/bo/menu",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/bo-menu-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "bo-payments",
+    "viewport": "mobile",
+    "path": "/bo/pembayaran",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/bo-payments-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
   },
@@ -132,6 +283,7 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
     "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
@@ -149,6 +301,7 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
     "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
@@ -166,6 +319,7 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
     "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
@@ -183,6 +337,7 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
     "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
@@ -200,6 +355,7 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
     "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
@@ -217,6 +373,61 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "login",
+    "viewport": "desktop",
+    "path": "/app/masuk",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/login-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "register",
+    "viewport": "desktop",
+    "path": "/app/daftar",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/register-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "cart",
+    "viewport": "desktop",
+    "path": "/app/keranjang",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/cart-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
     "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
@@ -234,8 +445,99 @@
       "Inter",
       "Erode"
     ],
+    "shotError": null,
     "envNotices": [
       "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "app-orders",
+    "viewport": "desktop",
+    "path": "/app/pesanan",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/app-orders-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "app-packages",
+    "viewport": "desktop",
+    "path": "/app/paket",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/app-packages-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "bo-dashboard",
+    "viewport": "desktop",
+    "path": "/bo",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/bo-dashboard-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "bo-menu",
+    "viewport": "desktop",
+    "path": "/bo/menu",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/bo-menu-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
+      "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
+    ]
+  },
+  {
+    "page": "bo-payments",
+    "viewport": "desktop",
+    "path": "/bo/pembayaran",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/bo-payments-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ],
+    "shotError": null,
+    "envNotices": [
       "The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy"
     ]
   }

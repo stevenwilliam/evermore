@@ -232,6 +232,26 @@ a:hover { text-decoration-thickness: 2px; }
 }
 .chip[aria-current="true"], .chip.is-active { background: var(--nourish-deep); color: var(--beige); border-color: var(--nourish-deep); }
 
+/* Every text-entry control takes the 44px touch floor, wherever it appears.
+ * The floor used to live only on `.searchbox input`, so a form that put the
+ * class ON the input rather than on a wrapper got a 21px control — found by
+ * the tap-target probe on the login and register forms, not by reading this
+ * file. */
+input[type="text"], input[type="email"], input[type="password"],
+input[type="tel"], input[type="search"], input[type="number"],
+input[type="file"], select, textarea {
+  min-height: var(--tap);
+  font: inherit;
+  font-size: var(--text-base);
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card-bg);
+  color: var(--page-ink);
+  max-width: 100%;
+}
+input[type="radio"], input[type="checkbox"] { min-height: 0; width: 20px; height: 20px; }
+
 /* A search box on every list (CLAUDE.md §7). */
 .searchbox { position: relative; flex: 1 1 240px; min-width: 200px; }
 .searchbox input {

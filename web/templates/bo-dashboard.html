@@ -1,0 +1,77 @@
+{{define "content"}}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow" style="color:var(--ink-muted)">Back office</p>
+        <h1>{{.Dash.DateLabel}}</h1>
+        <p>Angka untuk tanggal layanan hari ini, zona Asia/Jakarta</p>
+      </div>
+      {{if .Dash.CutOffIn}}<p><span class="pill pill-warn">Cut-off besok &middot; {{.Dash.CutOffIn}}</span></p>{{end}}
+    </div>
+
+    <nav class="filterbar" aria-label="Navigasi back office">
+      <a class="chip is-active" href="/bo">Dasbor</a>
+      <a class="chip" href="/bo/menu">Jadwal menu</a>
+      <a class="chip" href="/bo/pembayaran">Pembayaran{{if .Dash.AwaitingVerify}} · {{.Dash.AwaitingVerify}}{{end}}</a>
+    </nav>
+
+    <div class="card-grid" style="margin-bottom:var(--space-7)">
+      <article class="card"><div class="card-body">
+        <p class="meta">Meal hari ini</p><p class="price">{{.Dash.MealsToday}}</p></div></article>
+      <article class="card"><div class="card-body">
+        <p class="meta">Pengantaran</p><p class="price">{{.Dash.Deliveries}}<small>{{.Dash.Delivered}} terkirim · {{.Dash.OnTheRoad}} di jalan</small></p></div></article>
+      <article class="card"><div class="card-body">
+        <p class="meta">Perlu verifikasi</p><p class="price">{{.Dash.AwaitingVerify}}{{if .Dash.AwaitingVerify}}<small>tertua {{.Dash.OldestWaitMin}} menit</small>{{end}}</p></div></article>
+      <article class="card"><div class="card-body">
+        <p class="meta">Omzet terverifikasi</p><p class="price">{{rupiah .Dash.RevenueIDR}}<small>termasuk PPN</small></p></div></article>
+      <article class="card"><div class="card-body">
+        <p class="meta">Di luar jangkauan</p><p class="price">{{.Dash.OutOfRange}}<small>percobaan checkout</small></p></div></article>
+    </div>
+
+    <h2>Kapasitas per dapur &amp; slot <span class="meta" style="font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--w-body)">terpakai / kuota</span></h2>
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Kapasitas dapur per slot hari ini</caption>
+        <thead>
+          <tr><th scope="col">Dapur</th>
+          {{range (index .Dash.Capacity 0).Cells}}<th scope="col" class="num">{{.SlotLabel}}</th>{{end}}</tr>
+        </thead>
+        <tbody>
+        {{range .Dash.Capacity}}
+          <tr>
+            <th scope="row">{{.Name}}<br><span class="meta">{{.Code}}</span></th>
+            {{range .Cells}}
+              <td class="num">
+                {{if .Closed}}<span class="pill pill-quiet">tutup</span>
+                {{else if .Full}}<span class="pill pill-warn">{{.Used}} / {{.Quota}}</span>
+                {{else}}{{.Used}} / {{.Quota}}{{end}}
+              </td>
+            {{end}}
+          </tr>
+        {{end}}
+        </tbody>
+      </table>
+    </div>
+
+    {{if .Dash.Actions}}
+    <h2 style="margin-top:var(--space-7)">Perlu tindakan</h2>
+    <div class="stack">
+      {{range .Dash.Actions}}
+      <div class="callout {{if eq .Kind "warn"}}callout-warn{{else}}callout-info{{end}}">
+        <div style="flex:1">
+          <p style="margin:0"><strong>{{.Title}}</strong></p>
+          <p class="meta" style="margin:0">{{.Detail}}</p>
+        </div>
+        <a class="btn btn-outline" href="{{.Link}}">{{.CTA}}</a>
+      </div>
+      {{end}}
+    </div>
+    {{else}}
+    <div class="callout" style="margin-top:var(--space-6)">
+      <p style="margin:0"><span class="pill pill-ok">Bersih</span> Tidak ada yang menunggu keputusan.</p>
+    </div>
+    {{end}}
+  </div>
+</section>
+{{end}}

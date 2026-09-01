@@ -1,0 +1,99 @@
+{{define "content"}}
+<section class="section">
+  <div class="container">
+    <ol class="filterbar" style="list-style:none;padding:0;margin-bottom:var(--space-6)">
+      <li><span class="pill pill-ok">1 Keranjang</span></li>
+      <li><span class="pill pill-ok">2 Pengiriman</span></li>
+      <li><span class="pill pill-ok">3 Pembayaran</span></li>
+    </ol>
+
+    <p class="meta">Pesanan {{.Payment.OrderNumber}}</p>
+    <h1>Transfer {{rupiah .Payment.AmountIDR}}</h1>
+
+    {{if eq .Payment.Status "PAYMENT_SUBMITTED"}}
+      <div class="callout callout-info">
+        <p style="margin:0"><strong>Menunggu verifikasi.</strong> Tim keuangan memverifikasi manual
+        pada jam kerja, rata-rata di bawah 30 menit. Status dikirim ke email.</p>
+      </div>
+    {{else if eq .Payment.Status "PAID"}}
+      <div class="callout">
+        <p style="margin:0"><span class="pill pill-ok">Lunas</span> Pesanan masuk antrean dapur.</p>
+      </div>
+    {{else if .Payment.Expired}}
+      <div class="callout callout-warn">
+        <p style="margin:0"><strong>Batas waktu lewat.</strong> Pesanan dibatalkan otomatis dan slot dilepas.</p>
+      </div>
+    {{else}}
+      <div class="callout callout-warn">
+        <p style="margin:0">Bayar dalam <strong>{{duration .Payment.Remaining}}</strong>.
+        Lewat itu pesanan dibatalkan otomatis dan slot dilepas ke pelanggan lain.</p>
+      </div>
+    {{end}}
+
+    <div class="hero-grid" style="align-items:start;margin-top:var(--space-6)">
+      <div class="stack">
+        <div class="card">
+          <div class="card-body">
+            <h2 style="font-size:var(--text-lg)">Rekening tujuan</h2>
+            <p class="meta">{{.Payment.BankName}} &middot; {{.Payment.AccountHolder}}</p>
+            <p class="price" style="letter-spacing:.04em">{{.Payment.AccountNumber}}</p>
+
+            <h3 style="font-size:var(--text-base);margin-top:var(--space-5)">Nominal tepat sampai 3 digit terakhir</h3>
+            <p class="price">{{rupiah .Payment.AmountIDR}}</p>
+            <p class="meta">
+              Sufiks <strong>{{printf "%03d" .Payment.Suffix}}</strong> hanya penanda pencocokan.
+              Angka itu tidak masuk basis pajak.
+            </p>
+          </div>
+        </div>
+
+        {{if not .Payment.Expired}}
+        <div class="card">
+          <div class="card-body">
+            <h2 style="font-size:var(--text-lg)">Bukti transfer</h2>
+            <form method="post" action="/app/pembayaran/{{.Payment.OrderID}}/bukti" enctype="multipart/form-data" class="stack">
+              <p>
+                <label for="proof">Unggah tangkapan layar mutasi</label><br>
+                <input type="file" id="proof" name="proof" accept="image/jpeg,image/png" required>
+              </p>
+              <p class="meta">JPG atau PNG, maksimum 5 MB.</p>
+              <p>
+                <label for="sender_name">Nama pengirim</label><br>
+                <input class="searchbox" style="width:100%" type="text" id="sender_name" name="sender_name" maxlength="120">
+              </p>
+              <p>
+                <label for="declared_amount">Nominal yang ditransfer</label><br>
+                <input class="searchbox" style="width:100%" type="text" inputmode="numeric"
+                       id="declared_amount" name="declared_amount" placeholder="{{.Payment.AmountIDR}}">
+              </p>
+              <p><button class="btn btn-solid" type="submit">Saya sudah transfer</button></p>
+            </form>
+          </div>
+        </div>
+        {{end}}
+      </div>
+
+      <aside class="card">
+        <div class="card-body">
+          <h2 style="font-size:var(--text-xl)">Pesanan</h2>
+          <div class="table-wrap">
+            <table>
+              <caption class="visually-hidden">Rincian pesanan</caption>
+              <tbody>
+              {{range .PaymentLines}}
+                <tr>
+                  <th scope="row">{{.Name}} · {{.Qty}}<br><span class="meta">{{.SlotLabel}}</span></th>
+                  <td class="num">{{rupiah .TotalIDR}}</td>
+                </tr>
+              {{end}}
+                <tr><th scope="row"><strong>Total transfer</strong></th><td class="num"><strong>{{rupiah .Payment.AmountIDR}}</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:var(--space-4)"><a href="/app/pesanan">Lihat semua pesanan</a></p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+{{end}}

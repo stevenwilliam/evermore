@@ -1,0 +1,51 @@
+{{define "content"}}
+<section class="section">
+  <div class="container">
+    <h1>Pesanan saya</h1>
+    <form class="filterbar" method="get" action="/app/pesanan" role="search" data-live-search>
+      <div class="searchbox">
+        <label class="visually-hidden" for="q">Cari nomor pesanan</label>
+        <input type="search" id="q" name="q" value="{{.Search}}" placeholder="Cari nomor pesanan…" autocomplete="off">
+      </div>
+      <noscript><button class="btn btn-solid" type="submit">Cari</button></noscript>
+    </form>
+
+    <div data-results>
+    {{if .Orders}}
+      <p class="meta" data-result-count>{{len .Orders}} pesanan</p>
+      <div class="table-wrap">
+        <table>
+          <caption class="visually-hidden">Riwayat pesanan</caption>
+          <thead>
+            <tr><th scope="col">Nomor</th><th scope="col">Status</th>
+                <th scope="col" class="num">Porsi</th><th scope="col" class="num">Total</th>
+                <th scope="col"></th></tr>
+          </thead>
+          <tbody>
+          {{range .Orders}}
+            <tr data-search-text="{{.Number}}">
+              <td>{{.Number}}</td>
+              <td>
+                {{if eq .Status "PAID"}}<span class="pill pill-ok">{{.StatusLabel}}</span>
+                {{else if eq .Status "AWAITING_PAYMENT"}}<span class="pill pill-warn">{{.StatusLabel}}</span>
+                {{else if eq .Status "PAYMENT_SUBMITTED"}}<span class="pill pill-info">{{.StatusLabel}}</span>
+                {{else}}<span class="pill pill-quiet">{{.StatusLabel}}</span>{{end}}
+              </td>
+              <td class="num">{{.Meals}}</td>
+              <td class="num">{{rupiah .TotalIDR}}</td>
+              <td>{{if or (eq .Status "AWAITING_PAYMENT") (eq .Status "PAYMENT_SUBMITTED")}}
+                <a class="btn btn-outline" href="/app/pembayaran/{{.ID}}">Bayar</a>{{end}}</td>
+            </tr>
+          {{end}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <div class="callout callout-info">
+        <p style="margin:0">{{if .Search}}Tidak ada pesanan yang cocok.{{else}}Belum ada pesanan. <a href="/menu">Lihat menu</a>.{{end}}</p>
+      </div>
+    {{end}}
+    </div>
+  </div>
+</section>
+{{end}}

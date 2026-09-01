@@ -1,0 +1,92 @@
+{{define "content"}}
+<section class="section">
+  <div class="container">
+    <ol class="filterbar" style="list-style:none;padding:0;margin-bottom:var(--space-6)">
+      <li><span class="pill pill-ok">1 Keranjang</span></li>
+      <li><span class="pill pill-quiet">2 Pengiriman</span></li>
+      <li><span class="pill pill-quiet">3 Pembayaran</span></li>
+    </ol>
+
+    <h1>Keranjang{{if .Quote}} · {{.Quote.TotalQty}} porsi{{end}}</h1>
+
+    {{if .QuoteError}}
+    <div class="callout callout-warn"><p style="margin:0">{{.QuoteError}}</p></div>
+    {{end}}
+
+    {{if not .Quote}}
+      <div class="callout callout-info">
+        <p style="margin:0">Keranjang masih kosong. <a href="/menu">Lihat menu minggu ini</a>.</p>
+      </div>
+    {{else}}
+    <div class="hero-grid" style="align-items:start">
+      <div class="stack">
+        {{range .Quote.Lines}}
+        <article class="card">
+          <div class="card-body">
+            <h3 style="font-size:var(--text-lg)">{{.MealName}}</h3>
+            <p class="meta">{{.DietName}} &middot; {{.SlotTime}}</p>
+            <form method="post" action="/app/keranjang/tambah" class="card-foot" style="padding-top:var(--space-3)">
+              <input type="hidden" name="meal_id" value="{{.ScheduledMealID}}">
+              <label class="visually-hidden" for="qty-{{.ScheduledMealID}}">Jumlah porsi</label>
+              <input class="chip" style="width:88px;text-align:center" type="number" inputmode="numeric"
+                     id="qty-{{.ScheduledMealID}}" name="qty" value="{{.Qty}}" min="0" max="999">
+              <span class="price">{{rupiah .LineTotal}}<small>{{rupiah .UnitPrice}} / porsi</small></span>
+              <button class="btn btn-outline" type="submit">Perbarui</button>
+            </form>
+          </div>
+        </article>
+        {{end}}
+
+        {{if .Tiers}}
+        <div class="card">
+          <div class="card-body">
+            <h3 style="font-size:var(--text-lg)">Harga per porsi</h3>
+            <div class="table-wrap">
+              <table>
+                <caption class="visually-hidden">Harga menurut jumlah porsi</caption>
+                <thead><tr><th scope="col">Jumlah</th><th scope="col" class="num">Harga</th></tr></thead>
+                <tbody>
+                {{range .Tiers}}
+                  <tr><td>{{tierRange .MinQty .MaxQty}}</td><td class="num">{{rupiah .PriceIDR}}</td></tr>
+                {{end}}
+                </tbody>
+              </table>
+            </div>
+            {{if .Quote.NextTierQty}}
+            <p class="callout callout-info" style="margin-top:var(--space-4)">
+              Tambah <strong>{{.Quote.NextTierQty}} porsi</strong> lagi dan seluruh keranjang turun ke harga tingkat berikutnya.
+            </p>
+            {{end}}
+          </div>
+        </div>
+        {{end}}
+      </div>
+
+      <aside class="card">
+        <div class="card-body">
+          <h2 style="font-size:var(--text-xl)">Ringkasan</h2>
+          <div class="table-wrap">
+            <table>
+              <caption class="visually-hidden">Ringkasan biaya</caption>
+              <tbody>
+                <tr><th scope="row">Subtotal · {{.Quote.TotalQty}} porsi</th><td class="num">{{rupiah .Quote.Subtotal}}</td></tr>
+                <tr><th scope="row">Ongkos kirim · {{.Quote.Deliveries}} pengantaran</th><td class="num">{{rupiah .Quote.DeliveryFee}}</td></tr>
+                <tr><th scope="row">PPN {{bps .Quote.TaxRateBPS}} (sudah termasuk)</th><td class="num">{{rupiah .Quote.Tax.Tax}}</td></tr>
+                <tr><th scope="row"><strong>Total</strong></th><td class="num"><strong>{{rupiah .Quote.Total}}</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+          {{if .Anonymous}}
+            <p style="margin-top:var(--space-5)"><a class="btn btn-solid" href="/app/masuk?next=/app/checkout">Masuk untuk lanjut</a></p>
+            <p class="btn-reason">Kamu perlu akun untuk memilih alamat dan jam antar.</p>
+          {{else}}
+            <p style="margin-top:var(--space-5)"><a class="btn btn-solid" href="/app/checkout">Lanjut ke pengiriman</a></p>
+          {{end}}
+          <p class="btn-reason">Slot dikunci setelah pembayaran diverifikasi. Sebelum itu kapasitas masih bisa direbut pesanan lain.</p>
+        </div>
+      </aside>
+    </div>
+    {{end}}
+  </div>
+</section>
+{{end}}
