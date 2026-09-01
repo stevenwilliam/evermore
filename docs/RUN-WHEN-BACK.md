@@ -146,7 +146,7 @@ until the binary is rebuilt and the unit restarted — a plain `systemctl
 restart` of the old binary is not enough:
 
 ```bash
-cd /home/dev/projects/healthy_catering
+cd /home/dev/projects/evermore
 /usr/local/go/bin/go build -o bin/api ./cmd/api
 sudo systemctl restart evermore
 curl -s http://127.0.0.1:8090/ | grep -o 'wordmark-mark'
@@ -181,7 +181,7 @@ have shipped. Migration 0031 is already applied to this database.
 a login, and `docs/screenshots/` is current as of 2026-08-31:
 
 ```bash
-cd /home/dev/projects/healthy_catering
+cd /home/dev/projects/evermore
 export NODE_PATH=/home/dev/.npm/_npx/e41f203b7505f1fb/node_modules
 node scripts/shoot-screens.js            # defaults to 127.0.0.1:8081
 ```
@@ -205,7 +205,7 @@ production sheet, packing labels — have never been rendered against live data.
 That needs a staff account, which needs a database write:
 
 ```bash
-cd /home/dev/projects/healthy_catering
+cd /home/dev/projects/evermore
 set -a && . ./.env && set +a
 ./bin/api create-staff            # interactive; admin role
 # then sign in at http://127.0.0.1:8081/app/login and walk:
@@ -231,7 +231,7 @@ Every image in `web/public/images/menu/` is generic stock landscape, and the
 public menu pages render them today:
 
 ```bash
-cd /home/dev/projects/healthy_catering
+cd /home/dev/projects/evermore
 # Look at any two:
 #   ayam-panggang-brokoli.jpg   ("grilled chicken & broccoli")  -> a suspension bridge
 #   udang-padang-nasi-merah.jpg ("Padang prawns, red rice")     -> a muddy road at sunset
@@ -262,18 +262,18 @@ SPA bootstrap once a key exists. Recorded in `docs/10-design-system.md` §4.12.
 The build session completed the environment setup that this file previously
 listed as pending. Verified on this server:
 
-- PostgreSQL 18.4 with `healthy_catering` + `healthy_catering_test`, owned by
-  the `healthy_catering` role; `postgis` 3.6.4, `btree_gist` and `citext`
+- PostgreSQL 18 with `evermore` + `evermore_test`, owned by
+  the `evermore` role; `postgis` 3.6.4, `btree_gist` and `citext`
   created in both.
 - Redis satellite container `redis-shared` on 127.0.0.1:6379.
-- `/home/dev/projects/healthy_catering/.env` written, mode 0600, git-ignored,
+- `/home/dev/projects/evermore/.env` written, mode 0600, git-ignored,
   with generated `JWT_SIGNING_KEY` and `TOTP_ENCRYPTION_KEY`.
 - Migrations 0001–0011 applied.
 
 To run it:
 
 ```bash
-cd /home/dev/projects/healthy_catering
+cd /home/dev/projects/evermore
 go build -o bin/api ./cmd/api
 set -a && . ./.env && set +a
 ./bin/api migrate status
@@ -285,7 +285,7 @@ curl -s -X POST http://127.0.0.1:8081/api/v1/delivery-area/check \
 ```
 
 **The database password is only in `.env`.** If you need it:
-`sudo vi /home/dev/projects/healthy_catering/.env`
+`sudo vi /home/dev/projects/evermore/.env`
 
 ## 1. Confirm the planning documents — this is the gate
 
@@ -312,7 +312,7 @@ Fontshare, so it needs downloading and its licence reading before first use.
 
 ```bash
 # Both go here, with their licence text beside them.
-mkdir -p /home/dev/projects/healthy_catering/web/public/fonts
+mkdir -p /home/dev/projects/evermore/web/public/fonts
 ```
 
 ## 3. Assets were copied, not moved
@@ -333,20 +333,20 @@ and any second dev machine still need it, and because both extensions are
 constraints (`PROMPT.md` §5.3) and `postgis` for kitchen routing (§9).
 
 ```bash
-sudo -u postgres createuser --pwprompt healthy_catering
-sudo -u postgres createdb -O healthy_catering healthy_catering
-sudo -u postgres createdb -O healthy_catering healthy_catering_test
+sudo -u postgres createuser --pwprompt evermore
+sudo -u postgres createdb -O evermore evermore
+sudo -u postgres createdb -O evermore evermore_test
 
 # PostGIS is not in a default PostgreSQL install. This server runs PG 18,
 # not the 16 the brief assumed.
 sudo apt-get install -y postgresql-18-postgis-3
 
 # Extensions need superuser; do this once per database, before migration 0001.
-sudo -u postgres psql -d healthy_catering      -c 'CREATE EXTENSION IF NOT EXISTS btree_gist; CREATE EXTENSION IF NOT EXISTS postgis;'
-sudo -u postgres psql -d healthy_catering_test -c 'CREATE EXTENSION IF NOT EXISTS btree_gist; CREATE EXTENSION IF NOT EXISTS postgis;'
+sudo -u postgres psql -d evermore      -c 'CREATE EXTENSION IF NOT EXISTS btree_gist; CREATE EXTENSION IF NOT EXISTS postgis;'
+sudo -u postgres psql -d evermore_test -c 'CREATE EXTENSION IF NOT EXISTS btree_gist; CREATE EXTENSION IF NOT EXISTS postgis;'
 
 # Verify before trusting a green migration run.
-sudo -u postgres psql -d healthy_catering -c '\dx'
+sudo -u postgres psql -d evermore -c '\dx'
 ```
 
 ## 5. Redis satellite — already done here (§0), kept for the next machine

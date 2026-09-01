@@ -1,4 +1,4 @@
-# healthy_catering — Document Set
+# Evermore — Document Set
 
 **Version:** 0.2 (brief received, planning documents written)
 **Date:** 12 August 2026
@@ -12,17 +12,18 @@ and **awaiting Steven's confirmation. No application code until he approves.**
 
 ## 1. What this document set is
 
-> **Promoted to Evermore's baseline, 2026-09-01.** These documents were written
-> for `healthy_catering` and lived in `docs/reference/`. Steven promoted the
-> whole folder into `docs/` to be used as Evermore's working baseline, and
-> `docs/reference/` was removed. See **D19**. Two things follow: file paths and
-> repo names below still point into `healthy_catering` until repointed, and the
-> ✅ marks in `PROGRESS.md` were earned by that build's code, which is not in
-> this repo — `CLAUDE.md` §5 says a ✅ is re-earned by running the gate, never
-> inherited.
+> **These are Evermore's documents.** They began as the working documents of a
+> prior build under the repo codename `healthy_catering` and were promoted into
+> `docs/` on 2026-09-01 (**D19**); Steven then confirmed Evermore *is* that
+> product (**D20**). Repo names, file paths and database names throughout have
+> been repointed to this project.
+>
+> Where an entry in the decision log below still says `healthy_catering`, that
+> is a deliberate historical record of what happened on a given date, not a
+> stale reference. The one thing still inherited rather than earned is called
+> out in `PROGRESS.md`: a ✅ is re-earned by running the gate (`CLAUDE.md` §5).
 
-The engineering and product spec for `healthy_catering`, built in the house
-style. House style itself — how Steven works, and his stack, database and
+The engineering and product spec for **Evermore**, built in the house style. House style itself — how Steven works, and his stack, database and
 security preferences — lives in `99-steven-preference.md` and is portable
 between projects.
 
@@ -86,7 +87,7 @@ in the affected docs the same day.
 | D4 | 2026-08-12 | **Assets were copied, not moved.** Steven asked for a move; the source is another user's home (`aidev`) and a move there is not reversible by this project. The originals remain at `/home/aidev/asset/`. | Reversible beats literal when the difference is destroying someone else's copy. Flagged for Steven to confirm. | 00, design_guideline |
 | D5 | 2026-08-12 | **Dark-surface and non-text contrast decided up front.** On `#1C3D34`: beige 11.32, blue light 8.15, orange light 7.27, beige deep 6.47 all pass; `#468973` (2.88) and `#CC6883` (3.33) are never text on it. `#CCBDAA` on beige is **1.75**, so it is *not* an input border, focus ring or any meaningful boundary — those use `#1C3D34`. Energize Orange as a button needs near-black ink at large size (`#1C3D34` on it = 3.90, `#000000` = 6.89), never white. Logo re-verified by decoding the PNG: 7582×1989, ink `rgba(28,61,52)`, **only the final `e` is mirrored** — both `r`s are normal. | The header is going to be Nourish Green and the canvas is going to be beige; deciding the legal inks and borders now costs one calculation, and rediscovering them in review costs a redesign. Closes the "verify before shipping" TODO left on the orange button. | 10 §1, §2.4–2.6 |
 | D6 | 2026-08-12 | **Product brief received and stored verbatim at `PROMPT.md`.** Evermore is a B2C healthy-catering ordering website for Jakarta, `www.evermore.co.id`: marketing + menu pages, customer accounts, à-la-carte meal orders and prepaid credit packages, manual bank transfer, automatic per-delivery routing to one of several kitchens by coordinates, full back office. Phase 1 web only, no PWA; phase 2 mobile against the same `/api/v1`. Planning documents `01`–`04` written; **no code until Steven confirms them**. | Step 2 of the delivery workflow (`CLAUDE.md` §9) is complete; step 3 is gated on his confirmation. | CLAUDE.md §1 §10, 00, 01–04, PROGRESS |
-| D7 | 2026-08-12 | **Locale settled: IDR as `BIGINT` whole rupiah, `Asia/Jakarta`, `id-ID` + `en`, `www.evermore.co.id`, Jakarta hosting for UU PDP residency. Evermore is the customer-facing brand**; `healthy_catering` is the repo codename. Answers `00` §3 Q2–Q6. | Stated in the brief. Sen is obsolete in retail so the rupiah is the minor unit; business dates are `DATE` and convert through `Asia/Jakarta` explicitly, never server-local. | CLAUDE.md §10, 00 §3, 01 |
+| D7 | 2026-08-12 | **Locale settled: IDR as `BIGINT` whole rupiah, `Asia/Jakarta`, `id-ID` + `en`, `www.evermore.co.id`, Jakarta hosting for UU PDP residency. Evermore is the customer-facing brand**; `healthy_catering` is the repo codename. Answers `00` §3 Q2–Q6. **Superseded in part by D20:** the repo is now `evermore` too, so brand and codename are one word. | Stated in the brief. Sen is obsolete in retail so the rupiah is the minor unit; business dates are `DATE` and convert through `Asia/Jakarta` explicitly, never server-local. | CLAUDE.md §10, 00 §3, 01 |
 | D8 | 2026-08-12 | **The stack is contested and unresolved.** `CLAUDE.md` §3 pins Go + gin + gorm + React 18/Vite; the brief §2 proposes TypeScript + NestJS + Prisma + Next.js and marks it `[DECIDE]`. Five sub-decisions (`02-decisions.md` D-1…D-5) are open and **block M0**. Recommendation: Go + gin + gorm, numbered SQL migrations, Redis as a satellite, and Go templates for the eight public routes beside a React 18 + Vite SPA. | Prisma has no first-class support for `daterange`, exclusion constraints or PostGIS — the three things this product's hardest parts need — so the ORM's benefit disappears exactly where it would be paid for. Recorded as contested rather than silently resolved either way. | 02, CLAUDE.md §3 (pending) |
 | D9 | 2026-08-12 | **Steven's answers to the three blocking questions.** (a) **Prices are tax-inclusive**; the DB splits base and tax; the rate is a back-office parameter. The split is snapshotted per order, never stored on the price row. (b) **No refund** — compensation is in credits, unused credits are forfeited at expiry; `REFUNDED` is admin-only for erroneous or duplicate transfers. (c) **1 meal contains several foods; 1 credit buys 1 meal** even when it holds a single dish; **meal nutrition is aggregated from its foods**. (d) Routing = **nearest kitchen**. | Direct answers, 2026-08-12. (c) restructured the model: `scheduled_meal` + `scheduled_meal_item` replace the brief's flat `food_schedule`, because capacity, publication and the credit boundary all belong to the meal, not the food. | 01 §3.3 §3.4 §3.6 §3.7 §3.11 §4, 02 Part 0, 03 |
 | D10 | 2026-08-12 | **Stack settled by default under `code start`.** Steven gave the go-ahead without overriding the recommendation, and `02-decisions.md` states that silence on an item takes it. So: **Go + gin + gorm**, numbered forward-only SQL migrations, Redis as a satellite for cache/rate-limit/queue with idempotency keys in Postgres, **Go html/template for the public routes + React 18 + Vite SPA** for the transactional surface, house repo layout with OpenAPI 3.1 generating the TypeScript client. `CLAUDE.md` §3 therefore stands unamended. | Prisma has no first-class `daterange`, `EXCLUDE` or PostGIS support — the three things this product's hardest paths need — so NestJS + Prisma would mean raw SQL anyway, having paid the ORM's cost. Recorded as *decided by default* rather than *confirmed*, so it is visible as a reversible assumption if he disagrees on his return. | 02 Part A, CLAUDE.md §3 |
@@ -124,7 +125,7 @@ the concrete answer needed and a default — and the choices it left open live i
 | # | Question | Status / default if unanswered |
 |---|---|---|
 | Q1 | **What is the product?** | ✅ answered — B2C healthy catering, Jakarta (D6) |
-| Q2 | Is **Evermore** the customer-facing name? | ✅ yes; `healthy_catering` is the repo codename (D7) |
+| Q2 | Is **Evermore** the customer-facing name? | ✅ yes — and since D20 it is the repo name too, so brand and codename are the same word |
 | Q3 | Currency | ✅ IDR, `BIGINT` whole rupiah (D7) |
 | Q4 | Business timezone | ✅ `Asia/Jakarta` (D7) |
 | Q5 | UI languages | ✅ `id-ID` default + `en` (D7) |

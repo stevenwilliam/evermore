@@ -3,8 +3,8 @@
 ✅ done & tested · 🟡 partial · ⬜ not started
 
 **A ✅ here has been re-earned by running the gate in THIS repo** (CLAUDE.md §5).
-Nothing is inherited from `healthy_catering`. The previous contents of this
-file described that build; it was replaced on 2026-09-01 when this one started.
+Nothing is inherited from the prior build. The previous contents of this file
+described that build; it was replaced on 2026-09-01 when this one started.
 
 **Last updated:** 2026-09-01, end of the first build session.
 
@@ -44,7 +44,7 @@ file described that build; it was replaced on 2026-09-01 when this one started.
 | M13 | Public site (SEO) | ✅ | 7 routes, robots + sitemap + JSON-LD, one h1 per page |
 | M14 | Security hardening | 🟡 | Headers, CSP, CORS, rate limits, trusted proxies, IDOR scoping, negative authz tests. **No full ASVS L2 pass, no `12-security.md` rewritten for Evermore** |
 | M15 | Deployment (dev server) | ✅ | systemd + nginx, enabled, verified on the deployed URL |
-| M16 | Documents | 🟡 | This file and the decision log current. **Guides 14/15/16 still describe healthy_catering** |
+| M16 | Documents | 🟡 | This file, the index, the decision log and the handbooks all repointed to Evermore. **Guides 15/16 still describe features this build does not have yet** |
 | M17 | Print artefacts | ⬜ | Production sheet and packing labels not built |
 | M18 | Demo data | ✅ | Idempotent seed, verified by reading back |
 

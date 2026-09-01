@@ -19,11 +19,11 @@ more specific decision.
 **Owner:** stevenwilliam (itdept.sfg@gmail.com)
 **Brand:** Evermore — see §7 and `docs/design_guideline/`
 
-**The `healthy_catering` documents are Evermore's working baseline.** Seeded
-2026-09-01 with Steven's standards and the Evermore brand; on 2026-09-01 Steven
-promoted the whole of `docs/reference/` into `docs/` to be used, and the folder
-was removed. Evermore is built on that catering product's domain model,
-decisions, security map and guides.
+**Evermore is a B2C healthy-catering ordering site for Jakarta, and `docs/`
+is its specification.** Those documents began as a prior build's, under the repo
+codename `healthy_catering`; Steven promoted them into `docs/` on 2026-09-01
+(D19), confirmed Evermore *is* that product and supplied its design artifact
+(D20). Repo names, paths and database names in the docs are repointed here.
 
 **What that does and does not settle:**
 
@@ -34,10 +34,9 @@ decisions, security map and guides.
   to `docs/03-open-questions.md` with a proposed default, never into code.
 - **The baseline is inherited, not re-earned.** Its 34 decisions in
   `docs/02-decisions.md` are the starting position, and every one is open to
-  Steven changing it for Evermore. Its ✅ marks in `docs/PROGRESS.md` were
-  earned by `healthy_catering`'s code, which does not exist in this repo — per
-  §5 they carry no weight here until re-run. Its file paths point into
-  `healthy_catering`.
+  Steven changing it for Evermore. `docs/PROGRESS.md` has been rewritten for
+  this build and every ✅ in it names the gate that was run here; per §5 a ✅ is
+  never inherited.
 
 What *is* already decided is everything below, because it is Steven's standing
 preference rather than a product choice.
@@ -70,7 +69,7 @@ web/                       # SPA, if the project has a UI
 
 `internal/platform/*` is meant to be **portable**. Carry it over from an
 existing project and adapt rather than reinvent — `ruuma`
-(`/home/dev/projects/ruuma/internal/platform/`) and `healthy_catering`
+(`/home/dev/projects/ruuma/internal/platform/`) and the prior build at
 (`/home/dev/projects/healthy_catering/internal/platform/`) both have proven
 shapes for `config`, `logging`, `apierror`, `id`, `security` and `ratelimit`.
 
@@ -141,8 +140,8 @@ Security targets **OWASP ASVS v4 Level 2** and covers every **OWASP Top 10
 (2021)** category in `docs/12-security.md`, mapping each control to where it is
 implemented **and to the test that proves it**.
 `docs/12-security.md` is that map, inherited from the previous build — every
-row names a file and a proof, and its paths point into `healthy_catering` until
-they are repointed here.
+row names a file and a proof, and its paths still need repointing at this
+build's own code.
 
 ---
 
@@ -162,10 +161,11 @@ they are repointed here.
 - `docs/99-steven-preference.md` is portable and project-agnostic. Improvements
   that are not specific to this project belong there, so they reach the next
   project too.
-- **The promoted docs (`00`–`04`, `12`, `14`–`16`, `PROMPT.md`, `PROGRESS.md`,
-  `RUN-WHEN-BACK.md`, `screenshots/`) describe the `healthy_catering` build.**
-  They are Evermore's baseline to work from and amend in place — not a record
-  of anything this repo has built. Correct them as Evermore diverges.
+- **`docs/` is Evermore's specification, and `PROGRESS.md` is the only file
+  in it that describes what this repo has actually built.** The rest carry a
+  prior build's reasoning, repointed to this project. Amend them in place as
+  Evermore diverges, and never let a document imply a feature exists here
+  because the earlier build had it.
 
 ---
 
@@ -266,9 +266,9 @@ whose docs are stale is not done.
    2026-09-01
 2. **Steven — preparation.** He gives the PRD and business-rules brief, tuning,
    and final confirmation. **Nothing downstream starts until he confirms.**
-   ← we are here. The `healthy_catering` document set was promoted into `docs/`
-   on 2026-09-01 (D19) as the baseline to work from; it is a starting position,
-   not the confirmation.
+   ← the brief arrived as the promoted document set plus the design artifact
+   (D19, D20), and the build is under way. `docs/PROGRESS.md` is the live
+   status; step 2 remains open for the items listed there as blocked on him.
 3. **Claude — build all documents A→Z** from the confirmed brief.
 4. **Claude — build all modules in one shot, A→Z.** Do not stop partway.
 5. **Claude — test, debug and security-harden, A→Z.** Do not stop partway.

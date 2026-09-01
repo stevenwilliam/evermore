@@ -16,9 +16,10 @@ authority on intent; this file is the authority on what ships.
 > the typeface pairing. Evermore is Evermore, so those apply here whole and
 > unaltered.
 >
-> §4 is the **component layer**, and it was read off a design canvas drawn for
-> a different product's screens (`healthy_catering`, whose documents are now
-> Evermore's baseline in `docs/`).
+> §4 is the **component layer**, read off the design canvas Steven supplied.
+> That canvas was originally drawn under the repo codename `healthy_catering`;
+> since **D20** Evermore *is* that product, so its artboards describe this
+> product's own screens rather than someone else's.
 > Two halves, and they travel differently:
 >
 > - **The rules are portable and hard-won.** The AA-by-size policy (§4.1), the

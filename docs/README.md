@@ -1,20 +1,19 @@
 # Evermore — docs index
 
-**These documents are Evermore's working baseline.** They were written for
-`healthy_catering`, a B2C healthy-catering ordering site built for Jakarta
-between 2026-08-12 and 2026-08-31, and lived in `docs/reference/`. On
-2026-09-01 Steven promoted the whole folder into `docs/` to be used, and
-`docs/reference/` was removed. See **D19** in `00-README-and-decisions.md`.
+**These are Evermore's documents.** They began as the working documents of a
+prior build carrying the repo codename `healthy_catering` — a B2C
+healthy-catering ordering site for Jakarta, built between 2026-08-12 and
+2026-08-31. Steven promoted them into `docs/` on 2026-09-01 (**D19**) and then
+confirmed Evermore *is* that product (**D20**), supplying its design artifact.
 
-Two things follow, and they matter more than the promotion itself:
+Repo names, file paths and database names have been repointed to this project.
+Two things still follow from the history:
 
 1. **The 34 decisions in `02-decisions.md` are the starting position, not a
-   contract.** Every one is open to Steven changing it for Evermore. Nothing
-   here has been re-confirmed against a brief for this product.
-2. **The ✅ marks in `PROGRESS.md` were earned by `healthy_catering`'s code,
-   which is not in this repo.** `CLAUDE.md` §5: a ✅ is re-earned by running the
-   gate, never inherited. File paths throughout point into `healthy_catering`
-   until they are repointed here.
+   contract.** Every one is open to Steven changing it for Evermore.
+2. **`PROGRESS.md` has been rewritten for this build**, and every ✅ in it names
+   the gate that was actually run here. `CLAUDE.md` §5: a ✅ is re-earned by
+   running the gate, never inherited.
 
 ---
 
@@ -35,8 +34,9 @@ Two things follow, and they matter more than the promotion itself:
 contrast arithmetic, the typeface pairing. That is Evermore's and it carries
 over whole.
 
-§4 is the component layer, and it was read off a design canvas drawn for
-**healthy_catering's screens**. The *rules* are portable and hard-won — the
+§4 is the component layer, read off the design canvas Steven supplied. Since
+D20 that canvas is **Evermore's own**, so its screens are this product's
+screens. The *rules* are portable and hard-won — the
 AA-by-size policy in §4.1, the button and pill specs, the callout pattern, the
 `text-bar` collision in §4.1b that painted text at 1.00:1 for weeks. The
 *artboard inventory* in §4 and §4.12 describes screens that may not survive
@@ -55,10 +55,10 @@ rules; treat the inventory as the baseline's, not as settled here.
 | `02-decisions.md` | 34 settled decisions, with the reasoning | The *form* of a decision record. **Not** normative business rules — see the numbering note below |
 | `03-open-questions.md` | What was asked and not answered | How to park a question instead of guessing |
 | `04-milestones.md` | The delivery plan | Its §2 sets out the numbering collision below |
-| `12-security.md` | Control map: every control, and the test that proves it | **The template worth stealing.** Every row names a file and a proof; its paths point into `healthy_catering` |
+| `12-security.md` | Control map: every control, and the test that proves it | **The template worth stealing.** Every row names a file and a proof; its paths still need repointing at this build's code |
 | `14-production-deployment-handbook.md` | Empty-machine deploy, absolute paths | The shape of a handbook that works |
 | `15-user-guide.md`, `16-admin-guide.md` | End-user documentation | — |
-| `PROGRESS.md` | Build status at `healthy_catering`'s hand-off | The ✅/🟡/⬜ discipline — and see point 2 above |
+| `PROGRESS.md` | **Live build status for Evermore**, rewritten 2026-09-01 | What exists, what does not, and the gate behind every ✅ |
 | `RUN-WHEN-BACK.md` | Steps needing a terminal, a browser or credentials | How to hand off blocked work without hiding it |
 | `screenshots/` | That build's UI at hand-off (23 images) | What the design system produced in practice |
 

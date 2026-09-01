@@ -524,7 +524,7 @@ Having the numbers one file away from the standard that demands them is what
 stops "checked the contrast" becoming a thing people say rather than do.
 
 Its rules are not generic advice. Every one was written after the matching bug
-reached a running site on healthy_catering, and the incident log at the end is
+reached a running site on a previous project, and the incident log at the end is
 the evidence. **Keep the log.** A rule with its incident attached gets followed;
 the same rule as a slogan does not. When a new class of silent failure bites,
 add the row and the rule — that is how this file earns its keep across projects.

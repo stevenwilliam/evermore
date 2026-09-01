@@ -73,7 +73,7 @@ sudo docker exec redis-shared redis-cli ping   # expect PONG
 
 ```bash
 sudo mkdir -p /srv/evermore && sudo chown "$USER":"$USER" /srv/evermore
-git clone https://github.com/stevenwilliam/healthy_catering.git /srv/evermore
+git clone https://github.com/stevenwilliam/evermore.git /srv/evermore
 cd /srv/evermore
 go build -ldflags "-X main.version=$(git rev-parse --short HEAD)" -o /srv/evermore/bin/api ./cmd/api
 /srv/evermore/bin/api version
@@ -275,7 +275,7 @@ Fills the calendar so the public menu pages are not empty on a fresh
 environment. Idempotent — it never touches a menu that already exists.
 
 ```bash
-cd /home/dev/projects/healthy_catering
+cd /home/dev/projects/evermore
 set -a && . ./.env && set +a
 ./bin/api seed-menu        # today and the next two days
 ./bin/api seed-menu 7      # a week
@@ -349,7 +349,7 @@ exists. A backup that burns with the server is not a backup.
 sudo -E /usr/local/bin/evermore-restore-check.sh
 ```
 
-It drops and recreates `healthy_catering_test`, restores the newest dump into
+It drops and recreates `evermore_test`, restores the newest dump into
 it, prints the row counts, and runs the security suite **against the restored
 copy**. A dump nobody has restored is a hypothesis, and the moment you need it
 is the worst possible time to find that out.
@@ -359,7 +359,7 @@ Two things to know:
 - It runs as the **database superuser** (`sudo -u postgres`), because a
   `--clean` dump recreates extensions and only a superuser may do that. This is
   normal for a restore and is exactly why the application role is not one.
-- It **destroys** `healthy_catering_test`. That database exists for this and for
+- It **destroys** `evermore_test`. That database exists for this and for
   the test suite; never point `RESTORE_DB` at production.
 
 ## 11. Rollback
@@ -389,7 +389,7 @@ Run and verified on 2026-08-13:
 | nginx | `/etc/nginx/sites-available/evermore`, listening on 8090 |
 | systemd | `evermore.service`, enabled, restarts cleanly |
 | Secrets | `/etc/evermore/evermore.env`, `root:dev`, mode 640 |
-| Database | `healthy_catering` on the shared PostgreSQL 18 |
+| Database | `evermore` on the shared PostgreSQL 18 |
 
 ruuma is untouched: it still owns `listen 80 default_server` and answers on the
 bare IP.
