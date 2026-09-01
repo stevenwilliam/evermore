@@ -33,7 +33,7 @@ type Result struct {
 func Run(ctx context.Context, db *sql.DB, loc *time.Location, today time.Time) (*Result, error) {
 	res := &Result{Counts: map[string]int{}}
 	err := database.InTx(ctx, db, nil, func(tx *sql.Tx) error {
-		s := &seeder{ctx: ctx, tx: tx, loc: loc, today: today, res: res}
+		s := &seeder{ctx: ctx, tx: tx, loc: loc, today: today, res: res, ids: map[string]uuid.UUID{}}
 		steps := []struct {
 			name string
 			fn   func() error
@@ -73,6 +73,8 @@ type seeder struct {
 	loc   *time.Location
 	today time.Time
 	res   *Result
+	// ids caches natural-key -> actual id lookups.
+	ids map[string]uuid.UUID
 }
 
 func (s *seeder) exec(table, q string, args ...any) error {
@@ -85,10 +87,71 @@ func (s *seeder) exec(table, q string, args ...any) error {
 	return nil
 }
 
-// idFor returns a stable UUID for a natural key, so re-running the seed
-// produces the same ids and foreign keys stay valid across runs.
+// idFor returns a stable UUID for a natural key, so a fresh seed produces the
+// same ids every time.
+//
+// It is the id the seed WANTS to use. It is not necessarily the id that ends
+// up in the database: every insert here is ON CONFLICT (natural key) DO
+// NOTHING, so if a row already exists under a different id — inserted by a
+// test, a fixture or a human — the seed's own id was never written. Resolving
+// references through idFor in that case produces a foreign-key violation, so
+// references go through resolve() instead.
 func idFor(ns, key string) uuid.UUID {
 	return uuid.NewSHA1(uuid.NameSpaceOID, []byte("evermore:"+ns+":"+key))
+}
+
+// resolve reads back the id that is actually in the database for a natural
+// key, caching it. This is what makes the seed idempotent against a database
+// that already holds some of these rows under other ids.
+func (s *seeder) resolve(cacheKey, query string, args ...any) (uuid.UUID, error) {
+	if id, ok := s.ids[cacheKey]; ok {
+		return id, nil
+	}
+	var id uuid.UUID
+	if err := s.tx.QueryRowContext(s.ctx, query, args...).Scan(&id); err != nil {
+		return uuid.Nil, fmt.Errorf("resolving %s: %w", cacheKey, err)
+	}
+	if id == uuid.Nil {
+		return uuid.Nil, fmt.Errorf("resolving %s: scanned a nil uuid", cacheKey)
+	}
+	s.ids[cacheKey] = id
+	return id, nil
+}
+
+func (s *seeder) slotID(at string) (uuid.UUID, error) {
+	return s.resolve("slot:"+at, `SELECT id FROM delivery_time_slot WHERE slot_time = $1::time`, at)
+}
+func (s *seeder) dietID(slug string) (uuid.UUID, error) {
+	return s.resolve("diet:"+slug, `SELECT id FROM diet_type WHERE slug = $1`, slug)
+}
+func (s *seeder) foodID(slug string) (uuid.UUID, error) {
+	return s.resolve("food:"+slug, `SELECT id FROM food WHERE slug = $1`, slug)
+}
+func (s *seeder) kitchenID(code string) (uuid.UUID, error) {
+	return s.resolve("kitchen:"+code, `SELECT id FROM kitchen WHERE code = $1`, code)
+}
+func (s *seeder) packageID(slug string) (uuid.UUID, error) {
+	return s.resolve("package:"+slug, `SELECT id FROM package WHERE slug = $1`, slug)
+}
+func (s *seeder) ctypeID(slug string) (uuid.UUID, error) {
+	return s.resolve("ctype:"+slug, `SELECT id FROM customer_type WHERE slug = $1`, slug)
+}
+func (s *seeder) roleID(slug string) (uuid.UUID, error) {
+	return s.resolve("role:"+slug, `SELECT id FROM role WHERE slug = $1`, slug)
+}
+func (s *seeder) permID(code string) (uuid.UUID, error) {
+	return s.resolve("perm:"+code, `SELECT id FROM permission WHERE code = $1`, code)
+}
+func (s *seeder) allergenID(slug string) (uuid.UUID, error) {
+	return s.resolve("allergen:"+slug, `SELECT id FROM allergen WHERE slug = $1`, slug)
+}
+
+// tierID resolves the tier band containing qty, whoever created it.
+func (s *seeder) tierID(qty int) (uuid.UUID, error) {
+	return s.resolve(fmt.Sprintf("tier:%d", qty), `
+		SELECT id FROM meal_price_tier
+		 WHERE is_active AND min_qty <= $1 AND (max_qty IS NULL OR max_qty >= $1)
+		 ORDER BY min_qty LIMIT 1`, qty)
 }
 
 // ---------------------------------------------------------------------------
@@ -224,7 +287,10 @@ func (s *seeder) roles() error {
 		}
 	}
 	for slug, codes := range rolePermissions {
-		roleID := idFor("role", slug)
+		roleID, err := s.roleID(slug)
+		if err != nil {
+			return err
+		}
 		if len(codes) == 1 && codes[0] == "*" {
 			if err := s.exec("role_permission", `
 				INSERT INTO role_permission (role_id, permission_id)
@@ -235,10 +301,13 @@ func (s *seeder) roles() error {
 			continue
 		}
 		for _, c := range codes {
+			pid, err := s.permID(c)
+			if err != nil {
+				return err
+			}
 			if err := s.exec("role_permission", `
 				INSERT INTO role_permission (role_id, permission_id)
-				VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-				roleID, idFor("perm", c)); err != nil {
+				VALUES ($1, $2) ON CONFLICT DO NOTHING`, roleID, pid); err != nil {
 				return err
 			}
 		}
@@ -263,11 +332,14 @@ func (s *seeder) customerTypes() error {
 			return err
 		}
 	}
+	corpID, err := s.ctypeID("corporate")
+	if err != nil {
+		return err
+	}
 	return s.exec("organisation", `
 		INSERT INTO organisation (id, customer_type_id, name, pic_name, billing_email, is_invoice_billing)
 		VALUES ($1, $2, 'PT Sinar Mas', 'Dewi Anggraini', 'dewi@sinarmas.example', true)
-		ON CONFLICT DO NOTHING`,
-		idFor("org", "sinar-mas"), idFor("ctype", "corporate"))
+		ON CONFLICT DO NOTHING`, idFor("org", "sinar-mas"), corpID)
 }
 
 func (s *seeder) allergens() error {
@@ -319,10 +391,14 @@ func (s *seeder) dietTypes() error {
 		{"vegetarian", "Vegetarian"},
 	}
 	for _, x := range subs {
+		sdID, err := s.dietID("special-diet")
+		if err != nil {
+			return err
+		}
 		if err := s.exec("diet_subtype", `
 			INSERT INTO diet_subtype (id, diet_type_id, name, slug)
 			VALUES ($1, $2, $3, $4) ON CONFLICT (diet_type_id, slug) DO NOTHING`,
-			idFor("dietsub", x.slug), idFor("diet", "special-diet"), x.name, x.slug); err != nil {
+			idFor("dietsub", x.slug), sdID, x.name, x.slug); err != nil {
 			return err
 		}
 	}
@@ -374,16 +450,23 @@ func (s *seeder) kitchens() error {
 			idFor("kitchen", k.code), k.code, k.name, k.addr, k.lat, k.lng, k.radius, k.priority); err != nil {
 			return err
 		}
-		kid := idFor("kitchen", k.code)
+		kid, err := s.kitchenID(k.code)
+		if err != nil {
+			return err
+		}
 		// Every kitchen serves every slot, except Kelapa Gading which the
 		// dashboard shows as closed at 18.00.
 		for _, st := range []string{"07:00:00", "11:30:00", "12:00:00", "12:30:00", "17:30:00", "18:00:00", "18:30:00"} {
 			if k.code == "KLG-03" && (st == "18:00:00" || st == "18:30:00" || st == "17:30:00") {
 				continue
 			}
+			sid, err := s.slotID(st)
+			if err != nil {
+				return err
+			}
 			if err := s.exec("kitchen_slot", `
 				INSERT INTO kitchen_slot (kitchen_id, slot_id) VALUES ($1, $2)
-				ON CONFLICT DO NOTHING`, kid, idFor("slot", st)); err != nil {
+				ON CONFLICT DO NOTHING`, kid, sid); err != nil {
 				return err
 			}
 		}
@@ -458,10 +541,15 @@ var foods = []foodSpec{
 func (s *seeder) foods() error {
 	for _, f := range foods {
 		fid := idFor("food", f.slug)
+
 		if err := s.exec("food", `
 			INSERT INTO food (id, name, slug, portion_size, description)
 			VALUES ($1, $2, $3, $4, '') ON CONFLICT (slug) DO NOTHING`,
 			fid, f.name, f.slug, f.portion); err != nil {
+			return err
+		}
+		nutFID, err := s.foodID(f.slug)
+		if err != nil {
 			return err
 		}
 		if err := s.exec("food_nutrition", `
@@ -469,21 +557,33 @@ func (s *seeder) foods() error {
 			    saturated_fat_mg, carbohydrate_mg, sugar_mg, fibre_mg, sodium_mg, cholesterol_mg)
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 			ON CONFLICT (food_id) DO NOTHING`,
-			idFor("nutrition", f.slug), fid, f.kcal, f.proteinMG, f.fatMG, f.satFatMG,
+			idFor("nutrition", f.slug), nutFID, f.kcal, f.proteinMG, f.fatMG, f.satFatMG,
 			f.carbMG, f.sugarMG, f.fibreMG, f.sodiumMG, f.cholMG); err != nil {
 			return err
 		}
+		realFID, err := s.foodID(f.slug)
+		if err != nil {
+			return err
+		}
 		for _, a := range f.allergens {
+			aid, err := s.allergenID(a)
+			if err != nil {
+				return err
+			}
 			if err := s.exec("food_allergen", `
 				INSERT INTO food_allergen (food_id, allergen_id) VALUES ($1, $2)
-				ON CONFLICT DO NOTHING`, fid, idFor("allergen", a)); err != nil {
+				ON CONFLICT DO NOTHING`, realFID, aid); err != nil {
 				return err
 			}
 		}
 		for _, d := range f.diets {
+			did, err := s.dietID(d)
+			if err != nil {
+				return err
+			}
 			if err := s.exec("food_diet_type", `
 				INSERT INTO food_diet_type (food_id, diet_type_id) VALUES ($1, $2)
-				ON CONFLICT DO NOTHING`, fid, idFor("diet", d)); err != nil {
+				ON CONFLICT DO NOTHING`, realFID, did); err != nil {
 				return err
 			}
 		}
@@ -502,6 +602,17 @@ func (s *seeder) tiers() error {
 		{"t1", "Tier 1", 1, intp(3), 1},
 		{"t2", "Tier 2", 4, intp(9), 2},
 		{"t3", "Tier 3", 10, nil, 3},
+	}
+	// meal_price_tier has no unique natural key, and its EXCLUDE constraint
+	// means an existing ladder cannot be inserted over. If any active band
+	// exists, that ladder is the one in force and this is a no-op.
+	var existing int
+	if err := s.tx.QueryRowContext(s.ctx,
+		`SELECT count(*) FROM meal_price_tier WHERE is_active`).Scan(&existing); err != nil {
+		return err
+	}
+	if existing > 0 {
+		return nil
 	}
 	for _, t := range list {
 		if err := s.exec("meal_price_tier", `
@@ -523,13 +634,22 @@ func (s *seeder) prices() error {
 	diets := []string{"balanced", "weight-loss", "muscle-gain", "special-diet"}
 	prices := map[string]int64{"t1": 78000, "t2": 75000, "t3": 71000}
 
+	tierQty := map[string]int{"t1": 1, "t2": 4, "t3": 10}
 	for _, d := range diets {
+		did, err := s.dietID(d)
+		if err != nil {
+			return err
+		}
 		for tierKey, price := range prices {
+			tid, err := s.tierID(tierQty[tierKey])
+			if err != nil {
+				return err
+			}
 			if err := s.exec("meal_price_normal", `
 				INSERT INTO meal_price_normal (id, customer_type_id, diet_type_id, tier_id, unit_price_idr, validity)
 				VALUES ($1, NULL, $2, $3, $4, daterange($5::date, NULL, '[)'))
-				ON CONFLICT (id) DO NOTHING`,
-				idFor("mpn", d+":"+tierKey), idFor("diet", d), idFor("tier", tierKey),
+				ON CONFLICT ON CONSTRAINT meal_price_normal_no_overlap DO NOTHING`,
+				idFor("mpn", d+":"+tierKey), did, tid,
 				price, from.Format("2006-01-02")); err != nil {
 				return err
 			}
@@ -538,13 +658,24 @@ func (s *seeder) prices() error {
 	// Corporate scope for PT Sinar Mas, matching the price-resolver screen:
 	// 6 meals resolves to Rp 75.000 on the corporate Balanced row.
 	corpPrices := map[string]int64{"t1": 78000, "t2": 75000, "t3": 71000}
+	corpID, err := s.ctypeID("corporate")
+	if err != nil {
+		return err
+	}
+	balID, err := s.dietID("balanced")
+	if err != nil {
+		return err
+	}
 	for tierKey, price := range corpPrices {
+		tid, err := s.tierID(tierQty[tierKey])
+		if err != nil {
+			return err
+		}
 		if err := s.exec("meal_price_normal", `
 			INSERT INTO meal_price_normal (id, customer_type_id, diet_type_id, tier_id, unit_price_idr, validity)
 			VALUES ($1, $2, $3, $4, $5, daterange($6::date, NULL, '[)'))
-			ON CONFLICT (id) DO NOTHING`,
-			idFor("mpn-corp", "balanced:"+tierKey), idFor("ctype", "corporate"),
-			idFor("diet", "balanced"), idFor("tier", tierKey), price,
+			ON CONFLICT ON CONSTRAINT meal_price_normal_no_overlap DO NOTHING`,
+			idFor("mpn-corp", "balanced:"+tierKey), corpID, balID, tid, price,
 			from.Format("2006-01-02")); err != nil {
 			return err
 		}
@@ -575,11 +706,15 @@ func (s *seeder) packages() error {
 			pid, p.name, p.slug, p.credits, p.days, p.featured, p.order); err != nil {
 			return err
 		}
+		realPID, err := s.packageID(p.slug)
+		if err != nil {
+			return err
+		}
 		if err := s.exec("package_price_normal", `
 			INSERT INTO package_price_normal (id, customer_type_id, package_id, total_price_idr, validity)
 			VALUES ($1, NULL, $2, $3, daterange($4::date, NULL, '[)'))
-			ON CONFLICT (id) DO NOTHING`,
-			idFor("ppn", p.slug), pid, p.price, from.Format("2006-01-02")); err != nil {
+			ON CONFLICT ON CONSTRAINT package_price_normal_no_overlap DO NOTHING`,
+			idFor("ppn", p.slug), realPID, p.price, from.Format("2006-01-02")); err != nil {
 			return err
 		}
 	}
@@ -630,14 +765,22 @@ func (s *seeder) users() error {
 			uid, u.email, hash); err != nil {
 			return err
 		}
+		rid, err := s.roleID(u.role)
+		if err != nil {
+			return err
+		}
 		if err := s.exec("user_role", `
 			INSERT INTO user_role (user_id, role_id) VALUES ($1, $2)
-			ON CONFLICT DO NOTHING`, uid, idFor("role", u.role)); err != nil {
+			ON CONFLICT DO NOTHING`, uid, rid); err != nil {
 			return err
 		}
 		var kitchenID any
 		if u.kitchen != "" {
-			kitchenID = idFor("kitchen", u.kitchen)
+			kid, err := s.kitchenID(u.kitchen)
+			if err != nil {
+				return err
+			}
+			kitchenID = kid
 		}
 		if err := s.exec("staff_profile", `
 			INSERT INTO staff_profile (id, user_id, kitchen_id, full_name, job_title)
@@ -671,19 +814,27 @@ func (s *seeder) users() error {
 			uid, c.email, hash, c.phone); err != nil {
 			return err
 		}
+		custRole, err := s.roleID("customer")
+		if err != nil {
+			return err
+		}
 		if err := s.exec("user_role", `
 			INSERT INTO user_role (user_id, role_id) VALUES ($1, $2)
-			ON CONFLICT DO NOTHING`, uid, idFor("role", "customer")); err != nil {
+			ON CONFLICT DO NOTHING`, uid, custRole); err != nil {
 			return err
 		}
 		var orgID any
 		if c.org != "" {
 			orgID = idFor("org", c.org)
 		}
+		ctID, err := s.ctypeID(c.ctype)
+		if err != nil {
+			return err
+		}
 		if err := s.exec("customer", `
 			INSERT INTO customer (id, user_id, customer_type_id, organisation_id, full_name, notify_channels)
 			VALUES ($1, $2, $3, $4, $5, 'email') ON CONFLICT (user_id) DO NOTHING`,
-			cid, uid, idFor("ctype", c.ctype), orgID, c.name); err != nil {
+			cid, uid, ctID, orgID, c.name); err != nil {
 			return err
 		}
 		if err := s.exec("customer_address", `
@@ -755,17 +906,33 @@ func (s *seeder) menu() error {
 		for _, m := range week {
 			date := monday.AddDate(0, 0, m.dayOffset+weekOffset)
 			key := fmt.Sprintf("%s:%s:%s", date.Format("2006-01-02"), m.diet, m.slot)
-			mid := idFor("meal", key)
 			status, published := "DRAFT", any(nil)
 			if m.published {
 				status, published = "PUBLISHED", time.Now().UTC()
+			}
+			did, err := s.dietID(m.diet)
+			if err != nil {
+				return err
+			}
+			sid, err := s.slotID(m.slot)
+			if err != nil {
+				return err
 			}
 			if err := s.exec("scheduled_meal", `
 				INSERT INTO scheduled_meal (id, service_date, diet_type_id, slot_id, name, status, published_at, qty_capacity)
 				VALUES ($1, $2::date, $3, $4, $5, $6, $7, 40)
 				ON CONFLICT (service_date, diet_type_id, slot_id) DO NOTHING`,
-				mid, date.Format("2006-01-02"), idFor("diet", m.diet), idFor("slot", m.slot),
+				idFor("meal", key), date.Format("2006-01-02"), did, sid,
 				m.name, status, published); err != nil {
+				return err
+			}
+			// Read back the meal that is actually there: a prior run or a
+			// fixture may own this (date, diet, slot) under another id.
+			mid, err := s.resolve("meal:"+key, `
+				SELECT id FROM scheduled_meal
+				 WHERE service_date = $1::date AND diet_type_id = $2 AND slot_id = $3`,
+				date.Format("2006-01-02"), did, sid)
+			if err != nil {
 				return err
 			}
 			for i, f := range m.items {
@@ -778,11 +945,15 @@ func (s *seeder) menu() error {
 				case f == "buah-potong":
 					role = "DESSERT"
 				}
+				fid, err := s.foodID(f)
+				if err != nil {
+					return err
+				}
 				if err := s.exec("scheduled_meal_item", `
 					INSERT INTO scheduled_meal_item (id, scheduled_meal_id, food_id, item_role, sort_order)
 					VALUES ($1, $2, $3, $4, $5)
 					ON CONFLICT (scheduled_meal_id, food_id) DO NOTHING`,
-					idFor("mealitem", key+":"+f), mid, idFor("food", f), role, i); err != nil {
+					idFor("mealitem", key+":"+f), mid, fid, role, i); err != nil {
 					return err
 				}
 			}
@@ -814,13 +985,20 @@ func (s *seeder) capacity() error {
 				if isToday {
 					res = reserved[k][sl]
 				}
+				kid, err := s.kitchenID(k)
+				if err != nil {
+					return err
+				}
+				sid, err := s.slotID(sl)
+				if err != nil {
+					return err
+				}
 				if err := s.exec("kitchen_capacity", `
 					INSERT INTO kitchen_capacity (id, kitchen_id, service_date, slot_id, max_portions, reserved_portions)
 					VALUES ($1, $2, $3::date, $4, $5, $6)
 					ON CONFLICT (kitchen_id, service_date, slot_id) DO NOTHING`,
 					idFor("cap", k+":"+date.Format("2006-01-02")+":"+sl),
-					idFor("kitchen", k), date.Format("2006-01-02"), idFor("slot", sl),
-					caps[k], res); err != nil {
+					kid, date.Format("2006-01-02"), sid, caps[k], res); err != nil {
 					return err
 				}
 			}
@@ -838,13 +1016,16 @@ func (s *seeder) demoPackage() error {
 	activated := s.today.In(s.loc).AddDate(0, 0, -8)
 	expires := activated.AddDate(0, 0, 90)
 
+	p20, err := s.packageID("paket-20")
+	if err != nil {
+		return err
+	}
 	if err := s.exec("customer_package", `
 		INSERT INTO customer_package (id, customer_id, package_id, package_number,
 		    meal_credits, validity_days, price_paid_idr, status, activated_at, expires_at)
 		VALUES ($1, $2, $3, 'PKG-2608-0042', 20, 90, 1420000, 'ACTIVE', $4, $5::date)
 		ON CONFLICT (id) DO NOTHING`,
-		pkgID, custID, idFor("package", "paket-20"),
-		activated, expires.Format("2006-01-02")); err != nil {
+		pkgID, custID, p20, activated, expires.Format("2006-01-02")); err != nil {
 		return err
 	}
 

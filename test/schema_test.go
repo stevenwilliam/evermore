@@ -14,7 +14,6 @@ import (
 	"errors"
 	"os"
 	"strings"
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -361,14 +360,13 @@ func TestScopeKeyIsGeneratedAndCannotDrift(t *testing.T) {
 }
 
 func TestTierBandsCannotOverlap(t *testing.T) {
-	// A band of this test's own, so the collision it asserts is the one it
-	// created and not one inherited from another test.
-	base := 100000 + int(tierBand.Add(1))*1000
-	mustExec(t, `INSERT INTO meal_price_tier (id, name, min_qty, max_qty) VALUES ($1, 'A', $2, $3)`,
-		uuid.New(), base+500, base+599)
-	e := mustFail(t, "overlapping tier bands", `
-		INSERT INTO meal_price_tier (id, name, min_qty, max_qty) VALUES ($1, 'B', $2, $3)`,
-		uuid.New(), base+550, base+650)
+	ensureTierLadder(t)
+	// 2-5 straddles the real 1-3 and 4-9 bands, so the constraint must refuse
+	// it. Asserting against the ladder the product actually uses is stronger
+	// than asserting against a band invented for the test.
+	e := mustFail(t, "a band overlapping the configured ladder", `
+		INSERT INTO meal_price_tier (id, name, min_qty, max_qty) VALUES ($1, 'Overlap', 2, 5)`,
+		uuid.New())
 	assertMentions(t, e, "meal_price_tier_no_overlap")
 }
 
@@ -599,32 +597,41 @@ func seedCustomerPackage(t *testing.T, custID uuid.UUID) uuid.UUID {
 	return id
 }
 
-// seedTier creates a tier band in a private, non-overlapping quantity range.
+// seedTier returns an existing tier that covers minQty, creating the standard
+// ladder if the database has not been seeded yet.
 //
-// meal_price_tier_no_overlap is global across the table, so two tests that
-// both wanted "1-3" would collide during setup rather than during their
-// assertion. Each call takes the next band from an atomic counter, which makes
-// the tests order-independent — verified with `go test -shuffle=on`.
-//
-// Bands here are always bounded. An unbounded band would cover every band
-// allocated after it and reintroduce exactly the ordering dependency this
-// helper exists to remove; unbounded-tier semantics are covered by the pure
-// unit tests in internal/domain/pricing.
+// It deliberately does NOT invent a private band. meal_price_tier_no_overlap
+// is global and the seeded tier 3 is unbounded (10 -> infinity), so every
+// private band above 10 collides with it during setup. Using the real ladder
+// keeps these tests independent of whether the seed has run.
 func seedTier(t *testing.T, minQty, maxQty int) uuid.UUID {
 	t.Helper()
-	const bandWidth = 1000
-	base := 100000 + int(tierBand.Add(1))*bandWidth
-	if maxQty <= 0 || maxQty < minQty {
-		maxQty = minQty + 100
+	ensureTierLadder(t)
+	var id uuid.UUID
+	err := testDB.QueryRow(`
+		SELECT id FROM meal_price_tier
+		 WHERE is_active AND min_qty <= $1 AND (max_qty IS NULL OR max_qty >= $1)
+		 ORDER BY min_qty LIMIT 1`, minQty).Scan(&id)
+	if err != nil {
+		t.Fatalf("no tier covers qty %d: %v", minQty, err)
 	}
-	id := uuid.New()
-	mustExec(t, `INSERT INTO meal_price_tier (id, name, min_qty, max_qty) VALUES ($1, 'T', $2, $3)`,
-		id, base+minQty, base+maxQty)
 	return id
 }
 
-// tierBand hands out a fresh quantity band per seedTier call.
-var tierBand atomic.Int64
+// ensureTierLadder creates 1-3 / 4-9 / 10+ if no tiers exist.
+func ensureTierLadder(t *testing.T) {
+	t.Helper()
+	var n int
+	if err := testDB.QueryRow(`SELECT count(*) FROM meal_price_tier WHERE is_active`).Scan(&n); err != nil {
+		t.Fatal(err)
+	}
+	if n > 0 {
+		return
+	}
+	mustExec(t, `INSERT INTO meal_price_tier (id, name, min_qty, max_qty) VALUES ($1,'Tier 1',1,3)`, uuid.New())
+	mustExec(t, `INSERT INTO meal_price_tier (id, name, min_qty, max_qty) VALUES ($1,'Tier 2',4,9)`, uuid.New())
+	mustExec(t, `INSERT INTO meal_price_tier (id, name, min_qty, max_qty) VALUES ($1,'Tier 3',10,NULL)`, uuid.New())
+}
 
 // truncateAll empties every data table, leaving the schema and the migration
 // history intact. It is driven off the catalogue rather than a hand-kept list,
