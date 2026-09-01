@@ -1,0 +1,32 @@
+# Build artefacts
+/bin/
+/dist/
+*.test
+coverage.out
+
+# Secrets — never in git (CLAUDE.md §4)
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+web/dist/
+web/.vite/
+
+# Editor / OS
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# The SPA build output is produced by `npm run build` and served from disk;
+# the deployment handbook builds it rather than shipping it in git.
+web/dist/
+
+# TypeScript incremental build cache — a build artifact, not source.
+web/tsconfig.tsbuildinfo
+
+# Python bytecode from scripts/
+__pycache__/
+*.pyc
