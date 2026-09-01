@@ -132,6 +132,14 @@ CHECKS: list[tuple[str, str, str, dict]] = [
     ("deep ink on gold ribbon", NOURISH_DEEP, "#D4AF37", {}),
     ("deep ink on orange-deep button", NOURISH_DEEP, "#E0782D", {"large": True}),
     ("black on orange-deep button", "#000000", "#E0782D", {"large": True}),
+
+    # The WhatsApp float (design.md §3). The teal is WhatsApp's own colour and
+    # is NOT recoloured: the affordance is the beige ring, and the glyph is an
+    # icon, so 1.4.11's 3:1 applies rather than 4.5.
+    ("WA teal fill on the deep ground", "#128C7E", NOURISH_DEEP, {"non_text": True}),
+    ("WA beige ring on the deep ground", BEIGE, NOURISH_DEEP, {"non_text": True}),
+    ("WA beige ring against the teal", BEIGE, "#128C7E", {"non_text": True}),
+    ("WA white glyph on the teal", WHITE, "#128C7E", {"non_text": True}),
 ]
 
 # What design.md §3 records. A drift between the sheet and the arithmetic is
@@ -162,6 +170,10 @@ RECORDED = {
     "deep ink on gold ribbon": 5.65,
     "deep ink on orange-deep button": 3.90,
     "black on orange-deep button": 6.89,
+    "WA teal fill on the deep ground": 2.87,
+    "WA beige ring on the deep ground": 11.32,
+    "WA beige ring against the teal": 3.94,
+    "WA white glyph on the teal": 4.14,
 }
 
 

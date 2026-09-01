@@ -164,6 +164,11 @@ func (s *seeder) sysParameters() error {
 		{"company.name", "PT Evermore Nutrisi Indonesia", "string", "company", "Nama perusahaan"},
 		{"company.brand", "Evermore", "string", "company", "Nama merek"},
 		{"company.phone", "+622129000123", "string", "company", "Telepon perusahaan"},
+		// The floating WhatsApp button reads this. Digits only, country code
+		// first, no plus — that is the wa.me format. A blank value hides the
+		// button rather than rendering a broken link.
+		{"company.whatsapp", "6281299900123", "string", "company", "Nomor WhatsApp (format wa.me, tanpa +)"},
+		{"company.whatsapp_greeting", "Halo Evermore, saya mau tanya soal menu.", "string", "company", "Pesan pembuka WhatsApp"},
 		{"company.email", "halo@evermore.co.id", "string", "company", "Email perusahaan"},
 		{"company.address", "Jl. Tebet Raya No. 88, Jakarta Selatan 12820", "string", "company", "Alamat perusahaan"},
 		{"company.npwp", "00.000.000.0-000.000", "string", "company", "NPWP"},

@@ -9,8 +9,19 @@
 
 html { -webkit-text-size-adjust: 100%; }
 
+/* Sticky footer: the page is a column at least as tall as the viewport, and
+ * <main> takes the slack. On a short page — a 404, an empty cart — the footer
+ * sits on the bottom edge instead of floating halfway up with dead space
+ * beneath it. It is NOT position:fixed: a permanently pinned footer would eat vertical
+ * space on a 360px phone and collide with the WhatsApp float. */
+html { min-height: 100%; }
+
 body {
   margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;          /* dvh accounts for mobile browser chrome */
+  display: flex;
+  flex-direction: column;
   background: var(--page-bg);
   color: var(--page-ink);
   font-family: var(--font-body);
@@ -19,6 +30,9 @@ body {
   line-height: 1.6;
   font-variant-numeric: tabular-nums;
 }
+
+main { flex: 1 0 auto; }
+.footer, .footer-fineprint { flex-shrink: 0; }
 
 img, svg, video { max-width: 100%; height: auto; display: block; }
 
@@ -301,9 +315,12 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   color: var(--beige);
   font-size: var(--text-bar);      /* the bar rule applies to the footer too */
   font-weight: var(--w-eyebrow);
-  padding-block: var(--space-7);
-  /* No top margin: it let the beige page ground show as a stripe between a
-   * dark section and the footer. Sections own their own spacing. */
+  /* Bottom padding is 0: .footer-fineprint is the last child and paints its
+   * own darker ground, so 48px of padding under it left a mid-green band
+   * below the copyright strip at the very bottom of the page. No top margin
+   * either — that let the beige page ground show as a stripe between a dark
+   * section and the footer. */
+  padding-block: var(--space-7) 0;
 }
 .footer a { color: var(--beige); }
 .footer :focus-visible { outline-color: var(--beige); }
@@ -316,6 +333,10 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   background: var(--nourish-deep); color: var(--beige-deep);
   font-size: var(--text-sm); font-weight: var(--w-body);
   padding-block: var(--space-4);
+  margin-top: var(--space-7);
+  /* Room for the WhatsApp float so it never sits on the copyright line at the
+   * very bottom of a scrolled page. */
+  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
 }
 .footer-fineprint a { color: var(--blue-light); }
 
@@ -342,3 +363,164 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   body { background: #FFFFFF; color: #000000; font-size: 11pt; }
   .card { break-inside: avoid; border: 1px solid #000; }
 }
+
+
+/* ------------------------------------------------------- WhatsApp float */
+
+/* design.md §3 governs every value here and the reasoning is worth keeping
+ * next to the code:
+ *
+ *   - #128C7E is WhatsApp's own green. It measures 2.87 against the deep
+ *     ground, which FAILS 1.4.11 on its own — and that is deliberate. Do not
+ *     recolour it; recolouring stops the mark reading as WhatsApp.
+ *   - The affordance is the BEIGE RING, not the fill: 11.32 against the deep
+ *     ground and 3.94 against the teal. Both clear 3:1, so the control has a
+ *     findable boundary from either side.
+ *   - The glyph is white on the teal at 4.14. It is an icon, so 1.4.11's 3:1
+ *     applies rather than 1.4.3's 4.5.
+ *
+ * scripts/contrast.py measures all four.
+ */
+.wa-float {
+  position: fixed;
+  right: max(var(--space-4), env(safe-area-inset-right));
+  bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  z-index: 90;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;                 /* comfortably over the 44px touch floor */
+  height: 56px;
+  border-radius: 50%;
+
+  background: #128C7E;         /* WhatsApp's own colour — see above */
+  color: #FFFFFF;              /* the glyph */
+  /* The ring is the affordance. 3px so it survives a busy photo behind it. */
+  box-shadow: 0 0 0 3px var(--beige), var(--shadow-lg);
+
+  text-decoration: none;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.wa-float:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 4px var(--beige), var(--shadow-lg);
+  text-decoration: none;
+}
+
+/* The focus ring must not be the beige ring, which is decoration here and
+ * would be indistinguishable from the resting state. */
+.wa-float:focus-visible {
+  outline: 3px solid var(--nourish-deep);
+  outline-offset: 4px;
+}
+
+.wa-float-glyph { display: block; }
+
+/* On a narrow screen the float sits above the footer's fine print rather than
+ * over it, so it never covers a link. */
+@media (max-width: 480px) {
+  .wa-float { width: 52px; height: 52px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-float, .wa-float:hover { transition: none; transform: none; }
+}
+
+@media print { .wa-float { display: none !important; } }
+
+
+/* ------------------------------------------------- the deep-green ground */
+
+/* A section painted on the brand's deep green instead of the beige sheet.
+ *
+ * This is a TOKEN REMAP, not a set of one-off colours, because the sheet
+ * tokens are wrong here and wrong in a way that hides text:
+ *
+ *     --ink-muted  #4A5D56  measures  6.69 on beige  but  1.69 on the green
+ *     --border     .60 deep measures  3.55 on beige  but  ~1.2 on the green
+ *
+ * Remapped values, all measured (scripts/contrast.py):
+ *     beige       11.32   headings and body
+ *     beige-deep   6.47   muted text
+ *     blue-light   8.15   links
+ *     beige .55    4.62   control borders, clears 1.4.11's 3:1
+ */
+.ground-deep {
+  background: var(--nourish-deep);
+  color: var(--beige);
+
+  --page-ink:      var(--beige);
+  --ink-muted:     var(--beige-deep);
+  --link:          var(--blue-light);
+  --border:        rgba(255, 250, 224, 0.55);
+  --border-subtle: rgba(255, 250, 224, 0.22);
+  --focus-ring:    var(--beige);
+}
+
+.ground-deep h1, .ground-deep h2, .ground-deep h3, .ground-deep h4 { color: var(--beige); }
+
+/* Anything that paints its OWN light surface inside the dark ground must put
+ * the light inks back. Without this the remapped beige-deep lands on a white
+ * card at 1.75 and the muted text disappears — the same collision that made
+ * the packages cards unreadable at 1.05:1. */
+/* NOTE: .chip and .day are deliberately NOT here. They sit transparent on the
+ * dark ground and take beige ink; listing them here too made their sub-label
+ * paint the light #4A5D56 straight onto the green at 1.69. Two rules fighting
+ * over one element is exactly what design.md §4 warns about. */
+.ground-deep .card,
+.ground-deep .searchbox input,
+.ground-deep input[type="text"],
+.ground-deep input[type="search"],
+.ground-deep input[type="number"],
+.ground-deep .callout,
+.ground-deep .table-wrap {
+  --page-ink:      var(--nourish-deep);
+  --ink-muted:     #4A5D56;
+  --link:          var(--blue-deep);
+  --border:        rgba(28, 61, 52, 0.60);
+  --border-subtle: rgba(28, 61, 52, 0.28);
+  color: var(--nourish-deep);
+  background: var(--surface);
+}
+
+.ground-deep .card h1, .ground-deep .card h2,
+.ground-deep .card h3, .ground-deep .card h4 { color: var(--nourish-deep); }
+
+/* The chips and day pills are controls ON the dark ground, so their resting
+ * state is outlined-beige and their selected state is the filled beige — the
+ * inverse of the sheet, and both clear 3:1. */
+.ground-deep .chip,
+.ground-deep .day {
+  background: transparent;
+  color: var(--beige);
+  border-color: var(--beige);
+}
+.ground-deep .chip[aria-current="true"], .ground-deep .chip.is-active,
+.ground-deep .day[aria-current="date"],  .ground-deep .day.is-active {
+  background: var(--beige);
+  color: var(--nourish-deep);
+  border-color: var(--beige);
+}
+/* Resting: beige-deep on the green, 6.47. Selected: the pill is filled beige,
+ * so the sub-label takes the sheet's muted ink at 6.69. */
+.ground-deep .day span { color: var(--beige-deep); }
+.ground-deep .day[aria-current="date"] span,
+.ground-deep .day.is-active span { color: #4A5D56; }
+
+/* The search field keeps a light surface so typed text stays high-contrast. */
+.ground-deep .searchbox input::placeholder { color: #4A5D56; }
+
+.ground-deep .meta { color: var(--beige-deep); }
+.ground-deep .card .meta { color: #4A5D56; }
+.ground-deep .price { color: var(--nourish-deep); }
+.ground-deep .price small { color: #4A5D56; }
+.ground-deep a:not(.btn):not(.chip):not(.day) { color: var(--blue-light); }
+.ground-deep .card a:not(.btn) { color: var(--blue-deep); }
+
+/* On the dark ground the filled button inverts: beige fill, deep ink (11.32). */
+.ground-deep .btn-solid { background: var(--beige); color: var(--nourish-deep); }
+.ground-deep .btn-outline { color: var(--beige); border-color: var(--beige); }
+.ground-deep .card .btn-solid { background: var(--nourish-deep); color: var(--beige); }
+.ground-deep .card .btn-outline { color: var(--nourish-deep); border-color: rgba(28,61,52,.60); }

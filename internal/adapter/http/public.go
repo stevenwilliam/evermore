@@ -278,10 +278,13 @@ type pageData struct {
 	MenuWeek  []MenuDay
 	WeekLabel string
 	ThisWeek  string
-	PrevWeek  string
-	NextWeek  string
-	Flash     string
-	FlashKind string
+
+	// WhatsAppGreeting is the pre-filled wa.me message, URL-encoded.
+	WhatsAppGreeting string
+	PrevWeek         string
+	NextWeek         string
+	Flash            string
+	FlashKind        string
 }
 
 type alternate struct {
@@ -323,6 +326,10 @@ func (h *renderer) base(c *gin.Context, params map[string]string, nav, title, de
 		Year:         time.Now().In(h.cfg.Location).Year(),
 		Params:       tplParams,
 		CutOff:       params["order.cutoff_time"],
+		// Passed RAW. html/template percent-encodes it for the URL attribute
+		// context on its own; pre-encoding here produced a double-encoded
+		// link (%2C became %252C) that WhatsApp rendered as literal escapes.
+		WhatsAppGreeting: params["company.whatsapp_greeting"],
 	}
 }
 

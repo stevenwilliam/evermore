@@ -98,6 +98,13 @@ const probeScript = `(() => {
     if (cs.visibility === 'hidden' || cs.display === 'none' || +cs.opacity === 0) continue;
     const rect = el.getBoundingClientRect();
     if (rect.width < 1 || rect.height < 1) continue;
+    // Screen-reader-only text is never painted, so its contrast is not a real
+    // ratio. The clip/clip-path 1px technique leaves a 1x1 box with a normal
+    // computed colour, which otherwise reports as a failure nobody can see.
+    const clipped = cs.clip === 'rect(0px, 0px, 0px, 0px)' ||
+                    cs.clipPath === 'inset(50%)' ||
+                    (rect.width <= 1 && rect.height <= 1);
+    if (clipped) continue;
 
     const fgRaw = parse(cs.color);
     if (!fgRaw) continue;
