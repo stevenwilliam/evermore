@@ -172,12 +172,24 @@ for (const [vpName, w, h] of VIEWPORTS) {
   const page = await ctx.newPage();
 
   const consoleErrors = [];
+  const envNotices = new Set();
+  // Two console lines are conditions of the environment, not defects, and are
+  // reported separately so they neither fail the run nor disappear:
+  //   - the main document's own 404 (the probe asserts on status directly)
+  //   - COOP being ignored on a plain-HTTP origin (the header is correct; it
+  //     takes effect once TLS terminates, tracked in RUN-WHEN-BACK.md)
+  const ENV_NOTICES = [
+    /Failed to load resource.*404/,
+    /Cross-Origin-Opener-Policy header has been ignored/,
+  ];
   page.on('console', m => {
-    // Chromium logs the main document's own 404 as a console error; the probe
-    // asserts on the status separately, so that line is noise here.
-    if (m.type() === 'error' && !/Failed to load resource.*404/.test(m.text())) {
-      consoleErrors.push(m.text());
+    if (m.type() !== 'error') return;
+    const text = m.text();
+    if (ENV_NOTICES.some(re => re.test(text))) {
+      envNotices.add(text.split('.')[0]);
+      return;
     }
+    consoleErrors.push(text);
   });
   page.on('pageerror', e => consoleErrors.push('pageerror: ' + e.message));
   const failedRequests = [];
@@ -218,7 +230,9 @@ for (const [vpName, w, h] of VIEWPORTS) {
       consoleErrors: [...consoleErrors],
       failedRequests: [...failedRequests],
       fontsUsed,
+      envNotices: [...envNotices],
     });
+    envNotices.clear();
   }
   await ctx.close();
 }
@@ -228,7 +242,9 @@ writeFileSync(join(OUT, 'report.json'), JSON.stringify(results, null, 2));
 
 // --- human-readable summary -------------------------------------------------
 let problems = 0;
+const allNotices = new Set();
 for (const r of results) {
+  (r.envNotices || []).forEach(n => allNotices.add(n));
   const bad = r.findings.length + r.consoleErrors.length + r.failedRequests.length;
   problems += bad;
   const flag = bad ? 'FAIL' : ' ok ';
@@ -246,6 +262,10 @@ for (const r of results) {
   }
   for (const e of r.consoleErrors) console.log(`        console: ${e}`);
   for (const e of r.failedRequests) console.log(`        request: ${e}`);
+}
+if (allNotices.size) {
+  console.log('\nEnvironment notices (correct behaviour for this host, not defects):');
+  for (const n of allNotices) console.log('  - ' + n);
 }
 console.log(`\n${results.length} page/viewport combinations, ${problems} problem(s).`);
 process.exit(problems ? 1 : 0);

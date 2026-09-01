@@ -86,7 +86,7 @@ func Recovery() gin.HandlerFunc {
 // with a wildcard.
 func SecurityHeaders(isProd bool, extraConnect ...string) gin.HandlerFunc {
 	connect := append([]string{"'self'"}, extraConnect...)
-	csp := strings.Join([]string{
+	directives := []string{
 		"default-src 'self'",
 		"base-uri 'self'",
 		"form-action 'self'",
@@ -101,8 +101,17 @@ func SecurityHeaders(isProd bool, extraConnect ...string) gin.HandlerFunc {
 		"font-src 'self'",
 		"connect-src " + strings.Join(connect, " ") + " https://maps.googleapis.com",
 		"manifest-src 'self'",
-		"upgrade-insecure-requests",
-	}, "; ")
+	}
+
+	// upgrade-insecure-requests ONLY where TLS actually terminates. On a
+	// plain-HTTP host the browser rewrites every subresource to https://,
+	// which fails outright — caught by probing the deployed URL rather than
+	// localhost, where browsers treat the origin as already trustworthy and
+	// the directive is a no-op.
+	if isProd {
+		directives = append(directives, "upgrade-insecure-requests")
+	}
+	csp := strings.Join(directives, "; ")
 
 	return func(c *gin.Context) {
 		h := c.Writer.Header()
