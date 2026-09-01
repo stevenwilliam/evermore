@@ -1,0 +1,198 @@
+[
+  {
+    "page": "home",
+    "viewport": "mobile",
+    "path": "/",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/home-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  },
+  {
+    "page": "menu",
+    "viewport": "mobile",
+    "path": "/menu",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/menu-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  },
+  {
+    "page": "packages",
+    "viewport": "mobile",
+    "path": "/paket",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/packages-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  },
+  {
+    "page": "how",
+    "viewport": "mobile",
+    "path": "/cara-kerja",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/how-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  },
+  {
+    "page": "corporate",
+    "viewport": "mobile",
+    "path": "/untuk-kantor",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/corporate-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  },
+  {
+    "page": "coverage",
+    "viewport": "mobile",
+    "path": "/wilayah-antar",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/coverage-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  },
+  {
+    "page": "notfound",
+    "viewport": "mobile",
+    "path": "/tidak-ada",
+    "status": 404,
+    "file": "/home/dev/projects/evermore/docs/screenshots/notfound-mobile.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  },
+  {
+    "page": "home",
+    "viewport": "desktop",
+    "path": "/",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/home-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  },
+  {
+    "page": "menu",
+    "viewport": "desktop",
+    "path": "/menu",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/menu-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  },
+  {
+    "page": "packages",
+    "viewport": "desktop",
+    "path": "/paket",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/packages-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  },
+  {
+    "page": "how",
+    "viewport": "desktop",
+    "path": "/cara-kerja",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/how-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  },
+  {
+    "page": "corporate",
+    "viewport": "desktop",
+    "path": "/untuk-kantor",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/corporate-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  },
+  {
+    "page": "coverage",
+    "viewport": "desktop",
+    "path": "/wilayah-antar",
+    "status": 200,
+    "file": "/home/dev/projects/evermore/docs/screenshots/coverage-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  },
+  {
+    "page": "notfound",
+    "viewport": "desktop",
+    "path": "/tidak-ada",
+    "status": 404,
+    "file": "/home/dev/projects/evermore/docs/screenshots/notfound-desktop.png",
+    "findings": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "fontsUsed": [
+      "Inter",
+      "Erode"
+    ]
+  }
+]

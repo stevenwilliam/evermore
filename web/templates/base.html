@@ -1,0 +1,118 @@
+{{define "base"}}<!DOCTYPE html>
+<html lang="{{.Lang}}" data-theme="{{.Theme}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+{{/* SEO baseline, 99-steven-preference.md §13. Per-route title and
+     description, Open Graph STATIC IN THE SERVED HTML — preview bots do not
+     run JavaScript, which is the whole reason the public surface is server
+     rendered rather than part of the SPA. */}}
+<title>{{.Title}}</title>
+<meta name="description" content="{{.Description}}">
+<link rel="canonical" href="{{.CanonicalURL}}">
+{{if .NoIndex}}<meta name="robots" content="noindex,nofollow">{{else}}<meta name="robots" content="index,follow">{{end}}
+
+<meta property="og:type" content="{{.OGType}}">
+<meta property="og:site_name" content="{{.SiteName}}">
+<meta property="og:title" content="{{.Title}}">
+<meta property="og:description" content="{{.Description}}">
+<meta property="og:url" content="{{.CanonicalURL}}">
+<meta property="og:image" content="{{.BaseURL}}/images/og-default.png">
+<meta property="og:locale" content="{{.OGLocale}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{.Title}}">
+<meta name="twitter:description" content="{{.Description}}">
+<meta name="twitter:image" content="{{.BaseURL}}/images/og-default.png">
+
+<meta name="theme-color" content="#1C3D34">
+<link rel="icon" href="/images/favicon.ico" sizes="any">
+<link rel="icon" href="/images/favicon-32.png" type="image/png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+
+{{range .Alternates}}<link rel="alternate" hreflang="{{.Lang}}" href="{{.URL}}">
+{{end}}
+
+{{/* Preload only the two faces the first screen actually uses. Erode is not
+     subset (D15), so these are the full files and preloading the wrong ones
+     would cost more than it saves. */}}
+<link rel="preload" href="/fonts/inter/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/erode/Erode-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/fonts.css">
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/app.css">
+
+{{if .JSONLD}}<script type="application/ld+json">{{.JSONLD}}</script>{{end}}
+</head>
+<body>
+<a class="skip-link" href="#main">Lewati ke konten utama</a>
+
+<header class="masthead">
+  <div class="container masthead-inner">
+    <a class="masthead-brand" href="/">
+      <img src="/images/evermore-wordmark-light.png" alt="Evermore" width="150" height="30">
+    </a>
+
+    <nav class="masthead-nav" aria-label="Navigasi utama">
+      <a href="/menu"{{if eq .Nav "menu"}} aria-current="page"{{end}}>Menu minggu ini</a>
+      <a href="/cara-kerja"{{if eq .Nav "how"}} aria-current="page"{{end}}>Cara kerja</a>
+      <a href="/paket"{{if eq .Nav "packages"}} aria-current="page"{{end}}>Paket</a>
+      <a href="/untuk-kantor"{{if eq .Nav "corporate"}} aria-current="page"{{end}}>Untuk kantor</a>
+      <a href="/wilayah-antar"{{if eq .Nav "coverage"}} aria-current="page"{{end}}>Wilayah antar</a>
+    </nav>
+
+    <div class="masthead-actions">
+      <a href="/app/masuk">Masuk</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav"
+              data-nav-toggle>
+        <span class="visually-hidden">Buka menu navigasi</span>
+        <span aria-hidden="true">&#9776;</span>
+      </button>
+    </div>
+  </div>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Navigasi utama seluler" hidden>
+    <a href="/menu">Menu minggu ini</a>
+    <a href="/cara-kerja">Cara kerja</a>
+    <a href="/paket">Paket</a>
+    <a href="/untuk-kantor">Untuk kantor</a>
+    <a href="/wilayah-antar">Wilayah antar</a>
+    <a href="/app/masuk">Masuk</a>
+  </nav>
+</header>
+
+<main id="main">
+{{template "content" .}}
+</main>
+
+<footer class="footer">
+  <div class="container footer-grid">
+    <div>
+      <img src="/images/evermore-wordmark-light.png" alt="" width="150" height="30" aria-hidden="true">
+      <p style="margin-top:var(--space-4)">{{.Params.company_name}}</p>
+    </div>
+    <div>
+      <p>Jelajahi</p>
+      <p><a href="/menu">Menu</a></p>
+      <p><a href="/paket">Paket</a></p>
+      <p><a href="/wilayah-antar">Wilayah antar</a></p>
+    </div>
+    <div>
+      <p>Hubungi</p>
+      <p><a href="tel:{{.Params.company_phone}}">{{.Params.company_phone}}</a></p>
+      <p><a href="mailto:{{.Params.company_email}}">{{.Params.company_email}}</a></p>
+    </div>
+  </div>
+  <div class="footer-fineprint">
+    <div class="container">
+      <p style="margin:0">
+        &copy; {{.Year}} {{.Params.company_name}} &middot; {{.Params.company_address}}
+        &middot; <a href="/kebijakan-privasi">Kebijakan privasi</a>
+        &middot; <a href="/syarat-ketentuan">Syarat &amp; ketentuan</a>
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/app.js" defer></script>
+</body>
+</html>{{end}}

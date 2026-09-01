@@ -62,10 +62,6 @@ func run() error {
 	}
 }
 
-func openDB(ctx context.Context, cfg *config.Config) (*database.Options, error) {
-	return &database.Options{DSN: cfg.DatabaseURL}, nil
-}
-
 func cmdMigrate(ctx context.Context, cfg *config.Config) error {
 	migrations, err := database.Load(db.Migrations, "migrations")
 	if err != nil {

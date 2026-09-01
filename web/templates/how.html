@@ -1,0 +1,31 @@
+{{define "content"}}
+<section class="section">
+  <div class="container container-narrow">
+    <h1>Cara kerja</h1>
+    <ol class="stack" style="padding-left:var(--space-5)">
+      <li><strong>Pilih menu.</strong> Menu terbit tiap Jumat untuk minggu berikutnya, dengan {{len .Diets}} tipe diet.</li>
+      <li><strong>Pesan sebelum {{.CutOff}} WIB</strong> sehari sebelum tanggal antar.</li>
+      <li><strong>Transfer manual</strong> ke rekening yang tertera, dengan tiga digit terakhir sebagai penanda pencocokan.</li>
+      <li><strong>Kami verifikasi</strong> pada jam kerja, rata-rata di bawah 30 menit.</li>
+      <li><strong>Diantar</strong> pada jam yang kamu pilih, dari dapur terdekat yang melayani alamatmu.</li>
+    </ol>
+
+    <h2>Harga bertingkat</h2>
+    <p>Makin banyak porsi dalam satu keranjang, makin murah per porsinya. Tingkat dihitung dari jumlah <em>meal</em>, bukan jumlah makanan.</p>
+    {{if .Tiers}}
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Harga per porsi menurut jumlah</caption>
+        <thead><tr><th scope="col">Jumlah porsi</th><th scope="col" class="num">Harga per porsi</th></tr></thead>
+        <tbody>
+        {{range .Tiers}}
+          <tr><td>{{tierRange .MinQty .MaxQty}}</td><td class="num">{{rupiah .PriceIDR}}</td></tr>
+        {{end}}
+        </tbody>
+      </table>
+    </div>
+    <p class="meta">Semua harga sudah termasuk PPN.</p>
+    {{end}}
+  </div>
+</section>
+{{end}}

@@ -1,0 +1,17 @@
+# secrets
+.env
+*.pem
+*.key
+
+# build output
+/bin/
+/dist/
+web/dist/
+node_modules/
+tools/shot/node_modules/
+tools/shot/package-lock.json
+
+# local
+*.log
+.DS_Store
+/tmp/

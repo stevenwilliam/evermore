@@ -1,0 +1,74 @@
+{{define "content"}}
+<section class="section">
+  <div class="container">
+    <p class="meta"><a href="/menu">&larr; Menu minggu ini</a></p>
+
+    <div class="hero-grid" style="align-items:start">
+      <div>
+        <div class="card">
+          <div class="card-media" style="aspect-ratio:4/3">foto meal — 4:3</div>
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow" style="color:var(--ink-muted)">
+          {{.Meal.DietName}} &middot; {{.DateLabel}} &middot; {{.Meal.SlotTime}}
+        </p>
+        <h1>{{.Meal.Name}}</h1>
+        <p>Satu porsi lengkap. Komposisi ditetapkan dapur untuk tanggal ini dan
+           tidak bisa ditukar per komponen.</p>
+
+        <h2 style="font-size:var(--text-lg)">Isi meal</h2>
+        <div class="table-wrap">
+          <table>
+            <caption class="visually-hidden">Komponen meal</caption>
+            <thead><tr><th scope="col">Peran</th><th scope="col">Komponen</th><th scope="col">Porsi</th></tr></thead>
+            <tbody>
+            {{range .Meal.Items}}
+              <tr><td>{{role .Role}}</td><td>{{.FoodName}}</td><td>{{.PortionSize}}</td></tr>
+            {{end}}
+            </tbody>
+          </table>
+        </div>
+
+        <h2 style="font-size:var(--text-lg);margin-top:var(--space-6)">Informasi gizi <span class="text-muted" style="font-size:var(--text-sm);font-family:var(--font-body);font-weight:var(--w-body)">per porsi</span></h2>
+        <div class="table-wrap">
+          <table>
+            <caption class="visually-hidden">Panel gizi per porsi</caption>
+            <tbody>
+              <tr><th scope="row">Energi</th><td class="num">{{.Meal.Panel.CaloriesKcal}} kkal</td></tr>
+              <tr><th scope="row">Protein</th><td class="num">{{gram .Meal.Panel.ProteinMG}} g</td></tr>
+              <tr><th scope="row">Karbohidrat</th><td class="num">{{gram .Meal.Panel.CarbohydrateMG}} g</td></tr>
+              <tr><th scope="row">Lemak</th><td class="num">{{gram .Meal.Panel.FatMG}} g</td></tr>
+              <tr><th scope="row">Serat</th><td class="num">{{gram .Meal.Panel.FibreMG}} g</td></tr>
+              <tr><th scope="row">Natrium</th><td class="num">{{.Meal.Panel.SodiumMG}} mg</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="meta">Jumlah dari {{len .Meal.Items}} komponen di atas.</p>
+        {{if not .Meal.Panel.Complete}}
+        <div class="callout callout-warn">
+          <p style="margin:0">Panel gizi belum lengkap: {{range .Meal.Panel.MissingFoods}}{{.}} {{end}}belum punya data gizi.</p>
+        </div>
+        {{end}}
+
+        {{if .Meal.Allergens}}
+        <h2 style="font-size:var(--text-lg);margin-top:var(--space-6)">Alergen</h2>
+        <p>{{range .Meal.Allergens}}<span class="pill pill-warn">{{.}}</span> {{end}}</p>
+        {{end}}
+
+        <div class="card" style="margin-top:var(--space-6)">
+          <div class="card-body">
+            <div class="card-foot" style="padding-top:0">
+              {{if .Meal.PriceIDR}}
+              <span class="price">{{rupiah .Meal.PriceIDR}}<small>per porsi &middot; termasuk PPN</small></span>
+              {{end}}
+              <a class="btn btn-solid" href="/app/pesan?meal={{.Meal.ID}}">Tambah ke keranjang</a>
+            </div>
+            <p class="btn-reason">Pesan sebelum <strong>{{.CutOff}} WIB</strong> sehari sebelumnya.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{{end}}

@@ -1,0 +1,107 @@
+{{define "content"}}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <p class="eyebrow">Antar ke Jakarta Selatan, Pusat &amp; Utara</p>
+      <h1>Makan sehat<br>tanpa mikir<br>tiap pagi.</h1>
+      <p class="lede">
+        Menu baru tiap minggu, disusun ahli gizi, dimasak pagi hari dan diantar
+        ke meja kerja atau rumah pada jam yang kamu pilih. Pesan per porsi atau
+        ambil paket dengan harga lebih hemat.
+      </p>
+      <p class="stack" style="display:flex;gap:var(--space-3);flex-wrap:wrap;margin-top:var(--space-6)">
+        <a class="btn btn-primary" href="/menu">Lihat menu minggu ini</a>
+        <a class="btn btn-secondary" href="/wilayah-antar">Cek wilayah antar</a>
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <strong>{{len .Diets}} tipe diet</strong>
+          <span>{{.DietNames}}</span>
+        </div>
+        <div class="hero-stat">
+          <strong>{{len .Kitchens}} dapur</strong>
+          <span>{{.KitchenNames}}</span>
+        </div>
+        <div class="hero-stat">
+          <strong>Antar hari ini</strong>
+          <span>pesan sebelum {{.CutOff}} kemarin</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="background:var(--nourish);border:none">
+        <div class="card-media" style="background:var(--nourish-deep)">foto hero — meal di atas meja</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2>Menu {{.TodayLabel}}</h2>
+        <p>Terbit tiap Jumat untuk minggu berikutnya</p>
+      </div>
+      <a class="btn btn-outline" href="/menu">Lihat semua</a>
+    </div>
+
+    <div class="filterbar">
+      {{range .Diets}}<a class="chip" href="/menu?diet={{.Slug}}">{{.Name}}</a>{{end}}
+    </div>
+
+    {{if .Meals}}
+    <div class="card-grid">
+      {{range .Meals}}
+      <article class="card">
+        <div class="card-media">foto meal</div>
+        <div class="card-body">
+          <p class="meta">{{.SlotAlias}} &middot; {{.SlotTime}}</p>
+          <h3><a href="/menu/{{.ID}}" style="color:inherit;text-decoration:none">{{.Name}}</a></h3>
+          <p class="meta">{{.Components}} komponen &middot; {{.Panel.CaloriesKcal}} kkal &middot; {{gram .Panel.ProteinMG}} g protein</p>
+          <div class="card-foot">
+            {{if .PriceIDR}}<span class="price">{{rupiah .PriceIDR}}<small>termasuk PPN</small></span>{{end}}
+            <a class="btn btn-solid" href="/menu/{{.ID}}">Lihat</a>
+          </div>
+        </div>
+      </article>
+      {{end}}
+    </div>
+    {{else}}
+    <div class="callout callout-info">
+      <p style="margin:0">Menu untuk hari ini belum terbit. Menu minggu berikutnya terbit tiap Jumat.</p>
+    </div>
+    {{end}}
+  </div>
+</section>
+
+<section class="section" style="background:var(--nourish-deep);color:var(--beige)">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Lebih hemat</p>
+        <h2 style="color:var(--beige)">Bayar sekali, pakai 90 hari</h2>
+      </div>
+    </div>
+    <div class="card-grid">
+      {{range .Packages}}
+      <article class="card">
+        <div class="card-body">
+          {{if .IsFeatured}}<p><span class="pill pill-warn">Paling laris</span></p>{{end}}
+          <h3>{{.MealCredits}} porsi</h3>
+          <p class="meta">{{rupiah .PerMealIDR}} per porsi &middot; berlaku {{.ValidityDays}} hari</p>
+          <div class="card-foot">
+            <span class="price">{{rupiah .PriceIDR}}</span>
+            <a class="btn btn-solid" href="/paket">Lihat paket</a>
+          </div>
+        </div>
+      </article>
+      {{end}}
+    </div>
+    <p class="text-muted" style="color:var(--beige-deep);margin-top:var(--space-5)">
+      Kredit dipakai pada menu apa pun yang sudah terbit. Kredit tidak bisa diuangkan
+      dan hangus setelah masa berlaku.
+    </p>
+  </div>
+</section>
+{{end}}

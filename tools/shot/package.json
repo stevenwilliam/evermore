@@ -1,0 +1,7 @@
+{
+  "name": "evermore-shot",
+  "private": true,
+  "type": "module",
+  "description": "Screenshot and computed-style probe. CLAUDE.md §6: verify visual work by looking at it.",
+  "dependencies": { "playwright": "^1.49.0" }
+}

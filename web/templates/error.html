@@ -1,0 +1,11 @@
+{{define "content"}}
+<section class="section">
+  <div class="container container-narrow text-center">
+    <p class="eyebrow" style="color:var(--ink-muted)">{{.Code}}</p>
+    <h1>{{.Heading}}</h1>
+    <p>{{.Message}}</p>
+    <p><a class="btn btn-solid" href="/">Kembali ke beranda</a></p>
+    {{if .TraceID}}<p class="meta">Kode rujukan: <code>{{.TraceID}}</code></p>{{end}}
+  </div>
+</section>
+{{end}}

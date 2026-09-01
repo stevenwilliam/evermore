@@ -1,0 +1,37 @@
+{{define "content"}}
+<section class="section">
+  <div class="container">
+    <h1>Wilayah antar</h1>
+    <p>Kami mengantar dari {{len .Kitchens}} dapur. Titik di luar semua wilayah tidak bisa checkout.</p>
+
+    <div class="table-wrap" style="margin-top:var(--space-6)">
+      <table>
+        <caption class="visually-hidden">Dapur dan radius layanan</caption>
+        <thead>
+          <tr>
+            <th scope="col">Kode</th><th scope="col">Dapur</th>
+            <th scope="col">Alamat</th><th scope="col" class="num">Radius layanan</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{range .Kitchens}}
+          <tr>
+            <td><span class="pill pill-quiet">{{.Code}}</span></td>
+            <td>{{.Name}}</td>
+            <td>{{.AddressLine}}</td>
+            <td class="num">{{printf "%.1f" .ServiceRadiusKM}} km</td>
+          </tr>
+        {{end}}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-info" style="margin-top:var(--space-6)">
+      <p style="margin:0">
+        Poligon menang atas radius. Kalau alamatmu berada di dalam poligon sebuah
+        dapur, dapur itu melayani meski di luar radius — dan sebaliknya.
+      </p>
+    </div>
+  </div>
+</section>
+{{end}}

@@ -1,0 +1,31 @@
+{{define "content"}}
+<section class="section">
+  <div class="container container-narrow">
+    <h1>Bayar sekali, pakai 90 hari</h1>
+    <p>Kredit dipakai pada menu apa pun yang sudah terbit.</p>
+  </div>
+  <div class="container" style="margin-top:var(--space-6)">
+    <div class="card-grid">
+      {{range .Packages}}
+      <article class="card">
+        <div class="card-body">
+          {{if .IsFeatured}}<p><span class="pill pill-warn">Paling laris</span></p>{{end}}
+          <h2 style="font-size:var(--text-xl)">{{.MealCredits}} porsi</h2>
+          <p class="meta">{{rupiah .PerMealIDR}} per porsi</p>
+          <p class="price">{{rupiah .PriceIDR}}<small>berlaku {{.ValidityDays}} hari</small></p>
+          <div class="card-foot">
+            <a class="btn btn-solid" href="/app/paket/{{.Slug}}">Beli paket</a>
+          </div>
+        </div>
+      </article>
+      {{end}}
+    </div>
+    <div class="callout callout-warn" style="margin-top:var(--space-6)">
+      <p style="margin:0">
+        Kredit tidak bisa diuangkan dan hangus setelah masa berlaku. Pengembalian
+        karena dapur batal selalu masuk sebagai kredit, bukan tunai.
+      </p>
+    </div>
+  </div>
+</section>
+{{end}}

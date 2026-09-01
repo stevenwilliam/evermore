@@ -1,0 +1,76 @@
+{{define "content"}}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h1>Menu minggu ini</h1>
+        <p>{{if .PublishedUntil}}Terbit sampai {{.PublishedUntil}}{{else}}Belum ada menu yang terbit{{end}}</p>
+      </div>
+      {{if .CutOffCountdown}}
+      <p><span class="pill pill-warn">Cut-off besok &middot; {{.CutOffCountdown}}</span></p>
+      {{end}}
+    </div>
+
+    {{/* A debounced search box on every list — CLAUDE.md §7, no exceptions.
+         It is a real GET form so it works with JavaScript disabled, and app.js
+         upgrades it to debounced live filtering. */}}
+    <form class="filterbar" method="get" action="/menu" role="search" data-live-search>
+      <div class="searchbox">
+        <label class="visually-hidden" for="q">Cari menu atau bahan</label>
+        <input type="search" id="q" name="q" value="{{.Search}}"
+               placeholder="Cari menu atau bahan…" autocomplete="off">
+      </div>
+      {{if .SelectedDate}}<input type="hidden" name="tanggal" value="{{.SelectedDate}}">{{end}}
+      <a class="chip{{if not .SelectedDiet}} is-active{{end}}" href="/menu{{.DateQuery}}">Semua</a>
+      {{range .Diets}}
+      <a class="chip{{if eq $.SelectedDiet .Slug}} is-active{{end}}"
+         href="/menu?diet={{.Slug}}{{$.DateQueryAmp}}">{{.Name}}</a>
+      {{end}}
+      <noscript><button class="btn btn-solid" type="submit">Cari</button></noscript>
+    </form>
+
+    {{if .Dates}}
+    <nav class="daystrip" aria-label="Pilih tanggal">
+      {{range .Dates}}
+      <a class="day{{if .Selected}} is-active{{end}}" href="{{.URL}}"
+         {{if .Selected}}aria-current="date"{{end}}>
+        {{.Weekday}}<span>{{.DayMonth}}</span>
+      </a>
+      {{end}}
+    </nav>
+    {{end}}
+
+    <div style="margin-top:var(--space-6)" data-results>
+      {{if .Meals}}
+      <p class="meta" data-result-count>{{len .Meals}} menu ditemukan</p>
+      <div class="card-grid">
+        {{range .Meals}}
+        <article class="card" data-search-text="{{.Name}}">
+          <div class="card-media">foto meal</div>
+          <div class="card-body">
+            <p class="meta">{{.DietName}} &middot; {{.SlotAlias}} {{.SlotTime}}</p>
+            <h3><a href="/menu/{{.ID}}" style="color:inherit;text-decoration:none">{{.Name}}</a></h3>
+            <p class="meta">
+              {{.Components}} komponen &middot; {{.Panel.CaloriesKcal}} kkal &middot;
+              {{gram .Panel.ProteinMG}} g protein
+              {{if not .Panel.Complete}}<br><span class="pill pill-warn">Gizi belum lengkap</span>{{end}}
+            </p>
+            <div class="card-foot">
+              {{if .PriceIDR}}<span class="price">{{rupiah .PriceIDR}}<small>termasuk PPN</small></span>{{end}}
+              <a class="btn btn-solid" href="/menu/{{.ID}}">Lihat</a>
+            </div>
+          </div>
+        </article>
+        {{end}}
+      </div>
+      {{else}}
+      <div class="callout callout-info">
+        <p style="margin:0">
+          {{if .Search}}Tidak ada menu yang cocok dengan “{{.Search}}”.{{else}}Belum ada menu yang terbit untuk tanggal ini.{{end}}
+        </p>
+      </div>
+      {{end}}
+    </div>
+  </div>
+</section>
+{{end}}

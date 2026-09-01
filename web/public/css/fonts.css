@@ -1,0 +1,45 @@
+/* Self-hosted only. A font CDN hands a third party every visitor's IP and the
+ * page they are on (design.md §1).
+ *
+ * Erode ships four discrete cuts — 400/500/600/700. Asking for any other
+ * weight makes the browser synthesise a fake bold, which smears the
+ * letterforms the wordmark is built from.
+ *
+ * Erode is NOT subset: D15 reads the Fontshare licence as forbidding
+ * modification of the font software, and latin-subsetting is a modification.
+ * font-display: swap plus a preload on the two first-screen faces covers the
+ * bytes that subsetting would have saved.
+ */
+
+@font-face {
+  font-family: 'Erode';
+  src: url('/fonts/erode/Erode-Regular.woff2') format('woff2'),
+       url('/fonts/erode/Erode-Regular.woff') format('woff');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Erode';
+  src: url('/fonts/erode/Erode-Medium.woff2') format('woff2'),
+       url('/fonts/erode/Erode-Medium.woff') format('woff');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Erode';
+  src: url('/fonts/erode/Erode-Semibold.woff2') format('woff2'),
+       url('/fonts/erode/Erode-Semibold.woff') format('woff');
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Erode';
+  src: url('/fonts/erode/Erode-Bold.woff2') format('woff2'),
+       url('/fonts/erode/Erode-Bold.woff') format('woff');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* Inter as the variable file: every weight in one request, smaller than four
+ * static cuts. SIL OFL, licence beside the file. */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter/InterVariable.woff2') format('woff2-variations');
+  font-weight: 100 900; font-style: normal; font-display: swap;
+}
