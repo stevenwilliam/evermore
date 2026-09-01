@@ -80,7 +80,10 @@
   </nav>
 </header>
 
-<main id="main">
+{{/* The deep green is the page ground everywhere. It sits on <main> rather
+     than on <body> so the masthead and footer keep their own bar treatment,
+     and rather than on each section so a new page inherits it automatically. */}}
+<main id="main" class="ground-deep">
 {{template "content" .}}
 </main>
 

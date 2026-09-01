@@ -37,6 +37,7 @@ main { flex: 1 0 auto; }
 img, svg, video { max-width: 100%; height: auto; display: block; }
 
 h1, h2, h3, h4 {
+  color: var(--page-ink);
   font-family: var(--font-display);
   font-weight: var(--w-display);
   line-height: 1.15;
@@ -169,9 +170,12 @@ a:hover { text-decoration-thickness: 2px; }
 .btn-secondary { background: transparent; color: var(--beige); border-color: var(--beige); }
 .btn-secondary:hover { background: rgba(255, 250, 224, 0.12); }
 
-/* On the sheet, the filled button is the deep green. */
-.btn-solid { background: var(--nourish-deep); color: var(--beige); }
-.btn-outline { background: transparent; color: var(--nourish-deep); border-color: var(--border); }
+/* Read from tokens, never from a fixed colour. A button inside a card inside
+ * a dark section has to flip twice, and enumerating those contexts by selector
+ * is how one gets missed — which is exactly what happened: `.btn-outline`
+ * painted beige ink on a white callout at 1.05:1. */
+.btn-solid   { background: var(--btn-solid-bg); color: var(--btn-solid-ink); }
+.btn-outline { background: transparent; color: var(--btn-outline-ink); border-color: var(--btn-outline-border); }
 
 .btn[aria-disabled="true"], .btn:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
 
@@ -301,7 +305,16 @@ input[type="radio"], input[type="checkbox"] { min-height: 0; width: 20px; height
 
 /* ---------------------------------------------------------------- tables */
 
-.table-wrap { overflow-x: auto; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
+/* The wrapper paints a surface rather than being transparent. It is listed as
+ * a light surface in the deep-ground remap, and a "light surface" with no
+ * background put deep ink on the deep green at 1:1 — invisible. If it claims
+ * the light inks it has to provide the light ground. */
+.table-wrap {
+  overflow-x: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
 table { border-collapse: collapse; width: 100%; font-size: var(--text-sm); }
 th, td { text-align: left; padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border-subtle); }
 th { font-weight: var(--w-strong); background: rgba(28, 61, 52, 0.04); white-space: nowrap; }
@@ -433,15 +446,16 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* ------------------------------------------------- the deep-green ground */
 
-/* A section painted on the brand's deep green instead of the beige sheet.
+/* The brand's deep green as a page ground, applied to <main> in base.html so
+ * every page gets it and the bars keep their own treatment.
  *
- * This is a TOKEN REMAP, not a set of one-off colours, because the sheet
- * tokens are wrong here and wrong in a way that hides text:
+ * This is a TOKEN REMAP. The sheet tokens are not merely different on the
+ * green, they are wrong in a way that hides text:
  *
- *     --ink-muted  #4A5D56  measures  6.69 on beige  but  1.69 on the green
- *     --border     .60 deep measures  3.55 on beige  but  ~1.2 on the green
+ *     --ink-muted  #4A5D56  6.69 on beige  ->  1.69 on the green
+ *     --border     .60 deep 3.55 on beige  ->  ~1.2 on the green
  *
- * Remapped values, all measured (scripts/contrast.py):
+ * Remapped values, every one measured by scripts/contrast.py:
  *     beige       11.32   headings and body
  *     beige-deep   6.47   muted text
  *     blue-light   8.15   links
@@ -457,40 +471,41 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   --border:        rgba(255, 250, 224, 0.55);
   --border-subtle: rgba(255, 250, 224, 0.22);
   --focus-ring:    var(--beige);
+
+  /* On the green the filled button inverts: beige fill, deep ink (11.32). */
+  --btn-solid-bg:       var(--beige);
+  --btn-solid-ink:      var(--nourish-deep);
+  --btn-outline-ink:    var(--beige);
+  --btn-outline-border: var(--beige);
 }
 
-.ground-deep h1, .ground-deep h2, .ground-deep h3, .ground-deep h4 { color: var(--beige); }
-
-/* Anything that paints its OWN light surface inside the dark ground must put
- * the light inks back. Without this the remapped beige-deep lands on a white
- * card at 1.75 and the muted text disappears — the same collision that made
- * the packages cards unreadable at 1.05:1. */
-/* NOTE: .chip and .day are deliberately NOT here. They sit transparent on the
- * dark ground and take beige ink; listing them here too made their sub-label
- * paint the light #4A5D56 straight onto the green at 1.69. Two rules fighting
- * over one element is exactly what design.md §4 warns about. */
-.ground-deep .card,
-.ground-deep .searchbox input,
-.ground-deep input[type="text"],
-.ground-deep input[type="search"],
-.ground-deep input[type="number"],
-.ground-deep .callout,
-.ground-deep .table-wrap {
+/* ANY element that paints its own light surface restores the sheet's tokens.
+ *
+ * This is one rule over a set, not a rule per element, because the per-element
+ * version missed callouts and table headers: beige-deep landed on white at
+ * 1.84 and an outline button at 1.05. Everything downstream reads the tokens,
+ * so nesting resolves itself however deep it goes.
+ */
+.ground-deep :is(.card, .callout, .table-wrap, .searchbox input,
+                 input, select, textarea) {
   --page-ink:      var(--nourish-deep);
   --ink-muted:     #4A5D56;
   --link:          var(--blue-deep);
   --border:        rgba(28, 61, 52, 0.60);
   --border-subtle: rgba(28, 61, 52, 0.28);
-  color: var(--nourish-deep);
-  background: var(--surface);
+  --focus-ring:    var(--nourish-deep);
+
+  --btn-solid-bg:       var(--nourish-deep);
+  --btn-solid-ink:      var(--beige);
+  --btn-outline-ink:    var(--nourish-deep);
+  --btn-outline-border: rgba(28, 61, 52, 0.60);
+
+  color: var(--page-ink);
 }
 
-.ground-deep .card h1, .ground-deep .card h2,
-.ground-deep .card h3, .ground-deep .card h4 { color: var(--nourish-deep); }
-
-/* The chips and day pills are controls ON the dark ground, so their resting
- * state is outlined-beige and their selected state is the filled beige — the
- * inverse of the sheet, and both clear 3:1. */
+/* Chips and day pills are controls ON the green: outlined beige at rest,
+ * filled beige when chosen. Both clear 3:1 either way round. They are
+ * deliberately NOT in the light-surface set above. */
 .ground-deep .chip,
 .ground-deep .day {
   background: transparent;
@@ -503,24 +518,11 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   color: var(--nourish-deep);
   border-color: var(--beige);
 }
-/* Resting: beige-deep on the green, 6.47. Selected: the pill is filled beige,
- * so the sub-label takes the sheet's muted ink at 6.69. */
-.ground-deep .day span { color: var(--beige-deep); }
+.ground-deep .day span { color: var(--beige-deep); }         /* 6.47 */
 .ground-deep .day[aria-current="date"] span,
-.ground-deep .day.is-active span { color: #4A5D56; }
+.ground-deep .day.is-active span { color: #4A5D56; }         /* 6.69 on beige */
 
-/* The search field keeps a light surface so typed text stays high-contrast. */
 .ground-deep .searchbox input::placeholder { color: #4A5D56; }
 
-.ground-deep .meta { color: var(--beige-deep); }
-.ground-deep .card .meta { color: #4A5D56; }
-.ground-deep .price { color: var(--nourish-deep); }
-.ground-deep .price small { color: #4A5D56; }
-.ground-deep a:not(.btn):not(.chip):not(.day) { color: var(--blue-light); }
-.ground-deep .card a:not(.btn) { color: var(--blue-deep); }
-
-/* On the dark ground the filled button inverts: beige fill, deep ink (11.32). */
-.ground-deep .btn-solid { background: var(--beige); color: var(--nourish-deep); }
-.ground-deep .btn-outline { color: var(--beige); border-color: var(--beige); }
-.ground-deep .card .btn-solid { background: var(--nourish-deep); color: var(--beige); }
-.ground-deep .card .btn-outline { color: var(--nourish-deep); border-color: rgba(28,61,52,.60); }
+/* The table header tints its own surface, so it is a light surface too. */
+.ground-deep th { background: rgba(28, 61, 52, 0.04); color: var(--nourish-deep); }

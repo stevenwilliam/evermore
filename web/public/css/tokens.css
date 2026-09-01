@@ -34,8 +34,11 @@
   --gold:          #D4AF37;  /* the corner ribbon (deep ink 5.65) */
 
   /* ---- Semantic ---- */
-  --page-bg:       var(--beige);
-  --page-ink:      var(--nourish-deep);
+  /* The deep green is the page ground. <main> carries the .ground-deep remap
+   * that makes the inks legible on it; these two keep html/body and the
+   * overscroll gutter from flashing the beige sheet at the edges. */
+  --page-bg:       var(--nourish-deep);
+  --page-ink:      var(--beige);
   --bar-bg:        var(--nourish);
   --bar-ink:       var(--beige);
   --card-bg:       var(--surface);
@@ -49,6 +52,13 @@
   --border-subtle: rgba(28, 61, 52, 0.28);
 
   --focus-ring:    var(--nourish-deep);
+
+  /* Button inks as tokens, so a ground swap moves them without a per-context
+   * override. On the sheet the filled button is the deep green. */
+  --btn-solid-bg:       var(--nourish-deep);
+  --btn-solid-ink:      var(--beige);
+  --btn-outline-ink:    var(--nourish-deep);
+  --btn-outline-border: var(--border);
 
   /* ---- Type (design.md §1) ---- */
   --font-display: 'Erode', Georgia, 'Times New Roman', serif;
