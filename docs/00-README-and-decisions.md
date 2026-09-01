@@ -12,6 +12,15 @@ and **awaiting Steven's confirmation. No application code until he approves.**
 
 ## 1. What this document set is
 
+> **Promoted to Evermore's baseline, 2026-09-01.** These documents were written
+> for `healthy_catering` and lived in `docs/reference/`. Steven promoted the
+> whole folder into `docs/` to be used as Evermore's working baseline, and
+> `docs/reference/` was removed. See **D19**. Two things follow: file paths and
+> repo names below still point into `healthy_catering` until repointed, and the
+> ✅ marks in `PROGRESS.md` were earned by that build's code, which is not in
+> this repo — `CLAUDE.md` §5 says a ✅ is re-earned by running the gate, never
+> inherited.
+
 The engineering and product spec for `healthy_catering`, built in the house
 style. House style itself — how Steven works, and his stack, database and
 security preferences — lives in `99-steven-preference.md` and is portable
@@ -89,6 +98,7 @@ in the affected docs the same day.
 | D16 | 2026-08-13 | **`--border` is `rgba(28,61,52,0.60)`, not 0.28.** The first draft of the token sheet used 0.28 alpha, which composites to **1.69:1** on the beige canvas — the same 1.4.11 failure as `--beige-deep` at 1.75, reintroduced with a transparent ink one line after ruling it out. Anything below 0.55 alpha fails. The 0.28 value survives as `--border-subtle`, labelled decorative. | Caught by calculating rather than eyeballing, which is exactly why D5 made that the rule. | 10 §2.6, web/public/css/tokens.css |
 | D17 | 2026-08-13 | **Built and deployed to the development server in one push**, per Steven's "continue all till finish". M1–M15: identity/RBAC/audit, master data and settings, catalogue and menu calendar, the four price forms, meal ordering, payments, packages and credits, eight reports, notifications, the server-rendered public site, the security suite, and a systemd + nginx deployment on `192.168.88.101:8090`. The API binds 127.0.0.1 and is unreachable from the LAN; ruuma is untouched on `:80`. | The build phase is where the work happens, not where the questions are asked (99 §2). Blockers were worked around and collected rather than stopping the build: the eight outstanding inputs are listed in `PROGRESS.md`. | PROGRESS, 12, 14, 15, 16 |
 | D18 | 2026-08-13 | **Four classes of bug were only findable by running it**, and each is now guarded: (a) gorm maps `PriceIDR` to `price_id_r`, so every money field silently read as **zero** — explicit column tags plus `TestMoneyFieldsHaveExplicitColumnTags`; (b) a literal `?` inside a SQL string is consumed by gorm as a bind placeholder — the Maps URL's `?api=1` shifted every argument; (c) `html/template` refuses `Parse` after `Execute`, so a shared root template would have made the **first** email work and every later one fail; (d) an empty list serialised as JSON `null` rather than `[]`. | All four fail silently or far from their cause, which is exactly the class of thing that unit tests on pure functions cannot catch. Recorded so the next project checks for them. | 00, various |
+| D19 | 2026-09-01 | **The `healthy_catering` document set is promoted to Evermore's baseline.** All 13 documents and the 23 screenshots moved from `docs/reference/` into `docs/` with `git mv`, and `docs/reference/` was removed. `CLAUDE.md` §1 no longer says "do not assume this is a catering product" — the catering domain model, the 34 decisions, the security map and the guides are now the starting position, each still open to change for Evermore. `CLAUDE.md` §5 and §9 and `10-design-system.md` §4 repointed; `README.md` rewritten as the docs index. | Steven's directive, 2026-09-01: "copy all reference docs to current docs to be use", with the reference folder deleted and `CLAUDE.md` updated to match. It reverses the seed-time position that nothing in `reference/` was a decision about Evermore. | CLAUDE.md §1 §4 §5, 00, 10 §4, README |
 
 ---
 

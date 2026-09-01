@@ -19,21 +19,25 @@ more specific decision.
 **Owner:** stevenwilliam (itdept.sfg@gmail.com)
 **Brand:** Evermore — see §7 and `docs/design_guideline/`
 
-**The product is not defined yet.** Seeded 2026-09-01 with Steven's standards
-and the Evermore brand, and nothing else. There is no brief, no domain model,
-no business rules and no stack deviation on record.
+**The `healthy_catering` documents are Evermore's working baseline.** Seeded
+2026-09-01 with Steven's standards and the Evermore brand; on 2026-09-01 Steven
+promoted the whole of `docs/reference/` into `docs/` to be used, and the folder
+was removed. Evermore is built on that catering product's domain model,
+decisions, security map and guides.
 
-**So, until Steven gives the brief:**
+**What that does and does not settle:**
 
-- **No application code.** Not a scaffold, not a "just to get started" main.go.
-  §9 step 2 is his, and nothing downstream begins until he confirms.
-- **Do not invent business rules.** Anything a future brief does not state goes
+- **No application code yet.** Not a scaffold, not a "just to get started"
+  main.go. §9 step 2 is Steven's, and nothing downstream begins until he
+  confirms the brief against this baseline.
+- **Do not invent business rules.** Anything the baseline does not state goes
   to `docs/03-open-questions.md` with a proposed default, never into code.
-- **Do not assume this is a catering product.** `docs/reference/` holds the
-  working documents of `healthy_catering`, a different project that shared this
-  brand. It is there to be read, not to be applied. Its README says so at
-  length, and it means it — 34 decisions settled there are 34 decisions open
-  here.
+- **The baseline is inherited, not re-earned.** Its 34 decisions in
+  `docs/02-decisions.md` are the starting position, and every one is open to
+  Steven changing it for Evermore. Its ✅ marks in `docs/PROGRESS.md` were
+  earned by `healthy_catering`'s code, which does not exist in this repo — per
+  §5 they carry no weight here until re-run. Its file paths point into
+  `healthy_catering`.
 
 What *is* already decided is everything below, because it is Steven's standing
 preference rather than a product choice.
@@ -136,8 +140,9 @@ frameworks, CSS-in-JS.
 Security targets **OWASP ASVS v4 Level 2** and covers every **OWASP Top 10
 (2021)** category in `docs/12-security.md`, mapping each control to where it is
 implemented **and to the test that proves it**.
-`docs/reference/12-security.md` is the template worth copying — every row names
-a file and a proof.
+`docs/12-security.md` is that map, inherited from the previous build — every
+row names a file and a proof, and its paths point into `healthy_catering` until
+they are repointed here.
 
 ---
 
@@ -157,8 +162,10 @@ a file and a proof.
 - `docs/99-steven-preference.md` is portable and project-agnostic. Improvements
   that are not specific to this project belong there, so they reach the next
   project too.
-- `docs/reference/` is a **prior build, not a specification.** Nothing in it is
-  a decision about Evermore.
+- **The promoted docs (`00`–`04`, `12`, `14`–`16`, `PROMPT.md`, `PROGRESS.md`,
+  `RUN-WHEN-BACK.md`, `screenshots/`) describe the `healthy_catering` build.**
+  They are Evermore's baseline to work from and amend in place — not a record
+  of anything this repo has built. Correct them as Evermore diverges.
 
 ---
 
@@ -259,7 +266,9 @@ whose docs are stale is not done.
    2026-09-01
 2. **Steven — preparation.** He gives the PRD and business-rules brief, tuning,
    and final confirmation. **Nothing downstream starts until he confirms.**
-   ← we are here
+   ← we are here. The `healthy_catering` document set was promoted into `docs/`
+   on 2026-09-01 (D19) as the baseline to work from; it is a starting position,
+   not the confirmation.
 3. **Claude — build all documents A→Z** from the confirmed brief.
 4. **Claude — build all modules in one shot, A→Z.** Do not stop partway.
 5. **Claude — test, debug and security-harden, A→Z.** Do not stop partway.
