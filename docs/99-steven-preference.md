@@ -25,6 +25,38 @@ Where this file conflicts with a project's own `CLAUDE.md`, the project wins —
 it is the newer, more specific decision. Where it conflicts with a habit,
 this file wins.
 
+### The template project
+
+**`marketing_calendar` is the reference implementation. Copy its shape when
+starting anything new.** Steven, 2026-09-07: *"use this projects style as
+template."* It is the most complete and most recent expression of everything
+below, so rather than re-deriving the layout from prose, take it:
+
+```
+CLAUDE.md                     generated from §3–§9 + this project's specifics
+README.md                     what it is, what is built, read-in-this-order
+Makefile                      help · build · migrate · seed · test · contrast · check
+.env.example                  the whole config surface, secrets blank
+.gitignore .gitattributes
+.claude/skills/impeccable/    SKILL.md (portable) + design.md (per project)
+docs/                         the numbered set from §10, plus PROGRESS and RUN-WHEN-BACK
+scripts/contrast.py           measures the palette AND verifies design.md carries it
+cmd/api/main.go               thin: serve · migrate · migrate:status · seed · job
+internal/{domain,app,adapter,platform}/
+db/migrations/NNNN_name.{up,down}.sql + embed.go
+test/                         integration, concurrency and authorisation suites
+web/                          React 18 + Vite + TS + Tailwind
+mobile/                       Flutter, when there is a mobile app (§5)
+deploy/                       systemd unit, timers, nginx vhost
+```
+
+**Copy the structure, not the content.** Its business rules are about
+promotions; yours will not be. What travels is the shape: a normative `02` with
+`BR-x.y` ids that code and tests reference, a dated decision log in `00`, a
+`PROGRESS.md` that distinguishes written from run, constraints that live in the
+database rather than only in handlers, and a contrast checker that fails when
+the design sheet and the arithmetic disagree.
+
 ### Keeping this file in sync — Steven's standing instruction
 
 **When I ask you to update my preferences, update this file in EVERY project on
@@ -301,12 +333,28 @@ Pin React to 18 — not 19. Structure `web/src/{components,lib,pages}`. Node 20.
 **Never a PWA** — no manifest, no service worker, no install prompt, no offline
 shell. This is not a default to weigh; it is a prohibition. Do not propose one,
 and do not add "PWA-ready" scaffolding on the way past. Where a phone matters,
-the answer is a **mobile-first responsive web app** now, and a **native app
+the answer is a **mobile-first responsive web app** now, and a **Flutter app
 against the same versioned REST API** later.
+
+**Mobile apps: Flutter.** One codebase for Android and iOS — not React Native,
+not Kotlin plus Swift, not a webview wrapper. Dart is the language.
+
+- The mobile app is a **client of the same `/api/v1`** the web app uses. No
+  business logic in it, no private endpoints, no second source of truth. If the
+  API cannot serve the app, the API is wrong.
+- That is why the REST contract is versioned and documented with OpenAPI from
+  day one even when only the web client exists — so the mobile build is a new
+  consumer rather than a reason to reshape the backend.
+- It lives in `mobile/` in the same repository, so the API contract and its two
+  clients move together.
+- The same rules apply as anywhere else: money is integers, no floating point
+  near it, deny-by-default authorisation, and every string from a message
+  catalogue.
 
 **Not my defaults, don't reach for them unprompted:** an ORM's automigrate as
 the source of truth, GraphQL, microservices, Kubernetes, a NoSQL primary store,
-server-side rendering frameworks, CSS-in-JS.
+server-side rendering frameworks, CSS-in-JS, **React Native, Ionic, Cordova or a
+webview wrapper** for mobile.
 
 ---
 
@@ -541,6 +589,8 @@ naming the docs it touched; `PROGRESS.md` is updated as work lands.
 
 ## 12. New-project bootstrap checklist
 
+- [ ] **Start from `marketing_calendar`'s shape** (§0, the template project) —
+      copy the layout rather than re-deriving it
 - [ ] `git init`, remote, `main` as working branch, `.gitignore`, `.gitattributes`
 - [ ] `CLAUDE.md` generated from this file + the project's domain and locale
 - [ ] `docs/` set from section 10, with `00` decision log started at D1
