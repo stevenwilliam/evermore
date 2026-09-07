@@ -546,6 +546,7 @@ the order it gets written.
 | 00 | `00-README-and-decisions.md` | Index, **decision log** (`D1…`, dated, with docs touched), open questions |
 | 01 | `01-PRD.md` | Problem, personas, scope, requirements, metrics |
 | 02 | `02-business-rules.md` | **Normative** — rules carry `BR-x.y` IDs; code comments and test names reference them |
+| 02a | `02a-general-flow.md` | The major flow **drawn**: master data → transaction → report. Mermaid, beside the rules it illustrates |
 | 03 | `03-data-model.md` | Schema, mermaid ERD, DDL, constraints, indexes, migration notes |
 | 04 | `04-api-specification.md` | REST contract, error model, idempotency, auth, pagination |
 | 05 | `05-architecture-and-nfr.md` | Architecture, security, performance, observability |
@@ -581,8 +582,35 @@ the order it gets written.
   decisions with excuses is worth nothing.
 - **`13`, `14`, `15`, `16` are written last and in that order**, because each
   one needs the system to exist before it can be honest about it.
+- **Every mermaid diagram is parsed by a check, not eyeballed.** A diagram that
+  renders as an error box is worse than no diagram: it is a document that looks
+  maintained and is not. Checking that the fence says `mermaid` proves nothing —
+  run the parser, and prove the check fails on a broken diagram before trusting
+  it. `make diagrams`.
 
-### 10.1 What 14, 15 and 16 are each for
+### 10.1 What 02a is for
+
+The rules in `02` say what must be true. `02a` shows the **shape** — what
+depends on what, in which order, and where a number in a report came from.
+Seven diagrams beat seven pages for that, and it is the document somebody new
+reads first.
+
+What it must contain, or it is decoration:
+
+- **One picture of the whole thing**, distinguishing what *flows* from what
+  *constrains* — the parameter that decides a date, the version an instance is
+  pinned to.
+- **The setup order**, with a table of *what happens if you skip this box*. The
+  useful entries are the silent ones: a user with no role grant logs in
+  successfully and sees nothing.
+- **The lifecycle as a state machine**, including the transitions people get
+  wrong. Ours is "an edit after approval is not an edit, it is a new version".
+- **The refusal path** — every branch that says no, with the rule that says so.
+- **Where a reported number comes from.** This is the one that earns its place:
+  ours attributes actuals by promotion id and not by date range, and a diagram
+  makes that obvious in a way a sentence does not.
+
+### 10.2 What 14, 15 and 16 are each for
 
 They overlap in subject and not in purpose, and writing one instead of the
 others is the usual mistake.
@@ -593,7 +621,7 @@ others is the usual mistake.
 | `15-admin-guide` | whoever runs the system | "how do I keep it working, and what do I change when it does not" |
 | `16-uat-scenario-handbook` | the person **signing it off** | "how do I convince myself this is right" |
 
-### 10.2 The UAT handbook
+### 10.3 The UAT handbook
 
 Numbered scenarios, grouped by area, that a **business user runs alone** —
 without me, without a developer, without reading any of the other documents.
