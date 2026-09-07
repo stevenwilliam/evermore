@@ -25,6 +25,57 @@ Where this file conflicts with a project's own `CLAUDE.md`, the project wins —
 it is the newer, more specific decision. Where it conflicts with a habit,
 this file wins.
 
+### Keeping this file in sync — Steven's standing instruction
+
+**When I ask you to update my preferences, update this file in EVERY project on
+the server and push each one.** Not only the repository we happen to be working
+in. This file is the single portable standard, and four different versions of it
+is the same as having none — which is exactly what had happened by 2026-09-07:
+`ruuma` was ten sections behind and two others differed from each other.
+
+**`thenie_v2` is excluded.** Steven, 2026-09-07: *"for thenie_v2 dont touch it,
+it is special project."* It does not receive this file and is not synced. Leave
+it alone unless he says otherwise.
+
+**Every project's `CLAUDE.md` must name this file and state that it is a
+source.** A `CLAUDE.md` that does not point here will drift, and nobody will
+notice until the rule that was supposed to prevent something did not.
+
+The relationship, so it is unambiguous:
+
+- `99-steven-preference.md` — portable, project-agnostic, **identical in every
+  repo**. Improvements that are not specific to one project belong here so they
+  reach the next project.
+- `CLAUDE.md` — generated from §3–§9 of this file plus that project's domain,
+  locale and deliberate deviations. It is **the newer, more specific decision**,
+  so it wins locally — but it must say which parts of this file it is departing
+  from, and why.
+
+After syncing, check each project still complies with any rule that is new to
+it, and report where it does not rather than quietly leaving a contradiction.
+
+### What I actually come back to most
+
+Everything below matters, but these are the ones I invoke over and over.
+Counted across the decision logs of five projects (138 logged decisions —
+ruuma 46, marketing_calendar 43, evermore 31, healthy_catering 18):
+
+| Theme | Appearances | What it means in practice |
+|---|---|---|
+| **Audit** | 19 | Who did it, when, why. Append-only. Especially anything that bypasses a control. |
+| **Configurable without a deploy** | 16 | If it could change, it is a `sys_parameters` row with CRUD, not a constant. I *will* retune it in production. |
+| **Reversible over optimal** | 10 | I pick the option that can be undone. Copy rather than move. Coexist on a second port rather than stop a running service. |
+| **Phase 1 versus later** | 28 | I defer comfortably and explicitly. "for now" and "phase 1" are real boundaries, not hedges. |
+| **Manual where money moves** | 7 | Bank transfer, manual verification, no auto-refund. I do not want the machine moving money unattended. |
+
+Two more that appear in every project without exception: **money as whole-unit
+integers**, and **pipe-delimited CSV on every grid**.
+
+**Offered a choice, I usually take the narrower rule.** Given "a fixed recipient
+list" or "that list plus every actor", I took the fixed list. Given a nullable
+column "in case", I took no column. I would rather add a thing later than carry
+a half-built one now.
+
 ---
 
 ## 1. Who I am and how I answer
@@ -36,14 +87,63 @@ this file wins.
 - I answer fast and short. Terse does not mean unconsidered — take a one-word
   `yes` as a real decision and move.
 - If I say "all defaults", take every default you proposed and go.
+- **Silence takes the proposal.** If you give me a recommendation and I answer
+  the other questions but not that one, I have accepted it. Log it as *decided
+  by default* so it stays visible and cheap to reverse.
 - I write in English and Indonesian; the doc set stays in English.
+
+### How I write, and how to read it
+
+Lowercase, minimal punctuation, no greeting and no preamble. Short imperative
+clauses, often several in one comma-spliced line. I type fast and I do not
+proofread. **Read for intent, never for the letter.**
+
+Observed often enough to be worth writing down:
+
+| I type | I mean |
+|---|---|
+| `buttom` | button — *or* bottom. Context decides; sometimes both in one line |
+| `fiture` | feature |
+| `moderen` | modern |
+| `miss leading` | misleading |
+| `respected path` | the respective / appropriate path |
+| `real all documents` | read all documents |
+| `alot` | a lot |
+| `i still not see` | I still don't see |
+| `become more elegant` | make it more elegant |
+
+None of these is a new term. Do not build a `buttom` component.
+
+> Some of this section is **inferred from how I have actually behaved**, not
+> stated by me: the spelling table, "silence takes the proposal", and the
+> supply/decide split in §2 were read out of five projects' decision logs rather
+> than written by me. They have held so far. Correct them in place when I
+> contradict one, and date the correction — a file about a person that nobody
+> updates becomes a caricature.
+
+I also do not explain why. A request arrives as a request; the reasoning is
+there if you ask, but asking costs a round trip — **infer first and state the
+inference** ("I read this as X; say so if not"). That costs me one word to
+correct and nothing if you were right.
 
 ### My control words
 
 | I say | You do |
 |---|---|
-| **`coding stop`** | **Change nothing.** No edits, no new files, no commits, no migrations, no deploys, no config changes — until I say `coding start`. |
-| **`coding start`** | The hold is lifted. Resume normally. |
+| **`coding stop`** / **`code stop`** | **Change nothing.** No edits, no new files, no commits, no migrations, no deploys, no config changes — until I lift it. |
+| **`coding start`** / **`code start`** | The hold is lifted. Resume normally. |
+
+I use both spellings interchangeably. Treat them as the same word.
+
+**The hold is scoped to a project, not to the session.** I will say things like
+*"don't touch this project since it is in `code stop` mode, but you can do
+anything in the other one"* — and I mean exactly that.
+
+**A later, more specific instruction of mine overrides an earlier general one.**
+If I say `code stop` and then, in the same message, tell you to create a
+specific file and push it, the narrow instruction wins. Where the two genuinely
+conflict *and* the action is destructive, tell me what you would do and wait —
+but do not use the hold as a reason to ignore a direct request.
 
 `coding stop` is a hard gate, not a preference to weigh against the task. It
 holds across turns until I lift it — a new request while it is on is a request
@@ -104,6 +204,43 @@ If you are unsure whether the hold is still on, it is. Ask.
   copy-pasted command can never run in the wrong directory.
 - Prefer editing existing files and reusing `platform/*` over new scaffolding.
 
+### How I report a problem
+
+**Symptom only. I will not tell you where to look.** A whole bug report from me
+looks like *"i cant visit the web from my laptop"*. Diagnosis is your job.
+
+Before touching anything, **check the runbooks** — `RUN-WHEN-BACK.md` and the
+deployment handbook. More than once the cause was already written down there
+from a previous project, and re-deriving it cost an afternoon.
+
+### How I give design feedback
+
+I react to what I see, in my own words, and I expect you to translate:
+
+> *"the yellow color background is /menu not a good color, use the same green
+> color of background in homepage"*
+
+- **I name a reference, not a specification.** "the same green as the homepage"
+  is the whole brief — go and measure what that green actually is.
+- **When I have a colour in mind I give it** — *"i prefer #778aab, others is mix
+  and match"*. The hex is fixed; the rest is yours.
+- **"play with the colour" means exercise judgement, not ask.** So does *"any
+  input or additional feature is welcome"* — that is a real invitation to
+  propose things I did not think of.
+- **My aesthetic choice never overrides AA.** If the palette I picked puts a
+  2.41 border on every input, correct it and tell me the number. Do not ship it,
+  and do not stop to ask.
+
+### What I supply, and what you decide
+
+**Mine:** real bank accounts, legal entity and NPWP, production domains and TLS,
+SMTP relay and DNS records, API keys, brand artwork and photography, real role
+names, recipient lists, and the network ranges for an allowlist.
+
+**Yours:** everything else — schema shape, module boundaries, error model, index
+strategy, test strategy, naming, and every default in a question batch. I will
+overrule what I disagree with, quickly and in about three words.
+
 ---
 
 ## 3. Delivery workflow
@@ -161,7 +298,11 @@ a dependency has to earn its place.
 
 **Frontend (when there is a UI): React 18 + Vite + TypeScript + Tailwind.**
 Pin React to 18 — not 19. Structure `web/src/{components,lib,pages}`. Node 20.
-No PWA unless I ask for one.
+**Never a PWA** — no manifest, no service worker, no install prompt, no offline
+shell. This is not a default to weigh; it is a prohibition. Do not propose one,
+and do not add "PWA-ready" scaffolding on the way past. Where a phone matters,
+the answer is a **mobile-first responsive web app** now, and a **native app
+against the same versioned REST API** later.
 
 **Not my defaults, don't reach for them unprompted:** an ORM's automigrate as
 the source of truth, GraphQL, microservices, Kubernetes, a NoSQL primary store,
@@ -319,7 +460,18 @@ it is implemented **and to the test that proves it**. Non-negotiables:
 - Development happens on a **shared dev server** (`claudedev`), not a laptop.
   Projects live at `/home/dev/projects/<project>`, per-project config at
   `/etc/<project>/<project>.env`, shared config at `/etc/claudedev/`.
-- **nginx reverse-proxies each project's local port**; only 80/443 are open.
+- **nginx reverse-proxies each project's local port**; only 80/443 are open by
+  default, so **every new port needs an explicit `ufw` rule.**
+- **Open that port to every network I actually arrive from, not just one.** My
+  machine does *not* reach the dev server from the physical LAN — it comes
+  through the VMware host adapter as **`172.16.0.1`**. A rule scoped only to
+  `192.168.88.0/24` looks correct and silently drops every packet: nginx is
+  listening, the service is healthy, and the tab just spins. This has now cost
+  time on two projects. When I say I cannot reach the site, check
+  `sudo grep -a 'DPT=<port>' /var/log/ufw.log` before touching anything else.
+- **Verify from another machine, never with `curl` on the server.** `curl` on
+  the box does not traverse the firewall, so it reports a healthy service while
+  every real user is blocked. Both times the rule above was missed, this is why.
 - **PostgreSQL runs natively** on the dev server and is shared across projects
   (one database per project, plus a `<project>_test` database for integration
   and concurrency tests). Don't stand up a second Postgres in Docker.
@@ -382,6 +534,8 @@ naming the docs it touched; `PROGRESS.md` is updated as work lands.
 - Silent scope changes — narrowing, widening or reinterpreting what I asked for.
 - Business logic in a handler, or a domain package importing a driver.
 - An ORM's automigrate treated as the schema's source of truth.
+- **A PWA** — a manifest, a service worker, an install prompt or an offline
+  shell, in any project. See §5.
 
 ---
 
