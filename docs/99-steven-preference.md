@@ -538,7 +538,8 @@ it is implemented **and to the test that proves it**. Non-negotiables:
 
 ## 10. Doc set convention
 
-Numbered, in `docs/`, kept in sync on every change:
+Numbered, in `docs/`, kept in sync on every change. This is the full set, in
+the order it gets written.
 
 | # | File | Purpose |
 |---|---|---|
@@ -552,17 +553,71 @@ Numbered, in `docs/`, kept in sync on every change:
 | 07 | `07-test-plan.md` | Strategy, critical scenarios, QA checklist |
 | 08 | `08-roadmap.md` | Phasing and sequencing rationale |
 | 09 | `09-deployment.md` | Production deployment, TLS, backups, rollback |
-| 10 | `10-design-system.md` | Palette (with measured contrast), typography, components, a11y |
-| 11 | `11-local-dev-setup.md` | Local/dev environment and everyday commands |
-| 12 | `12-security.md` | ASVS L2 / Top-10 control map, abuse cases, security test suite |
+| 10 | `10-design-system.md` | Palette (with **measured** contrast), typography, components, a11y |
+| 11 | `11-local-dev-setup.md` | Local/dev environment, the chosen port, everyday commands |
+| 12 | `12-security.md` | ASVS L2 / Top-10 control map, abuse cases, and the test that proves each |
 | 13a | `13a-development-server-preparation.md` | Dev-server handbook — Part A (server once) + Part B (onboard a project) |
+| 13 | `13-production-deployment-handbook.md` | **Empty machine → running service.** Copy-paste, absolute paths, `vi` |
+| 14 | `14-user-guide.md` | For the people who use it. Their language, their words for things |
+| 15 | `15-admin-guide.md` | For whoever runs it: parameters, jobs, break-glass, month-end |
+| 16 | `16-uat-scenario-handbook.md` | **Scenarios a business user runs alone to sign off.** See below |
 | 99 | `99-steven-preference.md` | This file — portable preferences |
 | — | `PROGRESS.md` | Live build status: ✅ done & tested · 🟡 partial · ⬜ not started |
-| — | `RUN-WHEN-BACK.md` | Copy-paste steps that need an interactive terminal |
+| — | `RUN-WHEN-BACK.md` | Steps needing an interactive terminal, a decision from me, or a machine that does not exist yet |
+| — | `design/` | The design guideline as supplied, saved verbatim, so the source of the palette is never in doubt |
 
-Rules: `02` is normative and wins over the other docs on product logic;
-every behaviour-changing decision gets a **dated row in the `00` decision log**
-naming the docs it touched; `PROGRESS.md` is updated as work lands.
+### The rules that make the set worth having
+
+- **`02` is normative.** Where it disagrees with any other document on product
+  logic, `02` is right and the other is stale.
+- **Every behaviour-changing decision gets a dated row in the `00` decision
+  log**, naming the docs it touched. A superseded decision is *marked*
+  superseded, never edited away: the log records what was decided and when, not
+  only what is currently true.
+- **`PROGRESS.md` says what was actually run**, gate by gate, with what each
+  returned. A ✅ is re-earned by running the gate, never inherited.
+- **`RUN-WHEN-BACK.md` separates** what needs me, what needs a machine that
+  does not exist yet, and what was left alone on purpose. One list that mixes
+  decisions with excuses is worth nothing.
+- **`13`, `14`, `15`, `16` are written last and in that order**, because each
+  one needs the system to exist before it can be honest about it.
+
+### 10.1 What 14, 15 and 16 are each for
+
+They overlap in subject and not in purpose, and writing one instead of the
+others is the usual mistake.
+
+| | Written for | Answers |
+|---|---|---|
+| `14-user-guide` | the person doing the work | "how do I do my job here" |
+| `15-admin-guide` | whoever runs the system | "how do I keep it working, and what do I change when it does not" |
+| `16-uat-scenario-handbook` | the person **signing it off** | "how do I convince myself this is right" |
+
+### 10.2 The UAT handbook
+
+Numbered scenarios, grouped by area, that a **business user runs alone** —
+without me, without a developer, without reading any of the other documents.
+Each scenario says who to log in as, exactly what to do, and what the system
+must do.
+
+What makes it useful rather than ceremony:
+
+- **Test the refusals.** Mark them ⛔. A control nobody has watched refuse is a
+  control nobody knows works, and the refusals are where the value is: the
+  approval that must not happen, the file that must not load, the row that must
+  not be edited. Roughly half the scenarios should be things that must fail.
+- **Write the expected result as a sentence, not "works".** "Refused, and the
+  message names the earliest permitted date" is testable. "Login works" is not.
+- **Include the identical-response cases.** Wrong password and unknown email
+  must read the same. That is a scenario, and it is one nobody writes.
+- **Order matters.** Later scenarios build on earlier ones; say so.
+- **Give real accounts and real data**, seeded, so nobody has to invent a
+  fixture to start.
+- **Cover the phone** if anyone will approve from one.
+- **A sign-off table at the end**, with pass/fail per area and a place for a
+  name and a date.
+- **Say what a failure means.** Not everything blocks release — but a deferred
+  failure with nobody's name against it is a failure that ships.
 
 ---
 
