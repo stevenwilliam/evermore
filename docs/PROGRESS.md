@@ -38,7 +38,7 @@ described that build; it was replaced on 2026-09-01 when this one started.
 | M7 | Pricing | 🟡 | Resolver, tiers and the four tables proven; live cart resolves 78/75/71 correctly. **No admin price forms** |
 | M8 | Ordering | ✅ | Quote and checkout with tier-on-cart-total, tax split, routing, capacity under lock, idempotency. Driven end-to-end on the deployed site |
 | M9 | Payments | ✅ | Instructions, proof upload with byte-sniffed type, verification queue, verify/reject, expiry releasing capacity and suffix |
-| M10 | Packages & credits | 🟡 | Ledger rules tested; balance and history render; purchase activates on verification. **No purchase checkout or credit redemption flow** |
+| M10 | Packages & credits | 🟡 | Ledger rules tested; balance and history render; purchase activates on verification. **No purchase checkout or credit redemption flow** — and as of D35 the "Beli paket" control says so instead of linking to `/app/paket/<slug>`, a route that never existed |
 | M11 | Reports & CSV export | 🟡 | `platform/csvexport` written and tested (pipe-delimited, formula-guarded). **No report screens built on it** |
 | M12 | Notifications | ⬜ | Tables exist; no sender |
 | M13 | Public site (SEO) | ✅ | 7 routes, robots + sitemap + JSON-LD, one h1 per page |

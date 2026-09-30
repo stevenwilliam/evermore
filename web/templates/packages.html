@@ -13,8 +13,13 @@
           <h2 style="font-size:var(--text-xl)">{{.MealCredits}} porsi</h2>
           <p class="meta">{{rupiah .PerMealIDR}} per porsi</p>
           <p class="price">{{rupiah .PriceIDR}}<small>berlaku {{.ValidityDays}} hari</small></p>
-          <div class="card-foot">
-            <a class="btn btn-solid" href="/app/paket/{{.Slug}}">Beli paket</a>
+          <div class="card-foot" style="flex-direction:column;align-items:flex-start;gap:var(--space-2)">
+            {{/* There is no package purchase flow yet — PROGRESS M10 records it
+                 as not built. The control used to link to /app/paket/<slug>,
+                 a route that has never existed, so every click was a 404.
+                 CLAUDE.md §7: a disabled state explains itself. */}}
+            <button class="btn btn-solid" type="button" aria-disabled="true" disabled>Beli paket</button>
+            <p class="btn-reason">Pembelian paket belum tersedia. Hubungi kami lewat WhatsApp untuk memesan paket.</p>
           </div>
         </div>
       </article>
