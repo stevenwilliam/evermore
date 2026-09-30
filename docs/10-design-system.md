@@ -207,6 +207,29 @@ the ink becomes the ground and the cream becomes the ink.
 `--olive #5F7A33` does **not** survive the flip — **3.56** — which is why the
 dark scheme substitutes the lighter olive rather than reusing the token.
 
+### 2.10 The hero scrim (D34)
+
+The homepage hero is a photograph filling the viewport with white text over it.
+The photograph is **unknown** — it changes with the season and the menu — so
+every scrim stop is set from the **worst case: the pixel behind it is pure
+white**, and measured composited against white.
+
+| Stop | Position | Composite | White text | Verdict |
+|---|---|---|---|---|
+| `0.88` | bottom — where the copy sits | `#272523` | **15.27** | AAA |
+| `0.62` | top — where the wordmark sits | `#666564` | **5.82** | AA |
+| `0.56` | the lightest middle band | `#908F8E` | **4.66** | AA |
+| `0.15` | **Thenie's own middle stop** | — | **1.40** | **REJECTED** |
+
+Thenie's middle stop is `0.15`, which composites to **1.40** against a white
+photo. Nothing is positioned in that band today, so it is a *latent* trap
+rather than a live defect — raised to `0.56` so it cannot become one when a
+section is later moved up.
+
+This is arithmetic on the worst case, not a sample of the rendered pixels.
+Sampling the real composite needs a screenshot, and **screenshots were
+unavailable when this was written** — recorded in `RUN-WHEN-BACK.md §Z2`.
+
 ---
 
 ## 3. Typography — unchanged

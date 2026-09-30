@@ -590,3 +590,50 @@ node /home/dev/projects/evermore/tools/shot/verify-ui.mjs http://127.0.0.1:8099
 cream cut still reads correctly on it, so nothing is broken today — but the
 deep cut is `#1C3D34` on white, a colour no longer in the palette, and it will
 look wrong the moment a wordmark is placed on a light surface.
+
+---
+
+## Z2. D34 — the hero could NOT be verified by looking
+
+CLAUDE.md §6 says visual work is verified by looking at it. **That did not
+happen for D34**, and this is the honest record of why.
+
+Partway through the build, Playwright's screenshot path stopped working on
+this machine. It is not the page and not the CSS — `about:blank` times out
+too:
+
+```
+cd /home/dev/projects/evermore
+NODE_PATH=$(ls -d /home/dev/.npm/_npx/*/node_modules | head -1) \
+  node -e "const{chromium}=require('playwright');(async()=>{const b=await chromium.launch();
+  const p=await(await b.newContext()).newPage();await p.goto('about:blank');
+  await p.screenshot({timeout:8000});console.log('screenshots work again');await b.close()})()"
+```
+
+The system is not short of resources — no leaked Chromium, load 0.12, 5.4 GB
+free, `/dev/shm` at 1%. Two Chromium revisions are cached (1148 and 1234);
+trying the other one is the first thing to attempt:
+
+```
+ls /home/dev/.cache/ms-playwright/
+```
+
+**What WAS verified, and how:** the structure was probed in a real browser
+through `page.evaluate`, which still works — hero fills the viewport at 900px,
+the background image loads at 800x405 with `object-fit: cover`, the float nav
+is `fixed` at `bottom: 20px`, its CTA is `#B84B39` on white at 44px, the hero
+eyebrow and the script accent both resolve to **Erode italic**, four stat items
+render, and the masthead is correctly absent on public pages. `verify-ui.mjs`
+reports **0 FAIL**. Contrast is 61/61.
+
+**What was NOT verified:** that it LOOKS right. Composition, cropping, whether
+the wordmark sits well on the photograph, and whether the real rendered pixels
+behind the scrim match the worst-case arithmetic in `10-design-system.md`
+§2.10. Re-run the screenshots when the command above prints success:
+
+```
+cd /home/dev/projects/evermore
+(set -a; . ./.env; set +a; APP_PORT=8099 ./bin/api serve &)
+NODE_PATH=$(ls -d /home/dev/.npm/_npx/*/node_modules | head -1) \
+  node tools/shot/verify-ui.mjs http://127.0.0.1:8099
+```

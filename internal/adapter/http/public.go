@@ -166,6 +166,21 @@ var funcs = template.FuncMap{
 	"duration":  duration,
 	"isodate":   isodate,
 	"signed":    signed,
+	"photo":     photo,
+}
+
+// photo maps a stable id to one of the food photographs in
+// web/public/images/thenie/. It is deterministic, so a meal keeps the same
+// picture between renders rather than shuffling on every page load — a grid
+// that reshuffles reads as a bug even when the data is right.
+//
+// These are placeholders until real Evermore photography exists; the count is
+// asserted by the caller-side test so adding or removing a file cannot
+// silently start serving a 404.
+func photo(id uuid.UUID) string {
+	const n = 11
+	b := id[len(id)-1]
+	return fmt.Sprintf("/images/thenie/menu-%d.jpg", int(b)%n+1)
 }
 
 // NewPublicHandler parses every page template against the base layout.
@@ -229,7 +244,12 @@ type pageData struct {
 	JSONLD       template.JS
 	Alternates   []alternate
 	Nav          string
-	Year         int
+	// Public marks the marketing surface, which wears the Thenie chrome: a
+	// full-bleed photo hero and the floating bottom nav, with no masthead
+	// (D34). The signed-in and back-office screens keep the masthead, which
+	// carries the account and role controls the float pill has no room for.
+	Public bool
+	Year   int
 	Params       map[string]string
 
 	// Page-specific fields. Templates only reach for what their page sets.
@@ -409,6 +429,7 @@ func (h *PublicHandler) Home(c *gin.Context) {
 	d := h.base(c, params, "home",
 		params["seo.default_title"],
 		params["seo.default_description"])
+	d.Public = true
 	d.OGType = "website"
 
 	if d.Diets, err = h.repo.DietTypes(ctx); err != nil {
@@ -491,6 +512,7 @@ func (h *PublicHandler) Menu(c *gin.Context) {
 		"Menu minggu ini — "+params["seo.site_name"],
 		"Menu katering sehat Evermore untuk minggu ini: "+
 			"pilihan Balanced, Weight Loss, Muscle Gain dan Special Diet, dengan gizi lengkap per porsi.")
+	d.Public = true
 	d.Search = search
 	d.SelectedDiet = dietSlug
 	d.CutOffCountdown = h.cutOffCountdown(params)
@@ -585,6 +607,7 @@ func (h *PublicHandler) Meal(c *gin.Context) {
 		meal.DietName, h.longDate(meal.ServiceDate), meal.SlotTime)
 
 	d := h.base(c, params, "menu", meal.Name+" — "+params["seo.site_name"], desc)
+	d.Public = true
 	d.OGType = "product"
 	d.Meal = meal
 	d.DateLabel = h.longDate(meal.ServiceDate)
@@ -602,6 +625,7 @@ func (h *PublicHandler) Packages(c *gin.Context) {
 	d := h.base(c, params, "packages",
 		"Paket &amp; kredit — "+params["seo.site_name"],
 		"Beli kredit sekali, pakai pada menu apa pun yang sudah terbit. Paket 10, 20 dan 40 porsi.")
+	d.Public = true
 	d.Title = "Paket & kredit — " + params["seo.site_name"]
 	if d.Packages, err = h.repo.Packages(ctx, h.today()); err != nil {
 		Fail(c, apierror.Internal(err))
@@ -620,6 +644,7 @@ func (h *PublicHandler) Coverage(c *gin.Context) {
 	d := h.base(c, params, "coverage",
 		"Wilayah antar — "+params["seo.site_name"],
 		"Dapur Evermore di Tebet, Kebayoran dan Kelapa Gading, dengan radius layanan masing-masing.")
+	d.Public = true
 	if d.Kitchens, err = h.repo.Kitchens(ctx); err != nil {
 		Fail(c, apierror.Internal(err))
 		return
@@ -637,6 +662,7 @@ func (h *PublicHandler) HowItWorks(c *gin.Context) {
 	d := h.base(c, params, "how",
 		"Cara kerja — "+params["seo.site_name"],
 		"Pilih menu, pesan sebelum cut-off, transfer manual, kami verifikasi dan antar pada jam yang kamu pilih.")
+	d.Public = true
 	if d.Diets, err = h.repo.DietTypes(ctx); err != nil {
 		Fail(c, apierror.Internal(err))
 		return
@@ -658,6 +684,7 @@ func (h *PublicHandler) Corporate(c *gin.Context) {
 	d := h.base(c, params, "corporate",
 		"Untuk kantor — "+params["seo.site_name"],
 		"Katering harian untuk tim: harga korporat, satu tagihan, satu titik antar, laporan bulanan.")
+	d.Public = true
 	h.render(c, "corporate", http.StatusOK, d)
 }
 
@@ -669,6 +696,7 @@ func (h *PublicHandler) NotFound(c *gin.Context) {
 	}
 	d := h.base(c, params, "", "Halaman tidak ditemukan — Evermore",
 		"Halaman yang kamu cari tidak ada.")
+	d.Public = true
 	d.NoIndex = true
 	d.Code = "404"
 	d.Heading = "Halaman tidak ditemukan"

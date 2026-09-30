@@ -99,3 +99,52 @@
     timer = window.setTimeout(apply, 200);
   });
 })();
+
+/* D34 — the Thenie chrome: the floating bottom nav and the sticky mark.
+ * Both are progressive: with JS off the links list is still in the DOM and
+ * reachable, and the mark simply never appears. */
+(function () {
+  var toggle = document.querySelector('[data-float-nav-toggle]');
+  var links = document.getElementById('float-nav-links');
+  if (toggle && links) {
+    // The list ships hidden so a JS-less visit does not get a panel floating
+    // over the page; revealing it here is what makes the toggle meaningful.
+    links.hidden = false;
+    links.classList.remove('open');
+
+    var setOpen = function (open) {
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      links.classList.toggle('open', open);
+    };
+    toggle.addEventListener('click', function () {
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+    // Escape closes it and returns focus, or the keyboard user is stranded
+    // inside a panel with no way back to the control that opened it.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+    document.addEventListener('click', function (e) {
+      if (!links.contains(e.target) && !toggle.contains(e.target)) setOpen(false);
+    });
+  }
+
+  var mark = document.querySelector('[data-sticky-logo]');
+  if (mark) {
+    // Appears once the hero has scrolled past. Falls back to a fixed offset
+    // on pages with no hero, so it still behaves on /menu and /paket.
+    var hero = document.querySelector('.hero-full');
+    var trigger = function () { return hero ? hero.offsetHeight - 120 : 200; };
+    var sync = function () {
+      var on = window.scrollY > trigger();
+      mark.classList.toggle('show', on);
+      mark.setAttribute('aria-hidden', on ? 'false' : 'true');
+    };
+    window.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  }
+})();

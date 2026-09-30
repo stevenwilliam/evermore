@@ -44,9 +44,36 @@
 
 {{if .JSONLD}}<script type="application/ld+json">{{.JSONLD}}</script>{{end}}
 </head>
-<body>
+<body{{if .Public}} class="has-float-nav"{{end}}>
 <a class="skip-link" href="#main">Lewati ke konten utama</a>
 
+{{if .Public}}
+{{/* D34 — the Thenie chrome. No masthead: a sticky mark top-left once the
+     hero scrolls past, and a floating pill bottom-centre carrying the menu
+     and the order CTA. This is Thenie's signature and the reason the public
+     pages read as that design rather than as a conventional site. */}}
+<div class="sticky-logo" data-sticky-logo aria-hidden="true">
+  <img src="/images/evermore-wordmark-deep.png" alt="" width="120" height="24">
+</div>
+
+<ul class="navlinks" id="float-nav-links" hidden>
+  <li><a href="/menu"{{if eq .Nav "menu"}} aria-current="page"{{end}}>Menu minggu ini</a></li>
+  <li><a href="/cara-kerja"{{if eq .Nav "how"}} aria-current="page"{{end}}>Cara kerja</a></li>
+  <li><a href="/paket"{{if eq .Nav "packages"}} aria-current="page"{{end}}>Paket</a></li>
+  <li><a href="/untuk-kantor"{{if eq .Nav "corporate"}} aria-current="page"{{end}}>Untuk kantor</a></li>
+  <li><a href="/wilayah-antar"{{if eq .Nav "coverage"}} aria-current="page"{{end}}>Wilayah antar</a></li>
+  <li><a href="/app/masuk">Masuk</a></li>
+</ul>
+
+<nav class="float-nav" aria-label="Navigasi utama">
+  <button class="navToggle" type="button" aria-expanded="false" aria-controls="float-nav-links"
+          data-float-nav-toggle>
+    <span class="visually-hidden">Buka menu navigasi</span>
+    <span aria-hidden="true"></span>
+  </button>
+  <a class="nav-cta" href="/menu">Pesan Online</a>
+</nav>
+{{else}}
 <header class="masthead">
   <div class="container masthead-inner">
     <a class="masthead-brand" href="/">
@@ -79,6 +106,7 @@
     <a href="/app/masuk">Masuk</a>
   </nav>
 </header>
+{{end}}
 
 {{/* D32: the page ground is WHITE, as Thenie's is, so <main> carries no
      ground class. .ground-deep is still defined and is applied per-section to

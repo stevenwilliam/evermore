@@ -46,7 +46,7 @@
       <div class="card-grid">
         {{range .Meals}}
         <article class="card" data-search-text="{{.Name}}">
-          <div class="card-media">foto meal</div>
+          <div class="card-media photo-frame"><img src="{{photo .ID}}" alt="" loading="lazy" width="400" height="300"></div>
           <div class="card-body">
             <p class="meta">{{.DietName}} &middot; {{.SlotAlias}} {{.SlotTime}}</p>
             <h3><a href="/menu/{{.ID}}" style="color:inherit;text-decoration:none">{{.Name}}</a></h3>

@@ -200,6 +200,13 @@ CHECKS: list[tuple[str, str, str, dict]] = [
     ("WA teal on the dark scheme", "#128C7E", DARK, {"non_text": True}),
     ("WA white glyph on the teal", CREAM, "#128C7E", {"non_text": True}),
     ("cream ring on white (REJECTED)", SOFT, CREAM, {"non_text": True}),
+
+    # The D34 hero scrim. The photograph behind it is unknown, so every stop
+    # is measured against the WORST case: a pure-white pixel underneath.
+    ("hero scrim .88 — the copy band", CREAM, "rgba(9,7,5,0.88)", {"over_white": True}),
+    ("hero scrim .62 — the wordmark band", CREAM, "rgba(9,7,5,0.62)", {"over_white": True}),
+    ("hero scrim .56 — lightest band", CREAM, "rgba(9,7,5,0.56)", {"over_white": True}),
+    ("THENIE scrim .15 (REJECTED)", CREAM, "rgba(9,7,5,0.15)", {"over_white": True}),
 ]
 
 # What 10-design-system.md records. A drift between the sheet and the
@@ -263,6 +270,10 @@ RECORDED: dict[str, float] = {
     "WA teal on the dark scheme": 4.18,
     "WA white glyph on the teal": 4.14,
     "cream ring on white (REJECTED)": 1.09,
+    "hero scrim .88 — the copy band": 15.27,
+    "hero scrim .62 — the wordmark band": 5.82,
+    "hero scrim .56 — lightest band": 4.66,
+    "THENIE scrim .15 (REJECTED)": 1.40,
 }
 
 def main(argv: list[str]) -> int:
@@ -279,7 +290,11 @@ def main(argv: list[str]) -> int:
     print(f"{'pairing'.ljust(width)}   ratio   verdict          recorded")
     print("-" * (width + 40))
     for label, ink_s, ground_s, opts in CHECKS:
-        ground = to_rgb(ground_s)
+        opts = dict(opts)
+        # A translucent GROUND (the hero scrim) is flattened onto white first:
+        # the worst case for text over an unknown photograph is the lightest
+        # pixel the photo can supply.
+        ground = to_rgb(ground_s, over=(255, 255, 255)) if opts.pop("over_white", False) else to_rgb(ground_s)
         ink = to_rgb(ink_s, over=ground)
         r = ratio(ink, ground)
         rec = RECORDED.get(label)

@@ -658,3 +658,170 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   font-weight: var(--w-eyebrow);
 }
 .ribbon-gold::before { content: "\2605"; }   /* a star, so the badge is not colour alone */
+
+/* ==========================================================================
+   D34 — the Thenie page architecture
+   Ported from docs/design_reference/thenie_site_FINAL_14.html. Steven,
+   2026-09-30: "i want 99.99999999% same". Structure, spacing and component
+   shapes are Thenie's; the typefaces stay Erode + Inter (D32) and the inks
+   are the AA-corrected palette (10 §1).
+   ========================================================================== */
+
+/* ---- Full-bleed photo hero ---------------------------------------------
+ * Thenie's hero is the whole viewport: a photograph, a scrim, the brand
+ * centred at the top and the copy centred at the bottom. */
+.hero-full {
+  position: relative; overflow: hidden; padding: 0;
+  min-height: 100vh; min-height: 100svh;
+  display: flex; flex-direction: column; justify-content: space-between;
+  background: var(--ink);
+}
+.hero-media { position: absolute; inset: 0; }
+.hero-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* The scrim is what makes white text legal over an UNKNOWN photograph, so
+ * every stop is set from the worst case: the pixel behind it is pure white.
+ * Composited against white and measured (10 §2.10):
+ *
+ *   0.88  bottom, where the copy sits   -> 15.27  AAA
+ *   0.62  top, where the wordmark sits  ->  5.82  AA
+ *   0.56  the lightest middle band      ->  4.66  AA
+ *
+ * Thenie's own middle stop is 0.15, which composites to 3.23 and fails body
+ * text. Nothing is positioned in that band today, so it is a latent trap
+ * rather than a live defect — raised to 0.56 so it cannot become one. */
+.hero-media::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to top,
+    rgba(9,7,5,0.88) 0%, rgba(9,7,5,0.62) 38%, rgba(9,7,5,0.56) 60%, rgba(9,7,5,0.62) 100%);
+}
+.hero-brand {
+  position: relative; z-index: 2; padding: 34px 24px 0; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.hero-brand img { width: 260px; max-width: 62vw; height: auto; display: block;
+  filter: drop-shadow(0 10px 32px rgba(0,0,0,0.5)); }
+.hero-brand .word {
+  font-family: var(--font-body); font-weight: var(--w-ui); color: #FFFFFF;
+  font-size: var(--text-lg); line-height: 1.15; text-shadow: 0 2px 14px rgba(0,0,0,0.55);
+}
+.hero-inner {
+  position: relative; z-index: 2; width: 100%;
+  padding: 0 24px 150px; max-width: var(--container); margin: 0 auto; text-align: center;
+}
+.hero-inner h1 { color: #FFFFFF; text-shadow: 0 2px 18px rgba(0,0,0,0.5); margin-bottom: var(--space-4); }
+.hero-inner p.lede { color: #FFFFFF; text-shadow: 0 1px 12px rgba(0,0,0,0.6);
+  max-width: 62ch; margin-inline: auto; }
+.hero-eyebrow {
+  font-family: var(--font-display); font-style: italic; font-weight: var(--w-display-sub);
+  color: #FFFFFF; font-size: var(--text-xl); text-shadow: 0 2px 14px rgba(0,0,0,0.6);
+  display: block; margin-bottom: var(--space-3);
+}
+/* Thenie's headline puts the second half in an italic accent. Erode's italic
+ * carries this where Thenie used Baloo 2's; --gold is legal here because it
+ * sits on the scrim, not on white (10 §2.5). */
+.script { font-family: var(--font-display); font-style: italic; font-weight: var(--w-display); color: var(--gold); }
+@media (max-width: 767px) {
+  .hero-brand img { width: 190px; }
+  .hero-inner { padding: 0 20px 128px; }
+}
+
+/* ---- The sticky mark --------------------------------------------------- */
+.sticky-logo {
+  position: fixed; top: 16px; left: 16px; z-index: 190;
+  opacity: 0; transform: translateY(-10px); pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+.sticky-logo.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.sticky-logo img { width: 120px; height: auto; display: block;
+  filter: drop-shadow(0 4px 14px rgba(0,0,0,0.35)); }
+@media (prefers-reduced-motion: reduce) { .sticky-logo { transition: none; } }
+
+/* ---- The floating bottom nav — Thenie's signature ---------------------- */
+.float-nav {
+  position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
+  z-index: 260; display: flex; align-items: center; gap: 6px;
+  background: var(--cream-raised); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill); padding: 7px;
+  box-shadow: var(--shadow-lg);
+}
+.navToggle {
+  display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  width: var(--tap); height: var(--tap); border-radius: 50%;
+  background: transparent; border: 0; cursor: pointer;
+}
+.navToggle span, .navToggle span::before, .navToggle span::after {
+  content: ""; display: block; width: 18px; height: 2px;
+  background: var(--ink); position: relative; transition: .2s;
+}
+.navToggle span::before { position: absolute; top: -6px; }
+.navToggle span::after  { position: absolute; top: 6px; }
+.navToggle[aria-expanded="true"] span { background: transparent; }
+.navToggle[aria-expanded="true"] span::before { transform: rotate(45deg); top: 0; }
+.navToggle[aria-expanded="true"] span::after  { transform: rotate(-45deg); top: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .navToggle span, .navToggle span::before, .navToggle span::after { transition: none; }
+}
+.nav-cta {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  background: var(--btn-solid-bg); color: var(--btn-solid-ink);
+  padding: var(--space-3) var(--space-5); min-height: var(--tap);
+  border-radius: var(--radius-pill); font-weight: 700; font-size: var(--text-sm);
+  text-decoration: none; white-space: nowrap;
+  transition: background .2s, transform .15s;
+}
+.nav-cta:hover { background: var(--btn-solid-bg-hover); transform: translateY(-1px); text-decoration: none; }
+@media (prefers-reduced-motion: reduce) { .nav-cta { transition: none; } }
+
+.navlinks {
+  position: fixed; left: 50%; bottom: 88px; transform: translateX(-50%) translateY(10px);
+  list-style: none; margin: 0; padding: 10px;
+  display: flex; flex-direction: column; gap: 2px; min-width: 250px;
+  background: var(--cream-raised); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 259;
+}
+.navlinks.open { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+.navlinks a {
+  display: block; padding: var(--space-3) var(--space-4); min-height: var(--tap);
+  border-radius: var(--radius-md); text-decoration: none;
+  font-weight: var(--w-ui); font-size: var(--text-sm); color: var(--ink);
+  transition: background .2s, color .2s; white-space: nowrap;
+}
+.navlinks a:hover { background: var(--coral-tint); color: var(--coral-deep); text-decoration: none; }
+.navlinks a[aria-current="page"] { background: var(--btn-solid-bg); color: #FFFFFF; }
+@media (prefers-reduced-motion: reduce) { .navlinks { transition: none; } }
+
+/* The float and the nav pill must not collide. The class is set by the
+ * template from .Public rather than inferred with body:has(.float-nav) — one
+ * source of truth for "this is the marketing chrome", and no selector that
+ * has to re-evaluate the subtree. */
+body.has-float-nav .wa-float { bottom: calc(var(--space-4) + 76px); }
+
+/* ---- The eyebrow dash -------------------------------------------------- */
+/* Thenie's eyebrow is preceded by a short rule in the brand colour. */
+.eyebrow { display: inline-flex; align-items: center; gap: var(--space-2); letter-spacing: 0.14em; }
+.eyebrow::before {
+  content: ""; width: 20px; height: 2px; display: inline-block;
+  background: currentColor; flex: 0 0 auto;
+}
+/* The hero eyebrow is a script line, not a tracked label — no dash. */
+.hero-eyebrow::before { content: none; }
+
+/* ---- The stats strip --------------------------------------------------- */
+.stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; text-align: center; }
+.stat-item b {
+  display: flex; align-items: baseline; justify-content: center; gap: 4px;
+  font-family: var(--font-display); font-size: var(--text-lg);
+  font-weight: var(--w-display); color: var(--brand-ink);
+}
+.stat-item .count { font-size: var(--text-2xl); font-weight: var(--w-display); line-height: 1; }
+.stat-item > span { display: block; font-size: var(--text-sm); color: var(--ink-soft);
+  letter-spacing: .02em; margin-top: 6px; }
+@media (max-width: 620px) { .stats-strip { grid-template-columns: repeat(2, 1fr); gap: 22px 14px; } }
+
+/* ---- Photo frames ------------------------------------------------------ */
+.photo-frame { border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); }
+.photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tilt-frame { transform: rotate(-2deg); }
+.tilt-frame.right { transform: rotate(2deg); }
+@media (prefers-reduced-motion: reduce) { .tilt-frame, .tilt-frame.right { transform: none; } }

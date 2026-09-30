@@ -177,3 +177,37 @@ gold as text (2.15), and the control border (1.64).
 
 A fifth was found by running the project's own guard: `verify-ui.mjs` asserted
 the retired beige by hex (D33).
+
+---
+
+## D34 — the Thenie page architecture (2026-09-30)
+
+D32 changed the palette and the site still read as a different design, because
+Thenie's identity is its *structure*: a photograph you land inside, and a
+floating pill instead of a masthead. D34 ports that.
+
+| Item | Status |
+|---|---|
+| Full-bleed photo hero, scrim measured against the worst case | ✅ |
+| Floating bottom nav + sticky mark; masthead retained for app/BO | ✅ |
+| `pageData.Public` discriminator, 8 public pages flagged | ✅ |
+| Eyebrow leading rule, stats strip, photo frames, script accent | ✅ |
+| 30 food photographs extracted and installed | ✅ |
+| Typefaces still Erode + Inter | ✅ probed: both resolve to Erode italic |
+| `scripts/contrast.py` | ✅ **61/61**, sheet cross-checked |
+| `go build`, `go vet`, `go test ./...` | ✅ 10 packages pass |
+| `tools/shot/verify-ui.mjs` | ✅ 0 FAIL |
+| **Screenshots — did it LOOK right?** | ⬜ **NOT DONE — see RUN-WHEN-BACK §Z2** |
+
+**Screenshots broke environment-wide partway through this build** — `about:blank`
+times out, so it is the Playwright/Chromium screenshot path, not the page. The
+structure was verified by probing the live DOM through `page.evaluate` instead,
+which is weaker: it proves the hero fills the viewport, the image loads with
+`object-fit: cover`, the float nav is fixed at the right offset with a 44px CTA,
+and the fonts are Erode — but **not** that the composition looks good.
+
+Two marks were deliberately **not** carried over, and are parked in
+`docs/design_reference/thenie-brand-marks/`: the circular Thenie restaurant
+badge, which names a different business, and the Halal Indonesia certification
+mark, which is a third-party certification Evermore has not been shown to hold.
+Evermore's own wordmark takes the badge's place in the hero and the sticky mark.
