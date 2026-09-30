@@ -13,3 +13,7 @@ node_modules/
 *.log
 .DS_Store
 /tmp/
+
+# Python bytecode from scripts/
+__pycache__/
+*.pyc

@@ -60,7 +60,13 @@ for (const [vp, w, h] of [['mobile', 360, 800], ['desktop', 1440, 900]]) {
   console.log(`        ${wa.w >= 44 && wa.h >= 44 ? 'PASS' : 'FAIL'} — touch target >= 44px`);
   console.log(`        ${wa.position === 'fixed' && wa.inViewport ? 'PASS' : 'FAIL'} — fixed and inside the viewport`);
   console.log(`        ${wa.fill === 'rgb(18, 140, 126)' ? 'PASS' : 'FAIL'} — fill is WhatsApp #128C7E, not recoloured`);
-  console.log(`        ${/rgb\(255, 250, 224\)/.test(wa.shadow) ? 'PASS' : 'FAIL'} — beige ring present (the affordance)`);
+  // D32: the ring is --page-bg, not a frozen hex. The old oracle asserted the
+  // retired beige #FFFAE0 and would have failed forever after the re-skin —
+  // the incident log's "a guard that silently stopped guarding" in reverse.
+  // The teal now clears 3:1 unaided (4.14 light, 4.18 dark), so the ring is
+  // decoration and what is asserted is that it matches the page ground.
+  const pageBg = await p.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  console.log(`        ${wa.shadow.includes(pageBg) ? 'PASS' : 'FAIL'} — ring matches the page ground ${pageBg} (decoration; the teal carries 3:1 itself)`);
   console.log(`        ${wa.label ? 'PASS' : 'FAIL'} — accessible name: "${wa.label}"`);
   console.log(`        ${wa.rel && wa.rel.includes('noopener') ? 'PASS' : 'FAIL'} — rel=noopener on target=_blank`);
   console.log(`        ${wa.svgHidden === 'true' ? 'PASS' : 'FAIL'} — decorative svg hidden from AT`);

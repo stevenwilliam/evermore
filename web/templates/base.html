@@ -80,10 +80,11 @@
   </nav>
 </header>
 
-{{/* The deep green is the page ground everywhere. It sits on <main> rather
-     than on <body> so the masthead and footer keep their own bar treatment,
-     and rather than on each section so a new page inherits it automatically. */}}
-<main id="main" class="ground-deep">
+{{/* D32: the page ground is WHITE, as Thenie's is, so <main> carries no
+     ground class. .ground-deep is still defined and is applied per-section to
+     anything that wants the dark inverse; it remaps the tokens rather than
+     only swapping the background (10 §2.7). */}}
+<main id="main">
 {{template "content" .}}
 </main>
 

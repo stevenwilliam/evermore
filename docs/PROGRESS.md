@@ -58,7 +58,7 @@ described that build; it was replaced on 2026-09-01 when this one started.
 | `go test ./test/... -shuffle=on` | **passes, 6 consecutive runs** — order-independent |
 | Oversell test | 40 concurrent writers vs capacity 20 → **20 win, reserved lands 20/20** |
 | Order numbering | 50 concurrent callers → **50 distinct numbers** |
-| `scripts/contrast.py` | **34/34 pairings match, and every ratio is verified present in design.md §3** |
+| `scripts/contrast.py` | **57/57 pairings match, and every ratio is verified present in `10-design-system.md`** (D32 re-skin; was 34/34) |
 | `tools/shot/guard-test.mjs` | the gradient blind-spot guard **fires on a synthetic defect and stays silent when fixed** |
 | `tools/shot` on the deployed URL | **30/30 clean** — 0 contrast failures, 0 bar-rule violations, no overflow, no undersized tap targets, across public, customer and back-office screens |
 | Full purchase flow on the deployed site | cart Rp 450.000 → order → **Transfer Rp 450.926, BCA 5391184402, suffix 926** |
@@ -140,3 +140,40 @@ exist yet:
 | 5 | PKP registration, NPWP, legal entity name | Needed before a corporate invoice is correct (`03-open-questions.md` Q-1a). |
 | 6 | Production domain | `APP_BASE_URL` is the dev server's IP, which is what canonical and Open Graph URLs currently carry. |
 | 7 | **Ruling on D26** | The transactional screens are server-rendered Go templates, not the React SPA that D13 reserved for them. Reversible; the API exists either way. |
+
+---
+
+## D32 — the Thenie re-skin (2026-09-30)
+
+Steven supplied `docs/design_reference/thenie_site_FINAL_14.html` and asked for
+Evermore to follow it "as close as possible", keeping Evermore's own typefaces.
+
+| Item | Status |
+|---|---|
+| `docs/10-design-system.md` rewritten to the Thenie palette | ✅ |
+| `web/public/css/tokens.css` — new palette, aliases for the retired names | ✅ |
+| `web/public/css/app.css` — hero, eyebrow, buttons, media panels, float | ✅ |
+| `web/templates/base.html` — `<main>` no longer forces the dark ground | ✅ |
+| Typefaces unchanged (Erode + Inter, self-hosted) | ✅ probed in-browser |
+| `scripts/contrast.py` rewritten; 57 pairings incl. every REJECTED source value | ✅ 57/57 |
+| `tools/shot/verify-ui.mjs` stale-hex oracle fixed | ✅ 0 FAIL |
+| `go build`, `go vet`, `go test ./...` | ✅ 10 packages pass |
+| Screenshots, light + dark + 360px | ✅ `docs/screenshots/d32-thenie-reskin/` |
+| **Wordmark PNGs regenerated in the new ink** | ⬜ **blocked — see RUN-WHEN-BACK** |
+
+**Five AA failures in the source palette were corrected**, each recorded in
+`contrast.py` beside the value it replaces so a regression is caught by name:
+the coral button fill (3.49), `--ink-faint` (3.80/3.49), the focus ring (1.86),
+gold as text (2.15), and the control border (1.64).
+
+**Four defects were found by looking at the rendered page, not by reading CSS**
+— the discipline CLAUDE.md §6 exists for:
+
+1. The whole site was still dark-grounded — `<main>` carried `.ground-deep`.
+2. The eyebrow aliased to a pale warn tint, near-invisible on white.
+3. In dark mode the eyebrow fell to **3.38** — a real AA failure.
+4. `.hero-art` set `color: var(--beige)`, which flipped with the scheme and
+   painted the label `#2B2620` on a dark green panel.
+
+A fifth was found by running the project's own guard: `verify-ui.mjs` asserted
+the retired beige by hex (D33).

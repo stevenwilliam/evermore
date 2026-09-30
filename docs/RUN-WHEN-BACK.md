@@ -559,3 +559,34 @@ Follow §6.3 and §6.4 to split it into a referrer-restricted browser key and an
 IP-restricted server key, and set per-API daily caps. A budget alert notifies;
 only the quota cap stops the spending.
 
+
+---
+
+## Z. D32 — regenerate the wordmark PNGs in the new ink
+
+The D32 re-skin retired `#1C3D34`, the green the wordmark artwork is drawn in.
+`docs/design_guideline/logo.png` is untouched source art, but the three derived
+PNGs in `web/public/images/` are **still the old green** and were not
+regenerated — the re-skin changed CSS, not raster assets.
+
+`scripts/mklogo.py` reduces the artwork to a coverage mask and re-emits it in
+any colour, so this is a re-run, not a redraw:
+
+```
+cd /home/dev/projects/evermore
+vi scripts/mklogo.py          # point the two inks at the D32 palette:
+                              #   light surfaces -> --ink        #2B2620
+                              #   the dark bar   -> --cream-soft #FAF5E9
+python3 scripts/mklogo.py
+```
+
+Then confirm by looking, not by reading:
+
+```
+node /home/dev/projects/evermore/tools/shot/verify-ui.mjs http://127.0.0.1:8099
+```
+
+**Why it is blocked rather than done:** the masthead is `--ink #2B2620` and the
+cream cut still reads correctly on it, so nothing is broken today — but the
+deep cut is `#1C3D34` on white, a colour no longer in the palette, and it will
+look wrong the moment a wordmark is placed on a light surface.

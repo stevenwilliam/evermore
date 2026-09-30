@@ -76,11 +76,12 @@ a:hover { text-decoration-thickness: 2px; }
 
 /* ---------------------------------------------------------------- masthead */
 
-/* THE BAR RULE (design.md §3). On #468973 nothing reaches AA at reading size.
- * Every string on a bar is 19px at weight 700 — the first whole pixel above
- * WCAG's 18.66px large-text threshold. A 15px nav label here looks fine and
- * is an AA failure. This is why the header type is chunkier than it looks
- * like it needs to be. */
+/* THE BAR RULE (10 §2.4). It was forced by the old mid-green bar, where
+ * nothing reached AA at reading size. D32 moved the bar to --ink #2B2620,
+ * where cream-soft measures 13.78 and the rule is no longer load-bearing HERE.
+ * It is kept because it is the established masthead look, and because the rule
+ * still binds on .card-media, whose lightest gradient stop is --olive #5F7A33
+ * — cream-soft on it is 4.47, four hundredths under the body floor. */
 .masthead {
   background: var(--bar-bg);
   color: var(--bar-ink);
@@ -129,27 +130,35 @@ a:hover { text-decoration-thickness: 2px; }
   padding: var(--space-3) var(--space-4); min-height: var(--tap);
   border-bottom: 1px solid var(--border-subtle); text-decoration: none;
 }
-.mobile-nav a:hover { background: rgba(255, 250, 224, 0.08); }
+.mobile-nav a:hover { background: rgba(250, 245, 233, 0.08); }
 
 /* ------------------------------------------------------------------ hero */
 
-.hero { background: var(--nourish-deep); color: var(--beige); padding-block: var(--space-8) var(--space-9); }
+/* D32: the hero is LIGHT, as Thenie's is. The dark panel is still available
+ * as .ground-deep on any section that wants the inverse. */
+.hero { background: var(--cream); color: var(--ink); padding-block: var(--space-8) var(--space-9); }
 .hero h1 { font-size: var(--text-3xl); margin-bottom: var(--space-5); }
 @media (min-width: 768px) { .hero h1 { font-size: var(--text-4xl); } }
-.hero p.lede { font-size: var(--text-lg); max-width: 56ch; color: var(--beige); }
+.hero p.lede { font-size: var(--text-lg); max-width: 56ch; color: var(--ink-soft); }
 .hero-grid { display: grid; gap: var(--space-7); }
 @media (min-width: 1024px) { .hero-grid { grid-template-columns: 1.1fr 0.9fr; align-items: center; } }
 
-/* An eyebrow pill on the deep ground: orange-light ink measures 7.27 there. */
+/* Thenie's eyebrow: uppercase, tracked, in the brand colour. The source sets
+ * it at 0.72rem in --maroon, which is 11.5px small text at 3.49 and illegal.
+ * This is --coral-deep at 13px/700: 5.12 on white, 4.70 on the band (10 §2.3). */
 .eyebrow {
-  display: inline-block; font-size: var(--text-sm); font-weight: var(--w-eyebrow);
-  letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--orange-light); margin-bottom: var(--space-4);
+  display: inline-block; font-size: var(--text-xs); font-weight: var(--w-eyebrow);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--brand-ink); margin-bottom: var(--space-4);
 }
+.ground-deep .eyebrow { color: var(--coral-light); }   /* 6.14 on --ink */
+/* --brand-ink already flips with the scheme; this covers a dark PANEL on a
+ * light page, which the media query cannot see. */
 
 .hero-stats { display: flex; flex-wrap: wrap; gap: var(--space-6); margin-top: var(--space-6); }
 .hero-stat strong { display: block; font-family: var(--font-display); font-size: var(--text-xl); font-weight: var(--w-display); }
-.hero-stat span { color: var(--beige-deep); font-size: var(--text-sm); }
+.hero-stat span { color: var(--ink-soft); font-size: var(--text-sm); }
+.ground-deep .hero-stat span { color: var(--beige-deep); }   /* 8.60 on --ink */
 
 /* --------------------------------------------------------------- buttons */
 
@@ -163,12 +172,15 @@ a:hover { text-decoration-thickness: 2px; }
 .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); text-decoration: none; }
 .btn:active { transform: none; }
 
-/* Beige fill with deep ink: 11.32 either way round. */
-.btn-primary { background: var(--beige); color: var(--nourish-deep); }
-.btn-primary:hover { background: #FFFFFF; }
+/* D32: Thenie's primary is the coral pill. The fill is --coral-deep, NOT
+ * --coral: white on #E1614A measures 3.49 and fails AA at reading size.
+ * White on #B84B39 is 5.12, and the hover deepens to 6.68. */
+.btn-primary { background: var(--btn-solid-bg); color: var(--btn-solid-ink); }
+.btn-primary:hover { background: var(--btn-solid-bg-hover); }
 
-.btn-secondary { background: transparent; color: var(--beige); border-color: var(--beige); }
-.btn-secondary:hover { background: rgba(255, 250, 224, 0.12); }
+/* The olive ghost, Thenie's .btn-ghost-olive: olive-deep on olive-tint, 7.16. */
+.btn-secondary { background: var(--btn-ghost-bg); color: var(--btn-ghost-ink); border-color: transparent; }
+.btn-secondary:hover { background: var(--olive); color: #FFFFFF; }
 
 /* Read from tokens, never from a fixed colour. A button inside a card inside
  * a dark section has to flip twice, and enumerating those contexts by selector
@@ -176,6 +188,11 @@ a:hover { text-decoration-thickness: 2px; }
  * painted beige ink on a white callout at 1.05:1. */
 .btn-solid   { background: var(--btn-solid-bg); color: var(--btn-solid-ink); }
 .btn-outline { background: transparent; color: var(--btn-outline-ink); border-color: var(--btn-outline-border); }
+
+.ground-deep .btn-primary { background: var(--cream-soft); color: var(--ink); }
+.ground-deep .btn-primary:hover { background: #FFFFFF; }
+.ground-deep .btn-secondary { background: transparent; color: var(--cream-soft); border-color: var(--cream-soft); }
+.ground-deep .btn-secondary:hover { background: rgba(250, 245, 233, 0.12); color: var(--cream-soft); }
 
 .btn[aria-disabled="true"], .btn:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
 
@@ -319,7 +336,7 @@ input[type="radio"], input[type="checkbox"] { min-height: 0; width: 20px; height
 }
 table { border-collapse: collapse; width: 100%; font-size: var(--text-sm); }
 th, td { text-align: left; padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border-subtle); }
-th { font-weight: var(--w-strong); background: rgba(28, 61, 52, 0.04); white-space: nowrap; }
+th { font-weight: var(--w-strong); background: rgba(43, 38, 32, 0.04); white-space: nowrap; }
 tbody tr:last-child td { border-bottom: none; }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
@@ -382,19 +399,22 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* ------------------------------------------------------- WhatsApp float */
 
-/* design.md §3 governs every value here and the reasoning is worth keeping
- * next to the code:
+/* 10 §2 governs every value here and the reasoning is worth keeping next to
+ * the code. D32 CHANGED WHAT CARRIES THE AFFORDANCE:
  *
- *   - #128C7E is WhatsApp's own green. It measures 2.87 against the deep
- *     ground, which FAILS 1.4.11 on its own — and that is deliberate. Do not
- *     recolour it; recolouring stops the mark reading as WhatsApp.
- *   - The affordance is the BEIGE RING, not the fill: 11.32 against the deep
- *     ground and 3.94 against the teal. Both clear 3:1, so the control has a
- *     findable boundary from either side.
+ *   - #128C7E is WhatsApp's own green. Do not recolour it; recolouring stops
+ *     the mark reading as WhatsApp.
+ *   - On the retired deep-green ground the teal measured 2.87 and FAILED
+ *     1.4.11 on its own, so the beige ring was the affordance. On the white
+ *     ground the teal measures **4.14** and on the dark scheme **4.18** — it
+ *     now clears 3:1 unaided.
+ *   - So the ring is DECORATION, not the affordance. It is --page-bg, which
+ *     means it reads as a halo on either scheme instead of a cream disc that
+ *     measures 1.09 against a white page.
  *   - The glyph is white on the teal at 4.14. It is an icon, so 1.4.11's 3:1
  *     applies rather than 1.4.3's 4.5.
  *
- * scripts/contrast.py measures all four.
+ * scripts/contrast.py measures these.
  */
 .wa-float {
   position: fixed;
@@ -411,8 +431,9 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
   background: #128C7E;         /* WhatsApp's own colour — see above */
   color: #FFFFFF;              /* the glyph */
-  /* The ring is the affordance. 3px so it survives a busy photo behind it. */
-  box-shadow: 0 0 0 3px var(--beige), var(--shadow-lg);
+  /* Decoration, not the affordance (see above). --page-bg so it halos on
+   * either scheme; 3px so it survives a busy photo behind it. */
+  box-shadow: 0 0 0 3px var(--page-bg), var(--shadow-lg);
 
   text-decoration: none;
   transition: transform .12s ease, box-shadow .12s ease;
@@ -427,7 +448,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 /* The focus ring must not be the beige ring, which is decoration here and
  * would be indistinguishable from the resting state. */
 .wa-float:focus-visible {
-  outline: 3px solid var(--nourish-deep);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 4px;
 }
 
@@ -452,16 +473,17 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
  * every page gets it and the bars keep their own treatment.
  *
  * This is a TOKEN REMAP. The sheet tokens are not merely different on the
- * green, they are wrong in a way that hides text:
+ * dark ground, they are wrong in a way that hides text:
  *
- *     --ink-muted  #4A5D56  6.69 on beige  ->  1.69 on the green
- *     --border     .60 deep 3.55 on beige  ->  ~1.2 on the green
+ *     --ink-soft   #615848  7.01 on white  ->  1.58 on --ink
+ *     --coral      #E1614A  3.49 on white  ->  4.29 on --ink, still under 4.5
  *
- * Remapped values, every one measured by scripts/contrast.py:
- *     beige       11.32   headings and body
- *     beige-deep   6.47   muted text
- *     blue-light   8.15   links
- *     beige .55    4.62   control borders, clears 1.4.11's 3:1
+ * Remapped values, every one measured by scripts/contrast.py (D32):
+ *     cream-soft      13.78   headings and body
+ *     #CDC3B2          8.60   muted text
+ *     --coral-light    6.14   links  (--coral is 4.29 here and FAILS)
+ *     cream .55        5.23   control borders, clears 1.4.11's 3:1
+ *     --focus-ring-on-dark 8.05
  */
 .ground-deep {
   background: var(--nourish-deep);
@@ -469,14 +491,14 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
   --page-ink:      var(--beige);
   --ink-muted:     var(--beige-deep);
-  --link:          var(--blue-light);
-  --border:        rgba(255, 250, 224, 0.55);
-  --border-subtle: rgba(255, 250, 224, 0.22);
-  --focus-ring:    var(--beige);
+  --link:          var(--link-on-dark);
+  --border:        rgba(250, 245, 233, 0.55);
+  --border-subtle: rgba(250, 245, 233, 0.22);
+  --focus-ring:    var(--focus-ring-on-dark);
 
-  /* On the green the filled button inverts: beige fill, deep ink (11.32). */
+  /* On the dark ground the filled button inverts: cream fill, ink (13.78). */
   --btn-solid-bg:       var(--beige);
-  --btn-solid-ink:      var(--nourish-deep);
+  --btn-solid-ink:      var(--ink);
   --btn-outline-ink:    var(--beige);
   --btn-outline-border: var(--beige);
 }
@@ -490,17 +512,17 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
  */
 .ground-deep :is(.card, .callout, .table-wrap, .searchbox input,
                  input, select, textarea) {
-  --page-ink:      var(--nourish-deep);
-  --ink-muted:     #4A5D56;
-  --link:          var(--blue-deep);
-  --border:        rgba(28, 61, 52, 0.60);
-  --border-subtle: rgba(28, 61, 52, 0.28);
-  --focus-ring:    var(--nourish-deep);
+  --page-ink:      var(--ink);
+  --ink-muted:     var(--ink-soft);
+  --link:          var(--coral-deep);
+  --border:        var(--border-strong);
+  --border-subtle: var(--paper-line);
+  --focus-ring:    #1F6FB2;
 
-  --btn-solid-bg:       var(--nourish-deep);
-  --btn-solid-ink:      var(--beige);
-  --btn-outline-ink:    var(--nourish-deep);
-  --btn-outline-border: rgba(28, 61, 52, 0.60);
+  --btn-solid-bg:       var(--coral-deep);
+  --btn-solid-ink:      #FFFFFF;
+  --btn-outline-ink:    var(--ink);
+  --btn-outline-border: var(--border-strong);
 
   color: var(--page-ink);
 }
@@ -520,23 +542,23 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   color: var(--nourish-deep);
   border-color: var(--beige);
 }
-.ground-deep .day span { color: var(--beige-deep); }         /* 6.47 */
+.ground-deep .day span { color: var(--beige-deep); }         /* 8.60 on --ink */
 .ground-deep .day[aria-current="date"] span,
-.ground-deep .day.is-active span { color: #4A5D56; }         /* 6.69 on beige */
+.ground-deep .day.is-active span { color: var(--ink-soft); }   /* 6.44 on cream-soft */
 
-.ground-deep .searchbox input::placeholder { color: #4A5D56; }
+.ground-deep .searchbox input::placeholder { color: var(--ink-soft); }
 
 /* The table header tints its own surface, so it is a light surface too. */
-.ground-deep th { background: rgba(28, 61, 52, 0.04); color: var(--nourish-deep); }
+.ground-deep th { background: rgba(43, 38, 32, 0.04); color: var(--nourish-deep); }
 
 
 /* ------------------------------------------------------- section rhythm */
 
 /* A section on the raised band. Alternating this with the deep ground gives
- * the page rhythm without the beige sheet. Both inks clear AA on it (9.41 and
- * 5.38, design.md §3), so nothing inside needs a special case — which is the
- * whole reason the band was chosen over the better-looking #2A5749, where
- * muted text falls to 4.47. */
+ * the page rhythm without leaving the light ground. The band is --cream-soft
+ * #FAF5E9; every ink clears AA on it (13.78 / 6.44 / 4.50), so nothing inside
+ * needs a special case. --ink-faint is the tight one at exactly 4.50, which is
+ * why Thenie's own #8B8271 (3.49 here) was darkened — see 10 §2.3. */
 .band-raised { background: var(--band-raised); }
 
 /* A hairline between bands, so the step reads as deliberate rather than as a
@@ -547,19 +569,19 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* --------------------------------------------------------- media panels */
 
-/* The photo placeholders were flat #468973. A soft two-stop gradient toward
- * the deep ground gives them depth and stops a row of cards reading as a row
- * of identical rectangles. Both stops are palette colours, and the label sits
- * at 19px/700 — the bar rule — because beige on #468973 is 3.93 and is large
- * text only. */
+/* The photo placeholders were flat. A soft three-stop gradient toward
+ * the dark ink gives them depth and stops a row of cards reading as a row of
+ * identical rectangles. All three stops are palette colours, and the label
+ * sits at 19px/700 — the bar rule — because cream-soft on the lightest stop
+ * (--olive #5F7A33) is 4.47 and is large text only. */
 .card-media {
   aspect-ratio: 4 / 3;
   display: grid;
   place-items: center;
-  color: var(--beige);
-  /* 19px/700 is the bar rule, and it applies here for the same reason: the
-   * lightest gradient stop is #468973, where beige measures 3.93 — large text
-   * only. A 15px label here would look fine and be an AA failure. */
+  color: var(--media-ink);
+  /* 19px/700 is the bar rule, and it applies here: the lightest gradient stop
+   * is --olive #5F7A33, where cream-soft measures 4.47 — large text only.
+   * A 15px label here would look fine and be an AA failure. */
   font-size: var(--text-bar);
   font-weight: var(--w-eyebrow);
 
@@ -567,8 +589,8 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
    * reasons. It is the real fallback if the gradient does not paint, and it is
    * what a contrast checker measures — so the reported number is the worst
    * case across the gradient rather than a flattering average. */
-  background-color: var(--nourish);
-  background-image: linear-gradient(160deg, var(--nourish) 0%, #2A5749 62%, var(--nourish-deep) 100%);
+  background-color: var(--media-stop-1);
+  background-image: linear-gradient(160deg, var(--media-stop-1) 0%, var(--media-stop-2) 62%, var(--media-stop-3) 100%);
   position: relative;
   overflow: hidden;
 }
@@ -599,8 +621,11 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   place-items: center;
   text-align: center;
   padding: var(--space-6);
-  color: var(--beige);              /* 11.32 on the deep stop, 3.93 on the light
-                                       stop — hence 19px/700 below */
+  /* --media-ink, not --beige: --beige flips with the scheme and painted this
+   * label #2B2620 on the dark green panel in dark mode. Pinned literal, so the
+   * panel's ink does not move when the page's does. 4.47 on the lightest
+   * gradient stop — hence 19px/700 below. */
+  color: var(--media-ink);
   font-size: var(--text-bar);
   font-weight: var(--w-eyebrow);
   box-shadow: var(--shadow-lg);

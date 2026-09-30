@@ -233,11 +233,16 @@ build's own code.
 - **Nothing automated cancels a customer's booking** unless Steven asks for it.
   Humans cancel; the system surfaces the queue for them.
 - **Brand is Evermore.** The supplied guidelines are in
-  `docs/design_guideline/`; `docs/10-design-system.md` is the engineering
-  reading of them. **Several brand colours fail WCAG AA as text or as button
-  fills** — that is documented there with measured ratios and must be
-  respected, not rediscovered. `scripts/contrast.py` in the reference project
-  is the tool that measures them.
+  `docs/design_guideline/`, and the **colour, surfaces and component shapes
+  now come from `docs/design_reference/thenie_site_FINAL_14.html`** — Steven
+  asked for Thenie's look on 2026-09-30 (D32). The deep-green Nourish palette
+  is retired. **The typefaces did not change: Erode + Inter, self-hosted.**
+  `docs/10-design-system.md` is the engineering reading.
+  **Several brand colours fail WCAG AA as text or as button fills** — five of
+  Thenie's own values do — and that is documented there with measured ratios
+  and must be respected, not rediscovered. `scripts/contrast.py` is the tool
+  that measures them; it checks 57 pairings, including every rejected source
+  value, and verifies the design sheet agrees with the arithmetic.
 - **Accessibility is AA minimum**, and contrast is *calculated*, not eyeballed.
   Visible focus rings, real labels, keyboard-operable pickers, announced
   errors, `prefers-reduced-motion` and `prefers-color-scheme` respected. Colour

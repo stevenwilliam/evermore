@@ -1,72 +1,132 @@
-/* Evermore — design tokens.
+/* Evermore design tokens — the Thenie palette (design 10 §2).
  *
- * Every value here comes from .claude/skills/impeccable/design.md, which is
- * the measured sheet. The contrast ratios in the comments were calculated,
- * not estimated, and scripts/contrast.py re-measures them.
+ * Re-skinned 2026-09-30 (D32). The deep-green Nourish palette is retired; the
+ * ground is now white and the brand marks are Thenie's coral and olive, read
+ * out of docs/design_reference/thenie_site_FINAL_14.html.
  *
- * Three rules that look like taste and are not:
- *   1. Nothing but white or beige goes on the mid-green bars, and only at
- *      19px/700 — the "bar rule". Everything else fails AA there.
- *   2. --border is 0.60 alpha. At 0.28 it measures 1.69 on the sheet and
- *      stops being a findable control boundary.
- *   3. --orange-deep is decoration. It measures 2.90 on beige and is never
- *      text and never a button fill with light ink.
+ * The TYPEFACES DO NOT CHANGE. Thenie is set in Baloo 2; Evermore stays on
+ * Erode + Inter, self-hosted. Steven, 2026-09-30: "keep the font type that
+ * evermore has before".
+ *
+ * Every ratio in a comment below is computed by scripts/contrast.py, not
+ * estimated. Five of Thenie's own values fail AA and are corrected here; each
+ * correction names the number it replaces so nobody restores the original.
  */
 
 :root {
-  /* ---- Palette (design.md §2) ---- */
-  --nourish-deep:  #1C3D34;  /* page ground; ink on light surfaces; logo ink */
-  --nourish:       #468973;  /* the bars — masthead and footer */
-  --beige:         #FFFAE0;  /* ink on both greens; the sheet */
-  --beige-deep:    #CCBDAA;  /* muted ink ON THE DEEP GROUND ONLY (6.47) */
-  --surface:       #FFFFFF;  /* cards */
-  --ink-muted:     #4A5D56;  /* secondary text on the sheet (6.69) */
+  /* ---- Surfaces ---- */
+  --cream:         #FFFFFF;  /* page ground */
+  --cream-soft:    #FAF5E9;  /* alternating band, table stripes */
+  --cream-raised:  #FFFFFF;  /* cards, nav pill, modal */
 
-  --brown-deep:    #613F37;  /* warning / neutral emphasis (8.79 on beige) */
-  --blue-deep:     #2E55A3;  /* informational (6.79 on beige) */
-  --berry-deep:    #91253D;  /* destructive (7.89 on beige) */
+  /* ---- Ink ---- */
+  --ink:           #2B2620;  /* 14.99 on white, 13.78 on cream-soft */
+  --ink-soft:      #615848;  /*  7.01 on white,  6.44 on cream-soft */
+  /* CORRECTED. Thenie's #8B8271 measures 3.80 on white and 3.49 on
+   * cream-soft — both under the 4.5 body floor. Darkened 6.8% in lightness,
+   * hue and saturation untouched. */
+  --ink-faint:     #787061;  /*  4.90 on white,  4.50 on cream-soft */
 
-  --blue-light:    #B6DAFA;  /* tint; takes deep ink (8.15) */
-  --orange-light:  #FFBC8F;  /* tint; takes deep ink (7.27) */
-  --orange-deep:   #E0782D;  /* DECORATION ONLY — 2.90 on beige */
-  --berry-light:   #CC6883;  /* background only */
-  --brown-light:   #A36E50;  /* background only */
-  --gold:          #D4AF37;  /* the corner ribbon (deep ink 5.65) */
+  /* ---- Brand: coral ----
+   * --coral is Thenie's #E1614A exactly, and it is NOT a body-text colour:
+   * 3.49 on white. It is legal as large text (≥24px, or ≥19px bold) and as a
+   * non-text edge (3.49 clears 1.4.11's 3:1). Anything smaller takes
+   * --coral-deep. */
+  --coral:             #E1614A;  /* 3.49 on white — large text / borders only */
+  --coral-deep:        #B84B39;  /* fill under white text: 5.12. Also 5.12 as text on white */
+  --coral-deepest:     #9C3E2E;  /* fill hover: white 6.68 */
+  --coral-light:       #F08A75;  /* links on a dark ground: 6.14 on --ink, 7.08 on #1E1A16.
+                                  * --coral itself is 4.29 on --ink and FAILS there. */
+  --coral-tint:        #FCE3DE;  /* ink on it 12.27 */
+  --coral-tint-strong: #F6C7BC;
+
+  /* ---- Brand: olive ---- */
+  --olive:             #5F7A33;  /* white on it 4.86 */
+  --olive-deep:        #3E5321;  /* 8.52 on white, 7.16 on olive-tint */
+  --olive-tint:        #E7EEDA;
+  --olive-tint-strong: #D6E3C2;
+
+  /* ---- Brand: gold ----
+   * DECORATION ONLY on light grounds. 2.15 on white — it fails AA even as
+   * large text, and fails 1.4.11 as a border. Fills, rules and ribbons only;
+   * whatever sits on it must be --ink (6.96). It becomes legal as text in the
+   * dark scheme, where it measures 8.03. */
+  --gold:          #D9A867;
+  --ribbon:        #E4D3AA;  /* ink on it 10.13 */
+
+  /* ---- Lines and focus ---- */
+  /* Decorative hairline only — composites to #D0C9C0 on white and measures
+   * 1.64. Never a control edge, never a focus ring. */
+  --paper-line:    rgba(150, 135, 115, 0.45);
+  /* The real control boundary: 3.49 on white, 3.21 on cream-soft. */
+  --border-strong: #968773;
+  /* CORRECTED. Thenie's focus ring is #8FC4EC, which measures 1.86 on white —
+   * an invisible focus ring is a keyboard user with no cursor. This is the
+   * same blue darkened to clear 3:1 with room to spare. */
+  --focus-ring:         #1F6FB2;  /* 5.28 on white, 4.86 on cream-soft */
+  --focus-ring-on-dark: #8FC4EC;  /* 8.05 on --ink */
+
+  /* Media-panel gradient stops. Pinned literals, NOT --olive/--ink: those
+   * invert in the dark scheme and turn a dark photo panel into a light slab. */
+  --media-stop-1:  #5F7A33;
+  --media-stop-2:  #3E5321;
+  --media-stop-3:  #2B2620;
+  --media-ink:     #FAF5E9;   /* 4.47 on stop-1 — large text only, the bar rule */
+
+  --shadow:        rgba(43, 38, 32, 0.16);
+  --overlay-scrim: rgba(9, 7, 5, 0.70);
 
   /* ---- Semantic ---- */
-  /* The deep green is the page ground. <main> carries the .ground-deep remap
-   * that makes the inks legible on it; these two keep html/body and the
-   * overscroll gutter from flashing the beige sheet at the edges. */
-  --page-bg:       var(--nourish-deep);
-  --page-ink:      var(--beige);
-  /* The alternating band. Sections step between --page-bg and this so the page
-   * has rhythm without returning to the beige sheet. Measured on it: beige
-   * 9.41, beige-deep 5.38, white 9.88 — all AA or better (design.md §3).
-   * #2A5749 was the obvious alternative and is REJECTED: muted text lands at
-   * 4.47, under the 4.5 body floor. */
-  --band-raised:   #234A40;
-  --bar-bg:        var(--nourish);
-  --bar-ink:       var(--beige);
-  --card-bg:       var(--surface);
-  --link:          var(--blue-deep);
-  --link-on-dark:  var(--blue-light);
-
-  /* The real control boundary: rgba(28,61,52,.60) composites to #778979 on
-   * the sheet and measures 3.55, clearing WCAG 1.4.11's 3:1. */
-  --border:        rgba(28, 61, 52, 0.60);
-  /* Decorative only. 1.69 — never a control edge, never a focus ring. */
-  --border-subtle: rgba(28, 61, 52, 0.28);
-
-  --focus-ring:    var(--nourish-deep);
+  --page-bg:      var(--cream);
+  --page-ink:     var(--ink);
+  --band-raised:  var(--cream-soft);   /* the alternating section band */
+  --bar-bg:       var(--ink);          /* masthead / footer */
+  --bar-ink:      var(--cream-soft);   /* 13.78 on the bar */
+  --card-bg:      var(--cream-raised);
+  /* The brand colour as INK. Scheme-aware, because --coral-deep measures
+   * 3.38 on the dark ground and --coral-light measures 2.26 on white. */
+  --brand-ink:    var(--coral-deep);   /* 5.12 on white, 4.70 on the band */
+  --link:         var(--coral-deep);   /* 5.12 on white */
+  --link-on-dark: var(--coral-light);  /* 6.14 on --ink; --coral is 4.29 and fails */
+  --border:       var(--border-strong);
+  --border-subtle: var(--paper-line);
 
   /* Button inks as tokens, so a ground swap moves them without a per-context
-   * override. On the sheet the filled button is the deep green. */
-  --btn-solid-bg:       var(--nourish-deep);
-  --btn-solid-ink:      var(--beige);
-  --btn-outline-ink:    var(--nourish-deep);
-  --btn-outline-border: var(--border);
+   * override. The filled button is coral-deep, NOT coral: white on #E1614A is
+   * 3.49 and fails. */
+  --btn-solid-bg:       var(--coral-deep);
+  --btn-solid-bg-hover: var(--coral-deepest);
+  --btn-solid-ink:      #FFFFFF;
+  --btn-ghost-bg:       var(--olive-tint);
+  --btn-ghost-ink:      var(--olive-deep);   /* 7.16 */
+  --btn-outline-ink:    var(--ink);
+  --btn-outline-border: var(--ink);
 
-  /* ---- Type (design.md §1) ---- */
+
+  /* ---- Compatibility aliases (D32) ----
+   * app.css and the templates were written against the retired Nourish token
+   * set. Thenie solved the same problem the same way — "the order app was
+   * written against a different token set, so its names are aliased rather
+   * than rewritten". These map the old names onto the new palette so the
+   * re-skin is a token change, not 83 edited call sites. Ratios measured.
+   *
+   * The dark ground is now --ink #2B2620 rather than a green. */
+  --nourish-deep:  var(--ink);        /* dark ground, active chip, callout rule */
+  --nourish:       var(--olive-deep); /* the footer bar; cream-soft on it 7.83.
+                                       * NOT --olive #5F7A33: that is 4.47,
+                                       * four hundredths under the body floor. */
+  --beige:         var(--cream-soft); /* ink on the dark ground: 13.78 */
+  --beige-deep:    #CDC3B2;           /* muted ink on the dark ground: 8.60 */
+  --surface:       var(--cream-raised);
+  --ink-muted:     var(--ink-soft);   /* 7.01 on white, 6.44 on cream-soft */
+
+  --blue-deep:     #2E55A3;           /* informational rule: 7.13 on white */
+  --blue-light:    #DCE9F7;           /* informational tint: ink on it 12.17 */
+  --brown-deep:    #8A5A26;           /* warning rule: 5.88 on white */
+  --orange-light:  #F7E8CE;           /* warning tint: ink on it 12.41 */
+  --berry-deep:    #91253D;           /* destructive: 8.28 on white */
+
+  /* ---- Type — UNCHANGED from the Evermore baseline ---- */
   --font-display: 'Erode', Georgia, 'Times New Roman', serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
                'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB',
@@ -75,7 +135,7 @@
 
   --text-xs:   13px;
   --text-sm:   15px;
-  --text-base: 17px;  /* Inter at 450 on a coloured ground needs the extra px */
+  --text-base: 17px;
   --text-lg:   20px;
   --text-xl:   24px;
   --text-2xl:  32px;
@@ -95,42 +155,78 @@
   --space-5: 24px;  --space-6: 32px;  --space-7: 48px;  --space-8: 64px;
   --space-9: 96px;
 
-  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px; --radius-pill: 999px;
+  /* Thenie's radii: 999px pills everywhere, 16px cards, 8–20px for the rest. */
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 20px;
+  --radius-pill: 999px;
 
-  --shadow-sm: 0 1px 2px rgba(28, 61, 52, 0.08);
-  --shadow-md: 0 4px 16px rgba(28, 61, 52, 0.10);
-  --shadow-lg: 0 12px 32px rgba(28, 61, 52, 0.14);
+  --shadow-sm: 0 1px 2px rgba(43, 38, 32, 0.08);
+  --shadow-md: 0 6px 20px rgba(43, 38, 32, 0.07);
+  --shadow-lg: 0 14px 34px rgba(43, 38, 32, 0.22);
 
-  /* Touch target floor — 44px, from the artifact's mobile spec. */
   --tap: 44px;
 
-  --container: 1200px;
+  --container: 1180px;        /* Thenie's .container */
   --container-narrow: 760px;
 }
 
-/* Dark scheme. The brand is already dark-grounded, so dark mode deepens the
- * page rather than inverting it: the deep green becomes the sheet and beige
- * becomes the ink, which is the 11.32 pairing measured in design.md §3. */
+/* Dark scheme. Thenie ships a single light theme; CLAUDE.md §7 requires
+ * prefers-color-scheme to be respected, so this is derived rather than
+ * supplied. The ink becomes the ground and the cream becomes the ink.
+ * Measured on #1E1A16: cream 15.89, ink-soft-dark 9.92, ink-faint-dark 6.46,
+ * coral 4.95, gold 8.03, focus 9.28. Olive is the one that does not survive
+ * the flip — #5F7A33 lands at 3.56 — so the dark scheme uses olive-light. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --page-bg:  var(--nourish-deep);
-    --page-ink: var(--beige);
-    --card-bg:  #234A40;
-    --ink-muted: var(--beige-deep);   /* 6.47 on the deep ground */
-    --link:     var(--blue-light);    /* 8.15 on the deep ground */
-    --border:        rgba(255, 250, 224, 0.55);
-    --border-subtle: rgba(255, 250, 224, 0.22);
-    --focus-ring:    var(--beige);
+    --cream:        #1E1A16;
+    --cream-soft:   #2B2620;
+    --cream-raised: #2B2620;
+    --ink:          #FAF5E9;   /* 15.89 */
+    --ink-soft:     #CDC3B2;   /*  9.92 */
+    --ink-faint:    #A79D8C;   /*  6.46 */
+    --olive:        #A3C16B;   /*  8.56 — #5F7A33 is 3.56 here */
+    --olive-deep:   #C3D79A;
+    --olive-tint:   #33401C;
+    --page-bg:      #1E1A16;
+    --page-ink:     #FAF5E9;
+    --band-raised:  #2B2620;
+    --bar-bg:       #12100D;
+    --bar-ink:      #FAF5E9;
+    --card-bg:      #2B2620;
+    --brand-ink:    var(--coral-light);      /* 7.08 on the ground */
+    --link:         var(--coral-light);      /* 7.08 on the ground */
+    --link-on-dark: var(--coral-light);
+    --border:        rgba(250, 245, 233, 0.45);  /* 4.22 */
+    --border-subtle: rgba(250, 245, 233, 0.22);
+    --focus-ring:    var(--focus-ring-on-dark); /* 9.28 */
+    --btn-ghost-bg:  #33401C;
+    --btn-ghost-ink: #C3D79A;
+    --shadow:        rgba(0, 0, 0, 0.55);
   }
 }
 
 :root[data-theme="dark"] {
-  --page-bg:  var(--nourish-deep);
-  --page-ink: var(--beige);
-  --card-bg:  #234A40;
-  --ink-muted: var(--beige-deep);
-  --link:     var(--blue-light);
-  --border:        rgba(255, 250, 224, 0.55);
-  --border-subtle: rgba(255, 250, 224, 0.22);
-  --focus-ring:    var(--beige);
+  --cream:        #1E1A16;
+  --cream-soft:   #2B2620;
+  --cream-raised: #2B2620;
+  --ink:          #FAF5E9;
+  --ink-soft:     #CDC3B2;
+  --ink-faint:    #A79D8C;
+  --olive:        #A3C16B;
+  --olive-deep:   #C3D79A;
+  --olive-tint:   #33401C;
+  --page-bg:      #1E1A16;
+  --page-ink:     #FAF5E9;
+  --band-raised:  #2B2620;
+  --bar-bg:       #12100D;
+  --bar-ink:      #FAF5E9;
+  --card-bg:      #2B2620;
+  --brand-ink:    var(--coral-light);      /* 7.08 on the ground */
+  --link:         var(--coral-light);
+  --link-on-dark: var(--coral-light);
+  --border:        rgba(250, 245, 233, 0.45);
+  --border-subtle: rgba(250, 245, 233, 0.22);
+  --focus-ring:    var(--focus-ring-on-dark);
+  --btn-ghost-bg:  #33401C;
+  --btn-ghost-ink: #C3D79A;
+  --shadow:        rgba(0, 0, 0, 0.55);
 }
