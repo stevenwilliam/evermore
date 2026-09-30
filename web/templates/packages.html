@@ -13,13 +13,16 @@
           <h2 style="font-size:var(--text-xl)">{{.MealCredits}} porsi</h2>
           <p class="meta">{{rupiah .PerMealIDR}} per porsi</p>
           <p class="price">{{rupiah .PriceIDR}}<small>berlaku {{.ValidityDays}} hari</small></p>
-          <div class="card-foot" style="flex-direction:column;align-items:flex-start;gap:var(--space-2)">
-            {{/* There is no package purchase flow yet — PROGRESS M10 records it
-                 as not built. The control used to link to /app/paket/<slug>,
-                 a route that has never existed, so every click was a 404.
-                 CLAUDE.md §7: a disabled state explains itself. */}}
-            <button class="btn btn-solid" type="button" aria-disabled="true" disabled>Beli paket</button>
-            <p class="btn-reason">Pembelian paket belum tersedia. Hubungi kami lewat WhatsApp untuk memesan paket.</p>
+          <div class="card-foot">
+            {{/* D36: a POST, not a link. The form carries only the package id —
+                 the price is resolved server-side at checkout, so editing this
+                 markup changes which package is bought, never what it costs.
+                 An anonymous visitor is redirected to sign in and back. */}}
+            <form method="post" action="/app/paket/beli" style="margin:0">
+              <input type="hidden" name="package_id" value="{{.ID}}">
+              <input type="hidden" name="idempotency_key" value="{{newkey}}">
+              <button class="btn btn-solid" type="submit">Beli paket</button>
+            </form>
           </div>
         </div>
       </article>

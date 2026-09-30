@@ -38,7 +38,7 @@ described that build; it was replaced on 2026-09-01 when this one started.
 | M7 | Pricing | 🟡 | Resolver, tiers and the four tables proven; live cart resolves 78/75/71 correctly. **No admin price forms** |
 | M8 | Ordering | ✅ | Quote and checkout with tier-on-cart-total, tax split, routing, capacity under lock, idempotency. Driven end-to-end on the deployed site |
 | M9 | Payments | ✅ | Instructions, proof upload with byte-sniffed type, verification queue, verify/reject, expiry releasing capacity and suffix |
-| M10 | Packages & credits | 🟡 | Ledger rules tested; balance and history render; purchase activates on verification. **No purchase checkout or credit redemption flow** — and as of D35 the "Beli paket" control says so instead of linking to `/app/paket/<slug>`, a route that never existed |
+| M10 | Packages & credits | 🟡 | Ledger rules tested; balance and history render. **Package purchase works end to end (D36)** — buy → transfer suffix → proof → finance verify → credits issued, exercised against the running site. **Credit redemption (spending a credit on a slot) is still not built** |
 | M11 | Reports & CSV export | 🟡 | `platform/csvexport` written and tested (pipe-delimited, formula-guarded). **No report screens built on it** |
 | M12 | Notifications | ⬜ | Tables exist; no sender |
 | M13 | Public site (SEO) | ✅ | 7 routes, robots + sitemap + JSON-LD, one h1 per page |
@@ -211,3 +211,47 @@ Two marks were deliberately **not** carried over, and are parked in
 badge, which names a different business, and the Halal Indonesia certification
 mark, which is a third-party certification Evermore has not been shown to hold.
 Evermore's own wordmark takes the badge's place in the hero and the sticky mark.
+
+---
+
+## D36/D37 — package purchase, and the auth defect it uncovered (2026-09-30)
+
+Steven asked for seeded data so he could test purchasing. Two things came out of it.
+
+**The seeded menu was three weeks stale.** It was anchored to 31 Aug–12 Sep;
+re-running `evermore seed` re-anchored it to the current week (36 published
+meals, through 10 Oct).
+
+**The signed-in web surface could not authenticate from a browser at all.**
+D26 made those screens server-rendered, but auth stayed bearer-header-only, and
+a browser puts no header on a navigation or a form POST. Measured:
+
+| Page | Before (cookies only) | After |
+|---|---|---|
+| `/app/pesanan` | 303 → login | **200** |
+| `/app/paket` | 303 → login | **200** |
+
+Every existing test sent a bearer token — precisely what a browser never does —
+so the suite could not see it.
+
+**Package purchase, verified end to end against the running site:**
+
+| Step | Result |
+|---|---|
+| `POST /app/paket/beli` (browser-style, cookies only) | 303 → payment page |
+| Order | `EVM-2609-0002`, type `PACKAGE`, `AWAITING_PAYMENT` |
+| Tax (inclusive, 1100 bps) | 1.279.279 + 140.721 = **1.420.000**, reconciles |
+| Transfer suffix | **Rp 1.420.333** (rounding 333) |
+| `order_line` | `package_id` set, `scheduled_meal_id` null, `pkg_normal` |
+| `customer_package` | `PENDING`, no dates — as the activation code expects |
+| Verify before proof | **refused**, `PAYMENT_NOT_AWAITING_PROOF` — state machine holds |
+| Upload proof → verify | order `PAID`, package `ACTIVE`, expires 2026-12-29 |
+| Credit ledger | `PURCHASE +20`; balance **13 → 33** |
+
+| Gate | Result |
+|---|---|
+| `go build`, `go vet`, `go test ./...` | ✅ 10 packages pass |
+| `TestSignedInPagesAuthenticateFromCookiesAlone` | ✅ and **proven to fail** with the fix disabled |
+| `scripts/contrast.py` | ✅ 61/61 |
+
+Still not built: **credit redemption** — spending a credit on a schedule slot.

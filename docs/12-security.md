@@ -166,3 +166,28 @@ finished audit:
    backup script is not written, and an untested restore is not a backup.
 7. **Load and lockout testing** — the rate limiter is in-memory and correct for
    one node; it has not been exercised under load.
+
+## Session transport on the server-rendered surface (D37, 2026-09-30)
+
+| Control | Where | Proof |
+|---|---|---|
+| Access token is never readable from JavaScript | `evermore_session` is `HttpOnly` — `auth.go setSessionCookie` | `TestSignedInPagesAuthenticateFromCookiesAlone` asserts `HttpOnly` from the `Set-Cookie` header, not from the jar (a jar reports neither flag, so an assertion made against it always passes) |
+| The session cookie cannot outlive its credential | `MaxAge = AccessTokenTTL` (15 min default, capped at 1h by config validation) | same test asserts `Path` and lifetime wiring |
+| A cross-site POST cannot ride the session | `SameSite=Lax` | same test asserts `SameSite` |
+| Refresh token stays narrowly scoped | `evermore_refresh` remains `Path=/api/v1/auth`, `SameSite=Strict` | unchanged from the original design |
+| Logout ends the browser session immediately | `clearSessionCookie` alongside `clearRefreshCookie` | `auth.go Logout` |
+
+**Why this exists.** D26 made the signed-in screens server-rendered, but
+`Authenticate` read only the `Authorization` header. A browser attaches no
+header to a link click or a form POST, so the entire `/app/*` surface bounced a
+signed-in customer back to the login page. Putting the short-lived access token
+in an HttpOnly cookie is **stricter** than the previous intent of holding it in
+JavaScript memory — which could not survive the full-page navigation that
+followed login in any case.
+
+**The gap this leaves.** When the 15-minute access token expires the customer is
+returned to the login page rather than refreshed silently: the refresh cookie is
+scoped to `/api/v1/auth` and is not sent to `/app/*`, deliberately. A silent
+refresh would need either a scheduled call to the refresh endpoint from the page
+or a widening of that scope, and widening it is the worse trade. Recorded rather
+than done.

@@ -72,7 +72,7 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	authSvc := auth.NewService(auth.Options{
 		DB: d.DB, Tokens: tokens, RefreshTTL: d.Cfg.RefreshTokenTTL,
 	})
-	ah := NewAuthHandler(authSvc, tokens, d.Cfg.IsProduction())
+	ah := NewAuthHandler(authSvc, tokens, d.Cfg.IsProduction(), d.Cfg.AccessTokenTTL)
 
 	orderSvc := ordering.NewService(d.DB, d.Cfg.Location, nil)
 	paySvc := payments.NewService(d.DB, d.Store, d.Cfg.Location, nil)
@@ -164,6 +164,7 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	appGroup.POST("/pembayaran/:id/bukti", RequireAuth(), RateLimit(limiter, rlWrite), app.UploadProof)
 	appGroup.GET("/pesanan", app.Orders)
 	appGroup.GET("/paket", app.Packages)
+	appGroup.POST("/paket/beli", RequireAuth(), RateLimit(limiter, rlWrite), app.BuyPackage)
 
 	// --- back office ---
 	bo := r.Group("/bo", Authenticate(tokens, authSvc), RequireAuth())

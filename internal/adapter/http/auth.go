@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -17,13 +18,17 @@ const principalKey = "principal"
 
 // AuthHandler serves the identity endpoints.
 type AuthHandler struct {
-	svc    *auth.Service
-	tokens *security.TokenIssuer
-	secure bool // set Secure on the refresh cookie
+	svc       *auth.Service
+	tokens    *security.TokenIssuer
+	secure    bool // set Secure on the auth cookies
+	accessTTL time.Duration
 }
 
-func NewAuthHandler(svc *auth.Service, tokens *security.TokenIssuer, secure bool) *AuthHandler {
-	return &AuthHandler{svc: svc, tokens: tokens, secure: secure}
+func NewAuthHandler(svc *auth.Service, tokens *security.TokenIssuer, secure bool, accessTTL time.Duration) *AuthHandler {
+	if accessTTL <= 0 {
+		accessTTL = 15 * time.Minute
+	}
+	return &AuthHandler{svc: svc, tokens: tokens, secure: secure, accessTTL: accessTTL}
 }
 
 // Authenticate parses the bearer token and attaches the principal.
@@ -114,6 +119,11 @@ func bearer(c *gin.Context) string {
 	if len(h) > len(prefix) && strings.EqualFold(h[:len(prefix)], prefix) {
 		return strings.TrimSpace(h[len(prefix):])
 	}
+	// The header wins; the cookie is what makes the server-rendered surface
+	// work at all, because a browser navigation carries no header (D37).
+	if v, err := c.Cookie(sessionCookie); err == nil && v != "" {
+		return v
+	}
 	return ""
 }
 
@@ -125,6 +135,22 @@ type loginRequest struct {
 }
 
 const refreshCookie = "evermore_refresh"
+
+// sessionCookie carries the SHORT-LIVED access token for the server-rendered
+// surface (D37).
+//
+// D26 made the signed-in screens Go templates rather than a SPA, but auth was
+// left bearer-header-only. A browser cannot put an Authorization header on a
+// link click or a form POST, so /app/pesanan, /app/paket and /app/checkout all
+// redirected to the login page for a signed-in user — proven by requesting
+// them with cookies and without the header.
+//
+// The token is HttpOnly, so this is stricter than the previous intent of
+// holding it in JavaScript memory, and its lifetime is the access token's own:
+// the cookie cannot outlive the credential inside it. SameSite=Lax is what
+// keeps a cross-site form POST from riding on it, which matters now that a
+// cookie — not a header the attacker cannot set — carries the session.
+const sessionCookie = "evermore_session"
 
 // Login issues tokens. The refresh token also goes into an HttpOnly cookie so
 // a browser client never has to keep it in JavaScript-reachable storage.
@@ -154,6 +180,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	h.setRefreshCookie(c, tokens.RefreshToken)
+	h.setSessionCookie(c, tokens.AccessToken)
 	OK(c, http.StatusOK, gin.H{
 		"access_token": tokens.AccessToken,
 		"token_type":   tokens.TokenType,
@@ -194,6 +221,7 @@ func (h *AuthHandler) Refresh(c *gin.Context) {
 	}
 
 	h.setRefreshCookie(c, tokens.RefreshToken)
+	h.setSessionCookie(c, tokens.AccessToken)
 	OK(c, http.StatusOK, gin.H{
 		"access_token": tokens.AccessToken,
 		"token_type":   tokens.TokenType,
@@ -208,6 +236,9 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 		_ = h.svc.Logout(c.Request.Context(), raw)
 	}
 	h.clearRefreshCookie(c)
+	// Clear the session too, or the browser keeps navigating as the signed-in
+	// user until the access token expires on its own.
+	h.clearSessionCookie(c)
 	OK(c, http.StatusOK, gin.H{"status": "logged_out"})
 }
 
@@ -266,6 +297,25 @@ func (h *AuthHandler) setRefreshCookie(c *gin.Context, token string) {
 		HttpOnly: true,
 		Secure:   h.secure,
 		SameSite: http.SameSiteStrictMode,
+	})
+}
+
+func (h *AuthHandler) setSessionCookie(c *gin.Context, token string) {
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     sessionCookie,
+		Value:    token,
+		Path:     "/",
+		MaxAge:   int(h.accessTTL.Seconds()),
+		HttpOnly: true,
+		Secure:   h.secure,
+		SameSite: http.SameSiteLaxMode,
+	})
+}
+
+func (h *AuthHandler) clearSessionCookie(c *gin.Context) {
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name: sessionCookie, Value: "", Path: "/",
+		MaxAge: -1, HttpOnly: true, Secure: h.secure, SameSite: http.SameSiteLaxMode,
 	})
 }
 

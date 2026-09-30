@@ -167,7 +167,15 @@ var funcs = template.FuncMap{
 	"isodate":   isodate,
 	"signed":    signed,
 	"photo":     photo,
+	"newkey":    newkey,
 }
+
+// newkey mints an idempotency key for a form.
+//
+// Called once per rendered form, so a browser that double-submits the SAME
+// page sends the same key twice and places one order, while a genuine second
+// purchase from a freshly loaded page gets a new one.
+func newkey() string { return uuid.NewString() }
 
 // photo maps a stable id to one of the food photographs in
 // web/public/images/thenie/. It is deterministic, so a meal keeps the same

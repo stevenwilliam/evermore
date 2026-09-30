@@ -270,6 +270,42 @@ func (h *AppHandler) PlaceOrder(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "/app/pembayaran/"+orderID.String())
 }
 
+// BuyPackage places an order for a single credit package.
+//
+// D36: this deliberately bypasses the cart. A package has no service date,
+// address, kitchen or delivery, so the cut-off, routing and capacity checks
+// Checkout exists to run have nothing to act on. Everything after the order —
+// the transfer suffix, the payment, the verification queue and the credit
+// issuance — is the shared path.
+func (h *AppHandler) BuyPackage(c *gin.Context) {
+	ctx := c.Request.Context()
+	custID, ok := CustomerIDOf(c)
+	if !ok {
+		// Send them to sign in and back to the packages page afterwards,
+		// rather than failing a POST they cannot retry.
+		c.Redirect(http.StatusSeeOther, "/app/masuk?next=/paket")
+		return
+	}
+	packageID, err := uuid.Parse(c.PostForm("package_id"))
+	if err != nil {
+		Fail(c, apierror.Validation("Paket tidak dikenali."))
+		return
+	}
+
+	// From the form, so a double-submitted browser POST buys one package.
+	key := c.PostForm("idempotency_key")
+	if _, err := uuid.Parse(key); err != nil {
+		key = uuid.NewString()
+	}
+
+	orderID, _, err := h.orders.BuyPackage(ctx, custID, packageID, key)
+	if err != nil {
+		Fail(c, checkoutError(err))
+		return
+	}
+	c.Redirect(http.StatusSeeOther, "/app/pembayaran/"+orderID.String())
+}
+
 // Payment renders the transfer instructions.
 func (h *AppHandler) Payment(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -495,9 +531,25 @@ func checkoutError(err error) error {
 			"Kapasitas untuk tanggal dan jam itu sudah penuh.")
 	case errors.Is(err, ordering.ErrAddressNotOwned):
 		return apierror.NotFound("Alamat tidak ditemukan.")
+	case errors.Is(err, ordering.ErrPackageNotForSale):
+		return apierror.Conflict(apierror.CodeMenuNotPublished,
+			"Paket itu sudah tidak dijual.")
+	case errors.Is(err, ordering.ErrNoPackagePrice):
+		// Never guess a price (02-business-rules §5.1): the purchase is
+		// blocked and the customer is told, rather than charged a default.
+		return apierror.Conflict(apierror.CodeMenuNotPublished,
+			"Harga paket belum tersedia untuk akun Anda. Hubungi kami lewat WhatsApp.")
 	case errors.Is(err, ordering.ErrMealNotPublished):
 		return apierror.Conflict(apierror.CodeMenuNotPublished,
 			"Menu itu belum terbit atau sudah ditarik.")
+	case errors.Is(err, ordering.ErrPackageNotForSale):
+		return apierror.Conflict(apierror.CodeMenuNotPublished,
+			"Paket itu sudah tidak dijual.")
+	case errors.Is(err, ordering.ErrNoPackagePrice):
+		// Never guess a price (02-business-rules §5.1): the purchase is
+		// blocked and the customer is told, rather than charged a default.
+		return apierror.Conflict(apierror.CodeMenuNotPublished,
+			"Harga paket belum tersedia untuk akun Anda. Hubungi kami lewat WhatsApp.")
 	case strings.Contains(err.Error(), "ADDRESS_NOT_SERVICEABLE"):
 		return apierror.Conflict(apierror.CodeNotServiceable,
 			"Alamat ini di luar wilayah antar kami.")
