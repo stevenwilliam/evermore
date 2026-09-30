@@ -254,4 +254,14 @@ so the suite could not see it.
 | `TestSignedInPagesAuthenticateFromCookiesAlone` | ✅ and **proven to fail** with the fix disabled |
 | `scripts/contrast.py` | ✅ 61/61 |
 
+**D38 follow-up.** The first click of the live button returned a raw JSON 401:
+the route carried `RequireAuth()`, which answers before the handler and so beat
+the handler's own login redirect. `/paket` is public, so the button is visible
+signed-out. Fixed and covered by `TestBuyPackageSignedOutRedirectsToLogin`.
+
+| Path | Result |
+|---|---|
+| signed OUT → click Beli paket | **303 → `/app/masuk?next=/paket`** |
+| signed IN → click Beli paket | **303 → the payment page** |
+
 Still not built: **credit redemption** — spending a credit on a schedule slot.

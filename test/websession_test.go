@@ -3,8 +3,10 @@ package test
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/cookiejar"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -103,5 +105,38 @@ func TestSignedInPagesAuthenticateFromCookiesAlone(t *testing.T) {
 		if strings.Contains(loc, "/app/masuk") {
 			t.Errorf("%s: redirected to the login page while holding a valid session cookie", path)
 		}
+	}
+}
+
+// D38: a signed-out visitor clicking "Beli paket" must be sent to the login
+// page, not handed a JSON 401.
+//
+// /paket is a PUBLIC page, so the buy button is visible to anyone. The route
+// originally carried RequireAuth(), which answers before the handler runs and
+// renders a raw error object into the browser window — which is exactly what
+// Steven saw. The handler checks the session itself and redirects instead.
+func TestBuyPackageSignedOutRedirectsToLogin(t *testing.T) {
+	seedOnce(t)
+	srv := testServer(t)
+
+	client := srv.Client()
+	client.CheckRedirect = func(*http.Request, []*http.Request) error {
+		return http.ErrUseLastResponse
+	}
+
+	form := url.Values{"package_id": {"00000000-0000-0000-0000-000000000000"}}
+	resp, err := client.PostForm(srv.URL+"/app/paket/beli", form)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusSeeOther {
+		body, _ := io.ReadAll(resp.Body)
+		t.Fatalf("got %d body %q, want 303 to the login page — a browser must never be shown a JSON error object",
+			resp.StatusCode, strings.TrimSpace(string(body)))
+	}
+	if loc := resp.Header.Get("Location"); !strings.HasPrefix(loc, "/app/masuk") {
+		t.Errorf("Location is %q, want the login page", loc)
 	}
 }

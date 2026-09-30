@@ -164,7 +164,11 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	appGroup.POST("/pembayaran/:id/bukti", RequireAuth(), RateLimit(limiter, rlWrite), app.UploadProof)
 	appGroup.GET("/pesanan", app.Orders)
 	appGroup.GET("/paket", app.Packages)
-	appGroup.POST("/paket/beli", RequireAuth(), RateLimit(limiter, rlWrite), app.BuyPackage)
+	// No RequireAuth: /paket is a PUBLIC page, so a signed-out visitor sees
+	// the buy button. RequireAuth would answer their click with a raw JSON
+	// 401 before the handler ran; BuyPackage checks the session itself and
+	// redirects them to sign in and come back (D38).
+	appGroup.POST("/paket/beli", RateLimit(limiter, rlWrite), app.BuyPackage)
 
 	// --- back office ---
 	bo := r.Group("/bo", Authenticate(tokens, authSvc), RequireAuth())
