@@ -207,6 +207,18 @@ CHECKS: list[tuple[str, str, str, dict]] = [
     ("hero scrim .62 — the wordmark band", CREAM, "rgba(9,7,5,0.62)", {"over_white": True}),
     ("hero scrim .56 — lightest band", CREAM, "rgba(9,7,5,0.56)", {"over_white": True}),
     ("THENIE scrim .15 (REJECTED)", CREAM, "rgba(9,7,5,0.15)", {"over_white": True}),
+
+    # The bars (D39). The masthead and the footer are ONE colour, and both
+    # read --bar-bg/--bar-ink so they cannot drift apart per scheme.
+    ("cream-soft on the bar #55702E", SOFT, "#55702E", {}),
+    ("white on the bar #55702E", CREAM, "#55702E", {}),
+    ("cream-soft on the dark bar #2B3A18", SOFT, "#2B3A18", {}),
+    ("muted on the fine-print band #3E5321", "#CDC3B2", "#3E5321", {}),
+    ("link tint on the fine-print band", "#DCE9F7", "#3E5321", {}),
+    # The dark-scheme defect this change introduced and then fixed: .footer
+    # read --beige, which resolves to #2B2620 in dark mode, and painted dark
+    # ink on the mid-green bar. Kept so the alias cannot creep back.
+    ("ink on the bar (REJECTED dark-mode footer)", INK, "#55702E", {}),
 ]
 
 # What 10-design-system.md records. A drift between the sheet and the
@@ -274,6 +286,12 @@ RECORDED: dict[str, float] = {
     "hero scrim .62 — the wordmark band": 5.82,
     "hero scrim .56 — lightest band": 4.66,
     "THENIE scrim .15 (REJECTED)": 1.40,
+    "cream-soft on the bar #55702E": 5.16,
+    "white on the bar #55702E": 5.61,
+    "cream-soft on the dark bar #2B3A18": 11.21,
+    "muted on the fine-print band #3E5321": 4.89,
+    "link tint on the fine-print band": 6.92,
+    "ink on the bar (REJECTED dark-mode footer)": 2.67,
 }
 
 def main(argv: list[str]) -> int:

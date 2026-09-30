@@ -54,6 +54,18 @@
   --gold:          #D9A867;
   --ribbon:        #E4D3AA;  /* ink on it 10.13 */
 
+  /* ---- The bars (D39) ----
+   * The masthead and the footer are ONE colour. They were black (--ink) and
+   * green respectively, which read as two unrelated chromes on the same page.
+   *
+   * --bar-green is lighter than --olive-deep and still clears AA at BODY size
+   * (5.16), not merely at the bar's 19px/700 — so every string in a bar is
+   * legal regardless of size. --olive #5F7A33 is the obvious lighter choice
+   * and is REJECTED: cream-soft on it is 4.47, under the body floor, legal
+   * only while every string stays 19px/700. */
+  --bar-green:      #55702E;  /* cream-soft 5.16 AA, white 5.61 AA */
+  --bar-green-deep: #3E5321;  /* the fine-print band: cream-soft 7.83 AAA */
+
   /* ---- Lines and focus ---- */
   /* Decorative hairline only — composites to #D0C9C0 on white and measures
    * 1.64. Never a control edge, never a focus ring. */
@@ -80,8 +92,8 @@
   --page-bg:      var(--cream);
   --page-ink:     var(--ink);
   --band-raised:  var(--cream-soft);   /* the alternating section band */
-  --bar-bg:       var(--ink);          /* masthead / footer */
-  --bar-ink:      var(--cream-soft);   /* 13.78 on the bar */
+  --bar-bg:       var(--bar-green);    /* masthead AND footer — one chrome */
+  --bar-ink:      var(--cream-soft);   /* 5.16 on the bar */
   --card-bg:      var(--cream-raised);
   /* The brand colour as INK. Scheme-aware, because --coral-deep measures
    * 3.38 on the dark ground and --coral-light measures 2.26 on white. */
@@ -112,9 +124,9 @@
    *
    * The dark ground is now --ink #2B2620 rather than a green. */
   --nourish-deep:  var(--ink);        /* dark ground, active chip, callout rule */
-  --nourish:       var(--olive-deep); /* the footer bar; cream-soft on it 7.83.
-                                       * NOT --olive #5F7A33: that is 4.47,
-                                       * four hundredths under the body floor. */
+  --nourish:       var(--bar-green);  /* the footer bar, same colour as the
+                                       * masthead (D39). NOT --olive #5F7A33:
+                                       * that is 4.47, under the body floor. */
   --beige:         var(--cream-soft); /* ink on the dark ground: 13.78 */
   --beige-deep:    #CDC3B2;           /* muted ink on the dark ground: 8.60 */
   --surface:       var(--cream-raised);
@@ -189,7 +201,7 @@
     --page-bg:      #1E1A16;
     --page-ink:     #FAF5E9;
     --band-raised:  #2B2620;
-    --bar-bg:       #12100D;
+    --bar-bg:       #2B3A18;   /* dark green, cream-soft 11.21 AAA */
     --bar-ink:      #FAF5E9;
     --card-bg:      #2B2620;
     --brand-ink:    var(--coral-light);      /* 7.08 on the ground */
@@ -217,7 +229,7 @@
   --page-bg:      #1E1A16;
   --page-ink:     #FAF5E9;
   --band-raised:  #2B2620;
-  --bar-bg:       #12100D;
+  --bar-bg:       #2B3A18;   /* dark green, cream-soft 11.21 AAA */
   --bar-ink:      #FAF5E9;
   --card-bg:      #2B2620;
   --brand-ink:    var(--coral-light);      /* 7.08 on the ground */

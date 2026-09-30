@@ -90,7 +90,7 @@ a:hover { text-decoration-thickness: 2px; }
 }
 .masthead a { color: var(--bar-ink); text-decoration: none; }
 .masthead a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
-.masthead :focus-visible { outline-color: var(--beige); }
+.masthead :focus-visible { outline-color: var(--bar-ink); }
 
 .masthead-inner {
   display: flex; align-items: center; gap: var(--space-4);
@@ -343,8 +343,13 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 /* ---------------------------------------------------------------- footer */
 
 .footer {
-  background: var(--nourish);
-  color: var(--beige);
+  /* The SAME tokens as the masthead, not --nourish/--beige (D39).
+   * Those are scheme-flipping aliases: in dark mode --beige resolves to
+   * #2B2620 and painted dark ink on the mid-green footer at 2.67, a real AA
+   * failure, while the masthead went dark green — two chromes again. Reading
+   * --bar-bg/--bar-ink makes the two bars one thing by construction. */
+  background: var(--bar-bg);
+  color: var(--bar-ink);
   font-size: var(--text-bar);      /* the bar rule applies to the footer too */
   font-weight: var(--w-eyebrow);
   /* Bottom padding is 0: .footer-fineprint is the last child and paints its
@@ -354,15 +359,18 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
    * section and the footer. */
   padding-block: var(--space-7) 0;
 }
-.footer a { color: var(--beige); }
-.footer :focus-visible { outline-color: var(--beige); }
+.footer a { color: var(--bar-ink); }
+.footer :focus-visible { outline-color: var(--bar-ink); }
 .footer-grid { display: grid; gap: var(--space-6); }
 @media (min-width: 768px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr; } }
 /* Body copy inside the footer drops back to the deep ground for legibility:
  * on the mid-green, 17px beige is 3.93 and fails. Anything not at 19px/700
  * lives in this block, which paints its own darker ground. */
 .footer-fineprint {
-  background: var(--nourish-deep); color: var(--beige-deep);
+  /* A DEEPER GREEN band, not the near-black it used to be: the footer should
+   * step down within one colour family rather than change chrome. Measured on
+   * #3E5321 — muted ink 4.89, the link tint 6.92 (D39). */
+  background: var(--bar-green-deep); color: var(--beige-deep);
   font-size: var(--text-sm); font-weight: var(--w-body);
   padding-block: var(--space-4);
   margin-top: var(--space-7);

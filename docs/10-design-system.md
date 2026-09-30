@@ -230,6 +230,47 @@ This is arithmetic on the worst case, not a sample of the rendered pixels.
 Sampling the real composite needs a screenshot, and **screenshots were
 unavailable when this was written** — recorded in `RUN-WHEN-BACK.md §Z2`.
 
+### 2.11 The bars — one chrome (D39)
+
+The masthead was `--ink` (near-black) while the footer was green. On a page
+carrying both — every `/app/*` screen — that read as two unrelated chromes.
+They are now **one colour**, and both read the same pair of tokens so they
+cannot drift apart again:
+
+```css
+.masthead, .footer { background: var(--bar-bg); color: var(--bar-ink); }
+```
+
+| Token | Light | Dark |
+|---|---|---|
+| `--bar-bg` | `#55702E` | `#2B3A18` |
+| `--bar-ink` | `--cream-soft` | `--cream-soft` |
+
+| Pairing | Ratio | Verdict |
+|---|---|---|
+| cream-soft on the bar `#55702E` | **5.16** | AA |
+| white on the bar `#55702E` | **5.61** | AA |
+| cream-soft on the dark bar `#2B3A18` | **11.21** | AAA |
+| muted `#CDC3B2` on the fine-print band `#3E5321` | **4.89** | AA |
+| link tint on the fine-print band | **6.92** | AA |
+| `--ink` on the bar | **2.67** | **REJECTED** |
+
+**Why `#55702E` and not `--olive #5F7A33`.** The lighter olive is the obvious
+choice and puts cream-soft at **4.47** — under the body floor, legal only for
+as long as every string in a bar stays 19px/700. `#55702E` clears AA at
+**body** size, so the bar is safe whatever size a string ends up.
+
+**The 2.67 row is a defect this change introduced and then fixed.** `.footer`
+read `--nourish` and `--beige`, which are **scheme-flipping aliases**: in dark
+mode `--beige` resolves to `#2B2620`, so the footer painted dark ink on the
+mid-green bar while the masthead went dark green — a contrast failure and the
+two-chrome problem back again, in the other scheme. Reading `--bar-bg` and
+`--bar-ink` makes the bars one thing by construction. It is the same class of
+bug as `.hero-art` in D34: an alias that changes meaning with the scheme.
+
+The fine-print strip is `#3E5321` — a **deeper green**, not the near-black it
+used to be, so the footer steps down within one colour family.
+
 ---
 
 ## 3. Typography — unchanged
