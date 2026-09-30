@@ -292,6 +292,11 @@ type pageData struct {
 	Quote            *ordering.Quote
 	QuoteError       string
 	Addresses        []AddressView
+	Allergens        []AllergenView
+	// Notice is a success line; Message is the failure line. Both arrive as
+	// query strings after a POST-redirect-GET, so a refresh cannot resubmit.
+	Notice  string
+	MapsKey string
 	Orders           []OrderView
 	Payment          *payments.Instructions
 	PaymentLines     []PaymentLine

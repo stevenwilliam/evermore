@@ -164,6 +164,17 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	appGroup.POST("/pembayaran/:id/bukti", RequireAuth(), RateLimit(limiter, rlWrite), app.UploadProof)
 	appGroup.GET("/pesanan", app.Orders)
 	appGroup.GET("/paket", app.Packages)
+
+	// Delivery addresses and the allergen profile (D40). No RequireAuth: each
+	// handler checks the session and redirects a signed-out visitor to the
+	// login page rather than answering a browser with a JSON 401 (D38).
+	appGroup.GET("/alamat", app.Addresses)
+	appGroup.POST("/alamat", RateLimit(limiter, rlWrite), app.AddAddress)
+	appGroup.POST("/alamat/:id/ubah", RateLimit(limiter, rlWrite), app.EditAddress)
+	appGroup.POST("/alamat/:id/utama", RateLimit(limiter, rlWrite), app.DefaultAddress)
+	appGroup.POST("/alamat/:id/hapus", RateLimit(limiter, rlWrite), app.RemoveAddress)
+	appGroup.GET("/alergi", app.Allergies)
+	appGroup.POST("/alergi", RateLimit(limiter, rlWrite), app.SaveAllergies)
 	// No RequireAuth: /paket is a PUBLIC page, so a signed-out visitor sees
 	// the buy button. RequireAuth would answer their click with a raw JSON
 	// 401 before the handler ran; BuyPackage checks the session itself and

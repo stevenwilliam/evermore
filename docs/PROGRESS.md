@@ -265,3 +265,52 @@ signed-out. Fixed and covered by `TestBuyPackageSignedOutRedirectsToLogin`.
 | signed IN → click Beli paket | **303 → the payment page** |
 
 Still not built: **credit redemption** — spending a credit on a schedule slot.
+
+---
+
+## D40 — addresses and allergies (2026-09-30)
+
+`customer_address` and `customer.allergen_profile` shipped in the first
+migration, and `app-checkout.html` already rendered an address picker — but no
+code path could **write** an address, so the picker was always empty and
+checkout could never be completed by a real customer.
+
+| Surface | Status |
+|---|---|
+| Sign-up collects first address + allergies, atomically | ✅ |
+| `/app/alamat` — list, add, set default, soft-delete | ✅ |
+| `/app/alergi` — edit the profile | ✅ |
+| Checkout picker fed by real data | ✅ |
+| Account links in every nav | ✅ |
+
+**Verified against the running site**
+
+| Check | Result |
+|---|---|
+| Register with address + 2 allergies | 201; profile `["kacang","susu"]`, phone normalised `+6281234567890`, address `is_default`, `geom` generated |
+| Add a second address | 303, saved |
+| Delete the default | soft-deleted, the other **promoted to default** |
+| Save allergy profile | `["telur","gluten"]` |
+| Checkout picker | shows "Kantor", preselected |
+| No pin | refused — "Tandai lokasi di peta…" |
+| Pin in London | refused — "…di luar Indonesia." |
+| Latitude 999 | refused — "Lintang harus antara -90 dan 90." |
+| Unknown allergen slug | refused — "Alergi tidak dikenali: uranium" |
+| **IDOR** — set default / delete another customer's address | **refused both**, victim's row untouched |
+
+| Gate | Result |
+|---|---|
+| `go vet`, `go test ./...` | ✅ 10 packages |
+| `TestAddressRejectsAMissingOrImplausiblePin` (3 subtests) | ✅ |
+| `TestAddressIsScopedToItsOwner` | ✅ |
+| `TestAllergyProfileRefusesAnUnknownSlug` | ✅ |
+| `scripts/contrast.py` | ✅ 67/67 |
+
+**Not verified:** the map picker itself. Google Maps is referrer-restricted and
+screenshots are unavailable (RUN-WHEN-BACK §Z2), so the Places autocomplete and
+the draggable pin have **not been seen working**. The form degrades visibly to
+manual coordinate entry after 4s if Maps does not load, and the server applies
+identical rules to both input paths.
+
+A test account exists in the **dev** database: `budi.test@example.com` /
+`KopiSusuGulaAren2026`.

@@ -29,8 +29,38 @@
       ev.preventDefault();
       if (errBox) { errBox.hidden = true; errBox.textContent = ''; }
 
+      // D40: the register form carries an address and a set of allergies, so
+      // a flat FormData copy is wrong twice — it would put the address fields
+      // at the top level, and repeated `allergen` checkboxes would collapse to
+      // whichever one came last.
+      var ADDRESS_KEYS = ['label', 'recipient_name', 'recipient_phone', 'address_line',
+        'district', 'city', 'province', 'postal_code', 'driver_note',
+        'google_place_id', 'formatted_address'];
+
       var payload = {};
-      new FormData(form).forEach(function (v, k) { payload[k] = v; });
+      var address = {};
+      var hasAddress = false;
+      new FormData(form).forEach(function (v, k) {
+        if (k === 'allergen') return;                 // collected below
+        if (ADDRESS_KEYS.indexOf(k) !== -1) { address[k] = v; hasAddress = true; return; }
+        if (k === 'latitude' || k === 'longitude') { address[k] = v; return; }
+        payload[k] = v;
+      });
+
+      if (hasAddress) {
+        // The server wants numbers, and an empty string is not a number: send
+        // null so it reports a missing pin rather than failing to parse.
+        address.latitude = address.latitude === '' || address.latitude == null
+          ? null : parseFloat(address.latitude);
+        address.longitude = address.longitude === '' || address.longitude == null
+          ? null : parseFloat(address.longitude);
+        payload.address = address;
+      }
+
+      var picked = form.querySelectorAll('input[name="allergen"]:checked');
+      if (picked.length) {
+        payload.allergens = Array.prototype.map.call(picked, function (el) { return el.value; });
+      }
 
       fetch(form.getAttribute('data-endpoint'), {
         method: 'POST',
@@ -147,4 +177,123 @@
     window.addEventListener('resize', sync);
     sync();
   }
+})();
+
+/* D40 — the delivery-address map picker.
+ *
+ * The pin is the source of truth for routing; the text fields are what the
+ * driver reads. latitude/longitude are NOT NULL in the schema, so the form
+ * cannot be saved without a pin — and the server re-validates both, because
+ * this file can be bypassed with curl.
+ *
+ * If Maps never loads (a referrer-restricted key on a dev host is the usual
+ * reason) the manual coordinate inputs are revealed instead. That is a
+ * different way to INPUT the same value, not a weaker rule: the server applies
+ * exactly the same bounds either way. */
+(function () {
+  var form = document.querySelector('[data-address-form]');
+  if (!form) return;
+
+  var latEl = form.querySelector('[data-lat]');
+  var lngEl = form.querySelector('[data-lng]');
+  var manual = form.querySelector('[data-manual-latlng]');
+  var manualLat = form.querySelector('[data-lat-manual]');
+  var manualLng = form.querySelector('[data-lng-manual]');
+  var mapEl = form.querySelector('[data-map]');
+  var hint = form.querySelector('[data-map-hint]');
+  var mapReady = false;
+
+  var setPoint = function (lat, lng) {
+    latEl.value = lat;
+    lngEl.value = lng;
+  };
+
+  // Jakarta, as the starting view only — never submitted unless the pin moves
+  // there deliberately.
+  var CENTRE = { lat: -6.2088, lng: 106.8456 };
+
+  window.evermoreInitMap = function () {
+    mapReady = true;
+    var map = new google.maps.Map(mapEl, {
+      center: CENTRE, zoom: 12, mapTypeControl: false, streetViewControl: false
+    });
+    var marker = new google.maps.Marker({ map: map, position: CENTRE, draggable: true });
+
+    var commit = function (pos) {
+      setPoint(pos.lat(), pos.lng());
+      if (hint) { hint.textContent = 'Pin tersimpan di ' + pos.lat().toFixed(5) + ', ' + pos.lng().toFixed(5) + '.'; }
+    };
+    marker.addListener('dragend', function () { commit(marker.getPosition()); });
+    map.addListener('click', function (e) { marker.setPosition(e.latLng); commit(e.latLng); });
+
+    var search = form.querySelector('[data-places-input]');
+    if (search && google.maps.places) {
+      var ac = new google.maps.places.Autocomplete(search, {
+        componentRestrictions: { country: 'id' },
+        fields: ['geometry', 'place_id', 'formatted_address', 'address_components']
+      });
+      ac.addListener('place_changed', function () {
+        var place = ac.getPlace();
+        if (!place || !place.geometry) return;
+        var loc = place.geometry.location;
+        map.setCenter(loc); map.setZoom(17);
+        marker.setPosition(loc); commit(loc);
+
+        var pid = form.querySelector('[data-place-id]');
+        var fmt = form.querySelector('[data-formatted]');
+        if (pid) pid.value = place.place_id || '';
+        if (fmt) fmt.value = place.formatted_address || '';
+
+        // Prefill the text the driver reads, but leave it editable: the pin is
+        // authoritative for routing, the text is for a human.
+        var byType = {};
+        (place.address_components || []).forEach(function (comp) {
+          comp.types.forEach(function (t) { byType[t] = comp.long_name; });
+        });
+        var set = function (name, v) {
+          var el = form.querySelector('[name="' + name + '"]');
+          if (el && !el.value && v) el.value = v;
+        };
+        set('address_line', place.formatted_address);
+        set('district', byType.administrative_area_level_3 || byType.sublocality_level_1 || byType.locality);
+        set('city', byType.administrative_area_level_2 || byType.locality);
+        set('province', byType.administrative_area_level_1);
+        set('postal_code', byType.postal_code);
+      });
+    }
+  };
+
+  // Mirror the manual inputs into the real hidden fields.
+  var mirror = function () {
+    if (manualLat && manualLng) setPoint(manualLat.value.trim(), manualLng.value.trim());
+  };
+  if (manualLat) manualLat.addEventListener('input', mirror);
+  if (manualLng) manualLng.addEventListener('input', mirror);
+
+  // Give Maps a fair chance, then fall back VISIBLY rather than leaving a dead
+  // grey box and an unsubmittable form.
+  window.setTimeout(function () {
+    if (mapReady) return;
+    if (mapEl) mapEl.hidden = true;
+    if (manual) manual.hidden = false;
+    if (hint) hint.textContent = 'Peta tidak tersedia — isi koordinat di bawah.';
+  }, 4000);
+
+  form.addEventListener('submit', function (ev) {
+    if (!latEl.value || !lngEl.value) {
+      ev.preventDefault();
+      if (manual) manual.hidden = false;
+      if (hint) { hint.textContent = 'Tandai lokasi di peta, atau isi koordinat, sebelum menyimpan.'; }
+      (manualLat || form).focus();
+    }
+  });
+})();
+
+/* A destructive form asks first. */
+(function () {
+  document.querySelectorAll('form[data-confirm]').forEach(function (f) {
+    f.addEventListener('submit', function (ev) {
+      if (!window.confirm(f.getAttribute('data-confirm'))) ev.preventDefault();
+    });
+  });
 })();

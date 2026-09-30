@@ -11,6 +11,7 @@ import (
 
 	"github.com/stevenwilliam/evermore/internal/app/auth"
 	"github.com/stevenwilliam/evermore/internal/platform/apierror"
+	"github.com/stevenwilliam/evermore/internal/platform/sanitize"
 	"github.com/stevenwilliam/evermore/internal/platform/security"
 )
 
@@ -261,6 +262,79 @@ type registerRequest struct {
 	Password string `json:"password"`
 	FullName string `json:"full_name"`
 	Phone    string `json:"phone"`
+
+	// Onboarding (D40). Both optional in the wire format so an existing client
+	// keeps working, but an address that IS supplied is validated in full —
+	// a half-filled address would fail the NOT NULL columns at insert time
+	// with a driver error instead of a readable message.
+	Address   *registerAddress `json:"address"`
+	Allergens []string         `json:"allergens"`
+}
+
+type registerAddress struct {
+	Label     string `json:"label"`
+	Recipient string `json:"recipient_name"`
+	Phone     string `json:"recipient_phone"`
+	Line      string `json:"address_line"`
+	District  string `json:"district"`
+	City      string `json:"city"`
+	Province  string `json:"province"`
+	Postal    string `json:"postal_code"`
+	Note      string `json:"driver_note"`
+	PlaceID   string `json:"google_place_id"`
+	Formatted string `json:"formatted_address"`
+	Lat       *float64 `json:"latitude"`
+	Lng       *float64 `json:"longitude"`
+}
+
+// toRegisterAddress applies the same rules the address screen applies.
+func toRegisterAddress(in *registerAddress) (*auth.RegisterAddress, error) {
+	out := &auth.RegisterAddress{}
+	var err error
+	if out.Label, err = sanitize.Required("label", in.Label, 40); err != nil {
+		return nil, err
+	}
+	if out.Recipient, err = sanitize.Required("recipient_name", in.Recipient, 120); err != nil {
+		return nil, err
+	}
+	if out.Phone, err = sanitize.Phone("recipient_phone", in.Phone); err != nil {
+		return nil, err
+	}
+	if out.Line, err = sanitize.Required("address_line", in.Line, 240); err != nil {
+		return nil, err
+	}
+	if out.District, err = sanitize.Required("district", in.District, 80); err != nil {
+		return nil, err
+	}
+	if out.City, err = sanitize.Required("city", in.City, 80); err != nil {
+		return nil, err
+	}
+	if out.Province, err = sanitize.Required("province", in.Province, 80); err != nil {
+		return nil, err
+	}
+	if out.Postal, err = sanitize.Text("postal_code", in.Postal, 0, 10); err != nil {
+		return nil, err
+	}
+	if out.Note, err = sanitize.Text("driver_note", in.Note, 0, 240); err != nil {
+		return nil, err
+	}
+	if out.Formatted, err = sanitize.Text("formatted_address", in.Formatted, 0, 300); err != nil {
+		return nil, err
+	}
+	if out.PlaceID, err = sanitize.Text("google_place_id", in.PlaceID, 0, 120); err != nil {
+		return nil, err
+	}
+	if in.Lat == nil || in.Lng == nil {
+		return nil, apierror.Validation("Tandai lokasi di peta sebelum mendaftar.")
+	}
+	if err := sanitize.LatLng("latitude", *in.Lat, *in.Lng); err != nil {
+		return nil, apierror.From(err)
+	}
+	if *in.Lat < idnMinLat || *in.Lat > idnMaxLat || *in.Lng < idnMinLng || *in.Lng > idnMaxLng {
+		return nil, apierror.Validation("Titik peta berada di luar Indonesia.")
+	}
+	out.Lat, out.Lng = *in.Lat, *in.Lng
+	return out, nil
 }
 
 // Register creates a customer account.
@@ -270,10 +344,22 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		Fail(c, apierror.Validation(""))
 		return
 	}
-	_, err := h.svc.Register(c.Request.Context(), auth.RegisterInput{
+	in := auth.RegisterInput{
 		Email: req.Email, Password: req.Password,
 		FullName: req.FullName, Phone: req.Phone,
-	})
+	}
+	if req.Address != nil {
+		addr, aerr := toRegisterAddress(req.Address)
+		if aerr != nil {
+			Fail(c, apierror.From(aerr))
+			return
+		}
+		in.Address = addr
+	}
+	// Slugs are validated inside Register, which owns the write and has the
+	// allergen table in the same transaction.
+	in.Allergens = req.Allergens
+	_, err := h.svc.Register(c.Request.Context(), in)
 	switch {
 	case errors.Is(err, auth.ErrEmailTaken):
 		// Registration cannot avoid revealing that an address is taken — the

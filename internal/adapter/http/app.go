@@ -51,6 +51,7 @@ func NewAppHandler(db *sql.DB, repo *postgres.PublicRepo, o *ordering.Service,
 // appPages are the templates this handler owns.
 var appPages = []string{
 	"app-login", "app-register", "app-cart", "app-checkout", "app-payment",
+	"app-addresses", "app-allergies",
 	"app-orders", "app-packages", "bo-dashboard", "bo-payments", "bo-menu",
 }
 
@@ -478,7 +479,25 @@ func (h *AppHandler) Packages(c *gin.Context) {
 // LoginPage and RegisterPage render the forms.
 func (h *AppHandler) LoginPage(c *gin.Context) { h.simplePage(c, "app-login", "Masuk — Evermore") }
 func (h *AppHandler) RegisterPage(c *gin.Context) {
-	h.simplePage(c, "app-register", "Daftar — Evermore")
+	ctx := c.Request.Context()
+	params, err := h.repo.Params(ctx)
+	if err != nil {
+		Fail(c, apierror.Internal(err))
+		return
+	}
+	// D40: sign-up collects the first delivery address and the allergy
+	// profile, so the page needs the allergen list and the Maps key.
+	list, err := h.allergens(ctx, nil)
+	if err != nil {
+		Fail(c, apierror.Internal(err))
+		return
+	}
+	d := h.base(c, params, "", "Daftar — Evermore", "")
+	d.NoIndex = true
+	d.Next = c.Query("next")
+	d.Allergens = list
+	d.MapsKey = h.cfg.GoogleMapsBrowserKey
+	h.render(c, "app-register", http.StatusOK, d)
 }
 
 func (h *AppHandler) simplePage(c *gin.Context, page, title string) {

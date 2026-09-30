@@ -62,6 +62,9 @@
   <li><a href="/paket"{{if eq .Nav "packages"}} aria-current="page"{{end}}>Paket</a></li>
   <li><a href="/untuk-kantor"{{if eq .Nav "corporate"}} aria-current="page"{{end}}>Untuk kantor</a></li>
   <li><a href="/wilayah-antar"{{if eq .Nav "coverage"}} aria-current="page"{{end}}>Wilayah antar</a></li>
+  <li><a href="/app/alamat">Alamat saya</a></li>
+  <li><a href="/app/alergi">Alergi saya</a></li>
+  <li><a href="/app/pesanan">Pesanan saya</a></li>
   <li><a href="/app/masuk">Masuk</a></li>
 </ul>
 
@@ -89,6 +92,11 @@
     </nav>
 
     <div class="masthead-actions">
+      {{/* D40: the account menu. A customer needs a route to their addresses
+           and allergy profile from every signed-in page. */}}
+      <a href="/app/alamat">Alamat</a>
+      <a href="/app/alergi">Alergi</a>
+      <a href="/app/pesanan">Pesanan</a>
       <a href="/app/masuk">Masuk</a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav"
               data-nav-toggle>
@@ -103,6 +111,9 @@
     <a href="/paket">Paket</a>
     <a href="/untuk-kantor">Untuk kantor</a>
     <a href="/wilayah-antar">Wilayah antar</a>
+    <a href="/app/alamat">Alamat saya</a>
+    <a href="/app/alergi">Alergi saya</a>
+    <a href="/app/pesanan">Pesanan saya</a>
     <a href="/app/masuk">Masuk</a>
   </nav>
 </header>

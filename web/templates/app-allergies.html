@@ -1,0 +1,28 @@
+{{define "content"}}
+<section class="section">
+  <div class="container container-narrow">
+    <p class="eyebrow">Akun saya</p>
+    <h1>Alergi saya</h1>
+    <p>Kami menandai menu yang mengandung bahan ini supaya kamu bisa menghindarinya.</p>
+
+    {{if .Notice}}<div class="callout" role="status"><p style="margin:0">{{.Notice}}</p></div>{{end}}
+    {{if .Message}}<div class="callout callout-warn" role="alert"><p style="margin:0">{{.Message}}</p></div>{{end}}
+
+    <form method="post" action="/app/alergi" class="stack" style="margin-top:var(--space-6)">
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend class="eyebrow">Pilih semua yang sesuai</legend>
+        <div class="stack" style="margin-top:var(--space-3)">
+          {{range .Allergens}}
+          <label style="display:flex;gap:var(--space-3);align-items:center;min-height:var(--tap)">
+            <input type="checkbox" name="allergen" value="{{.Slug}}" {{if .Selected}}checked{{end}}>
+            <span>{{.Name}}</span>
+          </label>
+          {{end}}
+        </div>
+      </fieldset>
+      <p><button class="btn btn-primary" type="submit">Simpan profil alergi</button></p>
+      <p class="btn-reason">Menyimpan tanpa mencentang apa pun berarti tidak ada alergi.</p>
+    </form>
+  </div>
+</section>
+{{end}}

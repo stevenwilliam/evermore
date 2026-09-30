@@ -9,6 +9,7 @@ import (
 	"context"
 	"crypto/subtle"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -414,6 +415,24 @@ type RegisterInput struct {
 	Password string
 	FullName string
 	Phone    string
+
+	// Optional onboarding data (D40). Both are written in the SAME
+	// transaction as the account, so registration cannot half-succeed and
+	// leave a customer who can sign in but not check out.
+	//
+	// The address arrives already validated: the HTTP layer owns the field
+	// rules and the Indonesia bounds, because those are product rules and this
+	// package should not grow a second copy of them.
+	Address   *RegisterAddress
+	Allergens []string
+}
+
+// RegisterAddress is a first delivery address supplied at sign-up.
+type RegisterAddress struct {
+	Label, Recipient, Phone            string
+	Line, District, City, Province     string
+	Postal, Note, PlaceID, Formatted   string
+	Lat, Lng                           float64
 }
 
 // Register creates a customer account. Staff accounts are created by an admin,
@@ -457,10 +476,40 @@ func (s *Service) Register(ctx context.Context, in RegisterInput) (uuid.UUID, er
 			`SELECT id FROM customer_type WHERE slug = 'retail' AND is_active`).Scan(&retailID); err != nil {
 			return fmt.Errorf("the 'retail' customer type is missing: %w", err)
 		}
-		if _, err := tx.ExecContext(ctx, `
-			INSERT INTO customer (id, user_id, customer_type_id, full_name)
-			VALUES ($1, $2, $3, $4)`, id.New(), userID, retailID, name); err != nil {
+		customerID := id.New()
+		// An unknown slug is refused, not dropped: a profile that silently
+		// loses an allergy is worse than a rejected form (CLAUDE.md §4 —
+		// reject, never silently repair).
+		allergens, err := knownAllergens(ctx, tx, in.Allergens)
+		if err != nil {
 			return err
+		}
+		profile, err := json.Marshal(allergens)
+		if err != nil {
+			return err
+		}
+		if _, err := tx.ExecContext(ctx, `
+			INSERT INTO customer (id, user_id, customer_type_id, full_name, allergen_profile)
+			VALUES ($1, $2, $3, $4, $5)`, customerID, userID, retailID, name, profile); err != nil {
+			return err
+		}
+		if a := in.Address; a != nil {
+			// The first address is always the default: a customer with an
+			// address but no default cannot check out, because the picker
+			// preselects nothing and the form requires a choice.
+			if _, err := tx.ExecContext(ctx, `
+				INSERT INTO customer_address
+				  (id, customer_id, label, recipient_name, recipient_phone,
+				   address_line, district, city, province, postal_code,
+				   latitude, longitude, google_place_id, formatted_address,
+				   driver_note, is_default, is_active)
+				VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,
+				        NULLIF($13,''), NULLIF($14,''), $15, true, true)`,
+				id.New(), customerID, a.Label, a.Recipient, a.Phone,
+				a.Line, a.District, a.City, a.Province, a.Postal,
+				a.Lat, a.Lng, a.PlaceID, a.Formatted, a.Note); err != nil {
+				return err
+			}
 		}
 		var roleID uuid.UUID
 		if err := tx.QueryRowContext(ctx,
@@ -475,6 +524,42 @@ func (s *Service) Register(ctx context.Context, in RegisterInput) (uuid.UUID, er
 		return uuid.Nil, err
 	}
 	return userID, nil
+}
+
+// knownAllergens keeps an unrecognised slug out of the profile.
+func knownAllergens(ctx context.Context, tx *sql.Tx, want []string) ([]string, error) {
+	out := []string{}
+	if len(want) == 0 {
+		return out, nil
+	}
+	rows, err := tx.QueryContext(ctx, `SELECT slug FROM allergen`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	known := map[string]bool{}
+	for rows.Next() {
+		var s string
+		if err := rows.Scan(&s); err != nil {
+			return nil, err
+		}
+		known[s] = true
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	seen := map[string]bool{}
+	for _, s := range want {
+		if !known[s] {
+			return nil, apierror.Validation("Alergi tidak dikenali: " + s)
+		}
+		if seen[s] {
+			continue
+		}
+		seen[s] = true
+		out = append(out, s)
+	}
+	return out, nil
 }
 
 // ValidatePassword enforces the password policy.

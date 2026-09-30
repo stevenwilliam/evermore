@@ -2,7 +2,8 @@
 <section class="section">
   <div class="container container-narrow">
     <h1>Daftar</h1>
-    <form class="stack" data-auth-form data-endpoint="/api/v1/auth/register" data-next="/app/masuk">
+    <form class="stack" data-auth-form data-address-form
+          data-endpoint="/api/v1/auth/register" data-next="/app/masuk">
       <p>
         <label for="full_name">Nama lengkap</label><br>
         <input class="searchbox" style="width:100%" type="text" id="full_name" name="full_name"
@@ -25,10 +26,87 @@
                autocomplete="new-password" minlength="12" required>
         <span class="meta">Minimal 12 karakter.</span>
       </p>
+      <h2 style="margin-top:var(--space-7)">Alamat pengantaran</h2>
+      <p class="meta">Alamat pertama kamu. Bisa ditambah atau diubah kapan saja di menu Alamat.</p>
+
+      <p>
+        <label for="label">Label</label><br>
+        <input class="searchbox" style="width:100%" id="label" name="label" maxlength="40"
+               placeholder="Rumah, Kantor" required>
+      </p>
+      <p>
+        <label for="recipient_name">Nama penerima</label><br>
+        <input class="searchbox" style="width:100%" id="recipient_name" name="recipient_name"
+               maxlength="120" required>
+      </p>
+      <p>
+        <label for="recipient_phone">Telepon penerima</label><br>
+        <input class="searchbox" style="width:100%" id="recipient_phone" name="recipient_phone"
+               type="tel" maxlength="24" required>
+      </p>
+      <p>
+        <label for="addr-search">Cari alamat di peta</label><br>
+        <input class="searchbox" style="width:100%" id="addr-search" type="text"
+               data-places-input autocomplete="off" placeholder="Ketik nama jalan atau gedung">
+        <span class="meta" data-map-hint>Pilih dari daftar, lalu geser pin ke titik yang tepat.</span>
+      </p>
+
+      <div data-map style="height:260px;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-strong)"></div>
+
+      <div data-manual-latlng hidden>
+        <div class="callout callout-warn"><p style="margin:0">
+          Peta tidak bisa dimuat. Masukkan koordinat manual.
+        </p></div>
+        <p><label for="lat-manual">Lintang</label><br>
+          <input class="searchbox" style="width:100%" id="lat-manual" inputmode="decimal"
+                 data-lat-manual placeholder="-6.2088"></p>
+        <p><label for="lng-manual">Bujur</label><br>
+          <input class="searchbox" style="width:100%" id="lng-manual" inputmode="decimal"
+                 data-lng-manual placeholder="106.8456"></p>
+      </div>
+
+      <input type="hidden" name="latitude" data-lat>
+      <input type="hidden" name="longitude" data-lng>
+      <input type="hidden" name="google_place_id" data-place-id>
+      <input type="hidden" name="formatted_address" data-formatted>
+
+      <p>
+        <label for="address_line">Alamat lengkap</label><br>
+        <textarea class="searchbox" style="width:100%" id="address_line" name="address_line"
+                  rows="2" maxlength="240" required></textarea>
+      </p>
+      <p><label for="district">Kecamatan</label><br>
+        <input class="searchbox" style="width:100%" id="district" name="district" maxlength="80" required></p>
+      <p><label for="city">Kota</label><br>
+        <input class="searchbox" style="width:100%" id="city" name="city" maxlength="80" required></p>
+      <p><label for="province">Provinsi</label><br>
+        <input class="searchbox" style="width:100%" id="province" name="province" maxlength="80" required></p>
+      <p><label for="postal_code">Kode pos</label><br>
+        <input class="searchbox" style="width:100%" id="postal_code" name="postal_code" maxlength="10" inputmode="numeric"></p>
+      <p><label for="driver_note">Catatan untuk kurir</label><br>
+        <input class="searchbox" style="width:100%" id="driver_note" name="driver_note" maxlength="240"
+               placeholder="Pagar abu-abu, bel sekali"></p>
+
+      <h2 style="margin-top:var(--space-7)">Alergi</h2>
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend class="meta">Pilih semua yang sesuai. Boleh dikosongkan.</legend>
+        <div class="stack" style="margin-top:var(--space-3)">
+          {{range .Allergens}}
+          <label style="display:flex;gap:var(--space-3);align-items:center;min-height:var(--tap)">
+            <input type="checkbox" name="allergen" value="{{.Slug}}">
+            <span>{{.Name}}</span>
+          </label>
+          {{end}}
+        </div>
+      </fieldset>
+
       <p role="alert" aria-live="polite" data-auth-error class="callout callout-warn" hidden></p>
       <p><button class="btn btn-solid" type="submit">Daftar</button></p>
       <p class="meta">Sudah punya akun? <a href="/app/masuk">Masuk</a></p>
     </form>
   </div>
 </section>
+{{if .MapsKey}}
+<script defer src="https://maps.googleapis.com/maps/api/js?key={{.MapsKey}}&libraries=places&loading=async&callback=evermoreInitMap"></script>
+{{end}}
 {{end}}
