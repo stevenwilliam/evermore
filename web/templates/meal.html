@@ -1,12 +1,12 @@
 {{define "content"}}
 <section class="section">
   <div class="container">
-    <p class="meta"><a href="/menu">&larr; Menu minggu ini</a></p>
+    <p class="meta"><a href="/menu">&larr; {{t .L "meal.back"}}</a></p>
 
     <div class="hero-grid" style="align-items:start">
       <div>
         <div class="card">
-          <div class="card-media" style="aspect-ratio:4/3">foto meal — 4:3</div>
+          <div class="card-media" style="aspect-ratio:4/3">{{t .L "meal.photo"}}</div>
         </div>
       </div>
       <div>
@@ -14,14 +14,13 @@
           {{.Meal.DietName}} &middot; {{.DateLabel}} &middot; {{.Meal.SlotTime}}
         </p>
         <h1>{{.Meal.Name}}</h1>
-        <p>Satu porsi lengkap. Komposisi ditetapkan dapur untuk tanggal ini dan
-           tidak bisa ditukar per komponen.</p>
+        <p>{{t .L "meal.lede"}}</p>
 
-        <h2 style="font-size:var(--text-lg)">Isi meal</h2>
+        <h2 style="font-size:var(--text-lg)">{{t .L "meal.contents"}}</h2>
         <div class="table-wrap">
           <table>
-            <caption class="visually-hidden">Komponen meal</caption>
-            <thead><tr><th scope="col">Peran</th><th scope="col">Komponen</th><th scope="col">Porsi</th></tr></thead>
+            <caption class="visually-hidden">{{t .L "meal.components"}}</caption>
+            <thead><tr><th scope="col">{{t $.L "meal.role"}}</th><th scope="col">{{t $.L "meal.component"}}</th><th scope="col">{{t $.L "meal.portion"}}</th></tr></thead>
             <tbody>
             {{range .Meal.Items}}
               <tr><td>{{role .Role}}</td><td>{{.FoodName}}</td><td>{{.PortionSize}}</td></tr>
@@ -30,29 +29,29 @@
           </table>
         </div>
 
-        <h2 style="font-size:var(--text-lg);margin-top:var(--space-6)">Informasi gizi <span class="text-muted" style="font-size:var(--text-sm);font-family:var(--font-body);font-weight:var(--w-body)">per porsi</span></h2>
+        <h2 style="font-size:var(--text-lg);margin-top:var(--space-6)">{{t .L "meal.nutrition"}} <span class="text-muted" style="font-size:var(--text-sm);font-family:var(--font-body);font-weight:var(--w-body)">{{t .L "pkg.per"}}</span></h2>
         <div class="table-wrap">
           <table>
-            <caption class="visually-hidden">Panel gizi per porsi</caption>
+            <caption class="visually-hidden">{{t .L "meal.panel"}}</caption>
             <tbody>
-              <tr><th scope="row">Energi</th><td class="num">{{.Meal.Panel.CaloriesKcal}} kkal</td></tr>
-              <tr><th scope="row">Protein</th><td class="num">{{gram .Meal.Panel.ProteinMG}} g</td></tr>
-              <tr><th scope="row">Karbohidrat</th><td class="num">{{gram .Meal.Panel.CarbohydrateMG}} g</td></tr>
-              <tr><th scope="row">Lemak</th><td class="num">{{gram .Meal.Panel.FatMG}} g</td></tr>
-              <tr><th scope="row">Serat</th><td class="num">{{gram .Meal.Panel.FibreMG}} g</td></tr>
-              <tr><th scope="row">Natrium</th><td class="num">{{.Meal.Panel.SodiumMG}} mg</td></tr>
+              <tr><th scope="row">{{t .L "nut.energy"}}</th><td class="num">{{.Meal.Panel.CaloriesKcal}} {{t .L "nut.kcal"}}</td></tr>
+              <tr><th scope="row">{{t .L "nut.protein"}}</th><td class="num">{{gram .Meal.Panel.ProteinMG}} g</td></tr>
+              <tr><th scope="row">{{t .L "nut.carb"}}</th><td class="num">{{gram .Meal.Panel.CarbohydrateMG}} g</td></tr>
+              <tr><th scope="row">{{t .L "nut.fat"}}</th><td class="num">{{gram .Meal.Panel.FatMG}} g</td></tr>
+              <tr><th scope="row">{{t .L "nut.fibre"}}</th><td class="num">{{gram .Meal.Panel.FibreMG}} g</td></tr>
+              <tr><th scope="row">{{t .L "nut.sodium"}}</th><td class="num">{{.Meal.Panel.SodiumMG}} mg</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="meta">Jumlah dari {{len .Meal.Items}} komponen di atas.</p>
+        <p class="meta">{{printf (t .L "meal.sum") (len .Meal.Items)}}</p>
         {{if not .Meal.Panel.Complete}}
         <div class="callout callout-warn">
-          <p style="margin:0">Panel gizi belum lengkap: {{range .Meal.Panel.MissingFoods}}{{.}} {{end}}belum punya data gizi.</p>
+          <p style="margin:0">{{t .L "meal.panel.incomplete.pre"}} {{range .Meal.Panel.MissingFoods}}{{.}} {{end}}{{t $.L "meal.panel.incomplete.post"}}</p>
         </div>
         {{end}}
 
         {{if .Meal.Allergens}}
-        <h2 style="font-size:var(--text-lg);margin-top:var(--space-6)">Alergen</h2>
+        <h2 style="font-size:var(--text-lg);margin-top:var(--space-6)">{{t .L "meal.allergens"}}</h2>
         <p>{{range .Meal.Allergens}}<span class="pill pill-warn">{{.}}</span> {{end}}</p>
         {{end}}
 
@@ -60,11 +59,11 @@
           <div class="card-body">
             <div class="card-foot" style="padding-top:0">
               {{if .Meal.PriceIDR}}
-              <span class="price">{{rupiah .Meal.PriceIDR}}<small>per porsi &middot; termasuk PPN</small></span>
+              <span class="price">{{rupiah .Meal.PriceIDR}}<small>{{t .L "price.per.incl"}}</small></span>
               {{end}}
-              <a class="btn btn-solid" href="/app/pesan?meal={{.Meal.ID}}">Tambah ke keranjang</a>
+              <a class="btn btn-solid" href="/app/pesan?meal={{.Meal.ID}}">{{t .L "meal.add"}}</a>
             </div>
-            <p class="btn-reason">Pesan sebelum <strong>{{.CutOff}} WIB</strong> sehari sebelumnya.</p>
+            <p class="btn-reason">{{t .L "meal.cutoff.pre"}} <strong>{{.CutOff}} WIB</strong> {{t .L "meal.cutoff.post"}}</p>
           </div>
         </div>
       </div>

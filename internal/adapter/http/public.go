@@ -36,9 +36,10 @@ type PublicHandler struct {
 	repo *postgres.PublicRepo
 }
 
-// weekdayID and monthID render Indonesian dates. A message catalogue covers
-// interface strings; these are date parts, which Go's time package has no
-// Indonesian locale for.
+// Indonesian date parts, for the back-office surface only. Every public page
+// now goes through the catalogue's `day.*` and `monthlong.*` keys instead, so
+// its dates follow the language switch (D56); `monthID` had no caller left
+// once the last of those moved over and has been removed.
 var weekdayID = map[time.Weekday]string{
 	time.Monday: "Senin", time.Tuesday: "Selasa", time.Wednesday: "Rabu",
 	time.Thursday: "Kamis", time.Friday: "Jumat", time.Saturday: "Sabtu",
@@ -49,13 +50,6 @@ var weekdayShortID = map[time.Weekday]string{
 	time.Monday: "Sen", time.Tuesday: "Sel", time.Wednesday: "Rab",
 	time.Thursday: "Kam", time.Friday: "Jum", time.Saturday: "Sab",
 	time.Sunday: "Min",
-}
-
-var monthID = map[time.Month]string{
-	time.January: "Januari", time.February: "Februari", time.March: "Maret",
-	time.April: "April", time.May: "Mei", time.June: "Juni",
-	time.July: "Juli", time.August: "Agustus", time.September: "September",
-	time.October: "Oktober", time.November: "November", time.December: "Desember",
 }
 
 var monthShortID = map[time.Month]string{
@@ -110,11 +104,11 @@ func roleLabel(r string) string {
 	return r
 }
 
-func tierRange(minQty int, maxQty *int) string {
+func tierRange(l i18n.Locale, minQty int, maxQty *int) string {
 	if maxQty == nil {
-		return fmt.Sprintf("%d+ porsi", minQty)
+		return fmt.Sprintf(messages.T(l, "how.tiers.rangeplus"), minQty)
 	}
-	return fmt.Sprintf("%d – %d porsi", minQty, *maxQty)
+	return fmt.Sprintf(messages.T(l, "how.tiers.range"), minQty, *maxQty)
 }
 
 // bps renders a basis-point rate as a percentage: 1100 -> "11%".
@@ -172,7 +166,9 @@ var funcs = template.FuncMap{
 	"t":         translate,
 	"weekday":   weekday,
 	"daynum":    func(t time.Time) string { return t.Format("2") },
-	"monthShort": func(l i18n.Locale, t time.Time) string { return messages.T(l, "month."+strings.ToLower(t.Format("Jan"))) },
+	"monthShort": func(l i18n.Locale, t time.Time) string {
+		return messages.T(l, "month."+strings.ToLower(t.Format("Jan")))
+	},
 }
 
 // weekday names the day in the reader's language. Go's time package only
@@ -286,7 +282,7 @@ type pageData struct {
 	// carries the account and role controls the float pill has no room for.
 	Public bool
 	Year   int
-	Params       map[string]string
+	Params map[string]string
 
 	// Page-specific fields. Templates only reach for what their page sets.
 	Diets           []postgres.DietType
@@ -316,16 +312,16 @@ type pageData struct {
 	TraceID string
 
 	// Signed-in surface.
-	Anonymous        bool
-	Next             string
-	Quote            *ordering.Quote
-	QuoteError       string
-	Addresses        []AddressView
-	Allergens        []AllergenView
+	Anonymous  bool
+	Next       string
+	Quote      *ordering.Quote
+	QuoteError string
+	Addresses  []AddressView
+	Allergens  []AllergenView
 	// Notice is a success line; Message is the failure line. Both arrive as
 	// query strings after a POST-redirect-GET, so a refresh cannot resubmit.
-	Notice  string
-	MapsKey string
+	Notice           string
+	MapsKey          string
 	Orders           []OrderView
 	Payment          *payments.Instructions
 	PaymentLines     []PaymentLine
@@ -362,6 +358,24 @@ type dayLink struct {
 }
 
 // base fills the fields every page shares.
+// param reads a sys_parameter that may be set per locale: `key.<locale>` wins
+// over the unsuffixed `key`, so an operator can translate a value without one
+// language's copy overwriting the other's.
+func param(params map[string]string, key string, l i18n.Locale) string {
+	if v, ok := params[key+"."+string(l)]; ok && v != "" {
+		return v
+	}
+	return params[key]
+}
+
+// seo applies the per-route title and description from the catalogue. It has
+// to run after base(), because base() is what negotiates the locale: a title
+// built before that call can only ever be in one language (D56).
+func (h *renderer) seo(d *pageData, params map[string]string, key string) {
+	d.Title = messages.T(d.L, "seo."+key+".title") + " — " + params["seo.site_name"]
+	d.Description = messages.T(d.L, "seo."+key+".desc")
+}
+
 func (h *renderer) base(c *gin.Context, params map[string]string, nav, title, desc string) pageData {
 	// params keys use dots; templates cannot index a dotted key with .Foo, so
 	// the map is re-keyed with underscores for template convenience.
@@ -503,9 +517,10 @@ func (h *PublicHandler) Home(c *gin.Context) {
 	}
 	today := h.today()
 
-	d := h.base(c, params, "home",
-		params["seo.default_title"],
-		params["seo.default_description"])
+	d := h.base(c, params, "home", "", "")
+	// Per-locale rows if the back office has them, the unsuffixed row if not.
+	d.Title = param(params, "seo.default_title", d.L)
+	d.Description = param(params, "seo.default_description", d.L)
 	d.Public = true
 	d.OGType = "website"
 
@@ -591,10 +606,8 @@ func (h *PublicHandler) Menu(c *gin.Context) {
 		}
 	}
 
-	d := h.base(c, params, "menu",
-		"Menu minggu ini — "+params["seo.site_name"],
-		"Menu katering sehat Evermore untuk minggu ini: "+
-			"pilihan Balanced, Weight Loss, Muscle Gain dan Special Diet, dengan gizi lengkap per porsi.")
+	d := h.base(c, params, "menu", "", "")
+	h.seo(&d, params, "menu")
 	d.Public = true
 	d.Search = search
 	d.SelectedDiet = dietSlug
@@ -624,7 +637,10 @@ func (h *PublicHandler) Menu(c *gin.Context) {
 			selected = dates[0]
 		}
 		last := dates[len(dates)-1].In(h.cfg.Location)
-		d.PublishedUntil = fmt.Sprintf("%s, %d %s", weekdayID[last.Weekday()], last.Day(), monthID[last.Month()])
+		d.PublishedUntil = fmt.Sprintf("%s, %d %s",
+			messages.T(d.L, "day."+strings.ToLower(last.Format("Mon"))),
+			last.Day(),
+			messages.T(d.L, "monthlong."+strings.ToLower(last.Format("Jan"))))
 	}
 
 	for _, dt := range dates {
@@ -686,7 +702,7 @@ func (h *PublicHandler) Meal(c *gin.Context) {
 	meal.PriceIDR = price
 
 	loc := messages.Set.Negotiate(c.Request)
-	desc := fmt.Sprintf("%s — %d kkal, %s g protein per porsi. %s, diantar %s pukul %s.",
+	desc := fmt.Sprintf(messages.T(loc, "seo.meal.desc"),
 		meal.Name, meal.Panel.CaloriesKcal, gram(meal.Panel.ProteinMG),
 		meal.DietName, h.longDate(loc, meal.ServiceDate), meal.SlotTime)
 
@@ -706,11 +722,9 @@ func (h *PublicHandler) Packages(c *gin.Context) {
 		Fail(c, apierror.Internal(err))
 		return
 	}
-	d := h.base(c, params, "packages",
-		"Paket &amp; kredit — "+params["seo.site_name"],
-		"Beli kredit sekali, pakai pada menu apa pun yang sudah terbit. Paket 10, 20 dan 40 porsi.")
+	d := h.base(c, params, "packages", "", "")
+	h.seo(&d, params, "packages")
 	d.Public = true
-	d.Title = "Paket & kredit — " + params["seo.site_name"]
 	if d.Packages, err = h.repo.Packages(ctx, h.today()); err != nil {
 		Fail(c, apierror.Internal(err))
 		return
@@ -725,9 +739,8 @@ func (h *PublicHandler) Coverage(c *gin.Context) {
 		Fail(c, apierror.Internal(err))
 		return
 	}
-	d := h.base(c, params, "coverage",
-		"Wilayah antar — "+params["seo.site_name"],
-		"Dapur Evermore di Tebet, Kebayoran dan Kelapa Gading, dengan radius layanan masing-masing.")
+	d := h.base(c, params, "coverage", "", "")
+	h.seo(&d, params, "coverage")
 	d.Public = true
 	if d.Kitchens, err = h.repo.Kitchens(ctx); err != nil {
 		Fail(c, apierror.Internal(err))
@@ -743,9 +756,8 @@ func (h *PublicHandler) HowItWorks(c *gin.Context) {
 		Fail(c, apierror.Internal(err))
 		return
 	}
-	d := h.base(c, params, "how",
-		"Cara kerja — "+params["seo.site_name"],
-		"Pilih menu, pesan sebelum cut-off, transfer manual, kami verifikasi dan antar pada jam yang kamu pilih.")
+	d := h.base(c, params, "how", "", "")
+	h.seo(&d, params, "how")
 	d.Public = true
 	if d.Diets, err = h.repo.DietTypes(ctx); err != nil {
 		Fail(c, apierror.Internal(err))
@@ -765,9 +777,8 @@ func (h *PublicHandler) Corporate(c *gin.Context) {
 		Fail(c, apierror.Internal(err))
 		return
 	}
-	d := h.base(c, params, "corporate",
-		"Untuk kantor — "+params["seo.site_name"],
-		"Katering harian untuk tim: harga korporat, satu tagihan, satu titik antar, laporan bulanan.")
+	d := h.base(c, params, "corporate", "", "")
+	h.seo(&d, params, "corporate")
 	d.Public = true
 	h.render(c, "corporate", http.StatusOK, d)
 }
@@ -778,13 +789,13 @@ func (h *PublicHandler) NotFound(c *gin.Context) {
 	if params == nil {
 		params = map[string]string{}
 	}
-	d := h.base(c, params, "", "Halaman tidak ditemukan — Evermore",
-		"Halaman yang kamu cari tidak ada.")
+	d := h.base(c, params, "", "", "")
+	h.seo(&d, params, "404")
 	d.Public = true
 	d.NoIndex = true
 	d.Code = "404"
-	d.Heading = "Halaman tidak ditemukan"
-	d.Message = "Halaman yang kamu cari tidak ada atau sudah dipindahkan."
+	d.Heading = messages.T(d.L, "e404.heading")
+	d.Message = messages.T(d.L, "e404.message")
 	if id, ok := c.Get("trace_id"); ok {
 		d.TraceID, _ = id.(string)
 	}

@@ -205,8 +205,16 @@ func (s *seeder) sysParameters() error {
 		{"notify.email_enabled", "true", "bool", "notify", "Kirim notifikasi email"},
 
 		{"seo.site_name", "Evermore", "string", "seo", "Nama situs untuk Open Graph"},
+		// The home page's title and description are editable per language. A
+		// single row could only ever be in one of them, which is what left the
+		// English home page with an Indonesian <title> (D56). The unsuffixed
+		// keys stay as the fallback for a locale with no row of its own.
 		{"seo.default_title", "Evermore — katering sehat harian Jakarta", "string", "seo", "Judul bawaan"},
 		{"seo.default_description", "Menu baru tiap minggu, disusun ahli gizi, dimasak pagi hari dan diantar ke meja kerja atau rumah pada jam yang kamu pilih.", "string", "seo", "Deskripsi bawaan"},
+		{"seo.default_title.id", "Evermore — katering sehat harian Jakarta", "string", "seo", "Judul bawaan (Bahasa)"},
+		{"seo.default_description.id", "Menu baru tiap minggu, disusun ahli gizi, dimasak pagi hari dan diantar ke meja kerja atau rumah pada jam yang kamu pilih.", "string", "seo", "Deskripsi bawaan (Bahasa)"},
+		{"seo.default_title.en", "Evermore — daily healthy catering in Jakarta", "string", "seo", "Judul bawaan (English)"},
+		{"seo.default_description.en", "A new menu every week, built by nutritionists, cooked in the morning and delivered to your desk or your door in the window you choose.", "string", "seo", "Deskripsi bawaan (English)"},
 	}
 	for _, x := range params {
 		if err := s.exec("sys_parameters", `

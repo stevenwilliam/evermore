@@ -1,15 +1,15 @@
 {{define "content"}}
 <section class="section">
   <div class="container container-narrow">
-    <h1>Untuk kantor</h1>
-    <p>Katering harian untuk tim, dengan harga korporat, satu tagihan dan satu titik antar.</p>
+    <h1>{{t .L "nav.corporate"}}</h1>
+    <p>{{t .L "corp.sub"}}</p>
     <ul class="stack">
-      <li>Harga khusus per tipe pelanggan, disetel di back office.</li>
-      <li>Penagihan lewat invoice dengan nomor PO.</li>
-      <li>Satu pengantaran ke lobi atau resepsionis, sesuai jam yang disepakati.</li>
-      <li>Laporan konsumsi bulanan, bisa diekspor.</li>
+      <li>{{t .L "corp.b1"}}</li>
+      <li>{{t .L "corp.b2"}}</li>
+      <li>{{t .L "corp.b3"}}</li>
+      <li>{{t .L "corp.b4"}}</li>
     </ul>
-    <p><a class="btn btn-solid" href="mailto:{{.Params.company_email}}">Hubungi tim korporat</a></p>
+    <p><a class="btn btn-solid" href="mailto:{{.Params.company_email}}">{{t .L "corp.cta"}}</a></p>
   </div>
 </section>
 {{end}}

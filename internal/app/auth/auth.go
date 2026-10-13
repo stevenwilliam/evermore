@@ -429,10 +429,10 @@ type RegisterInput struct {
 
 // RegisterAddress is a first delivery address supplied at sign-up.
 type RegisterAddress struct {
-	Label, Recipient, Phone            string
-	Line, District, City, Province     string
-	Postal, Note, PlaceID, Formatted   string
-	Lat, Lng                           float64
+	Label, Recipient, Phone          string
+	Line, District, City, Province   string
+	Postal, Note, PlaceID, Formatted string
+	Lat, Lng                         float64
 }
 
 // Register creates a customer account. Staff accounts are created by an admin,

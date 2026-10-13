@@ -143,12 +143,12 @@ func (h *AppHandler) Addresses(c *gin.Context) {
 
 // addressForm is one submitted address, already validated.
 type addressForm struct {
-	Label, Recipient, Phone     string
-	Line, District, City, Prov  string
-	Postal, Note                string
-	Lat, Lng                    float64
-	PlaceID, Formatted          string
-	MakeDefault                 bool
+	Label, Recipient, Phone    string
+	Line, District, City, Prov string
+	Postal, Note               string
+	Lat, Lng                   float64
+	PlaceID, Formatted         string
+	MakeDefault                bool
 }
 
 // readAddressForm validates every field on the SERVER. The browser validates

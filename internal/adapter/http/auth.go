@@ -272,17 +272,17 @@ type registerRequest struct {
 }
 
 type registerAddress struct {
-	Label     string `json:"label"`
-	Recipient string `json:"recipient_name"`
-	Phone     string `json:"recipient_phone"`
-	Line      string `json:"address_line"`
-	District  string `json:"district"`
-	City      string `json:"city"`
-	Province  string `json:"province"`
-	Postal    string `json:"postal_code"`
-	Note      string `json:"driver_note"`
-	PlaceID   string `json:"google_place_id"`
-	Formatted string `json:"formatted_address"`
+	Label     string   `json:"label"`
+	Recipient string   `json:"recipient_name"`
+	Phone     string   `json:"recipient_phone"`
+	Line      string   `json:"address_line"`
+	District  string   `json:"district"`
+	City      string   `json:"city"`
+	Province  string   `json:"province"`
+	Postal    string   `json:"postal_code"`
+	Note      string   `json:"driver_note"`
+	PlaceID   string   `json:"google_place_id"`
+	Formatted string   `json:"formatted_address"`
 	Lat       *float64 `json:"latitude"`
 	Lng       *float64 `json:"longitude"`
 }

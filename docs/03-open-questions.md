@@ -283,6 +283,8 @@ rather than UI strings:
 | `diet_type` | `name`, `description`, `seo_title`, `seo_description` | nav links, menu page headline and lede, `<title>` |
 | `meal` | `name` | the card title on a menu page |
 | `food` | `name` | the item list inside each card |
+| `kitchen` | `name`, `address_line` | the coverage table (`Dapur Kebayoran` on the English page) |
+| `slot` | `alias` | the card meta line (`Balanced · Makan siang`) |
 
 So a reader on `/zh/menu/keto` gets Chinese chrome around an Indonesian menu.
 That is better than nothing and is visibly half-done.

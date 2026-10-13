@@ -21,7 +21,7 @@
             <form method="post" action="/app/paket/beli" style="margin:0">
               <input type="hidden" name="package_id" value="{{.ID}}">
               <input type="hidden" name="idempotency_key" value="{{newkey}}">
-              <button class="btn btn-solid" type="submit">Beli paket</button>
+              <button class="btn btn-solid" type="submit">{{t $.L "pkg.buy"}}</button>
             </form>
           </div>
         </div>

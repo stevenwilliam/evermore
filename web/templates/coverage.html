@@ -1,16 +1,16 @@
 {{define "content"}}
 <section class="section">
   <div class="container">
-    <h1>Wilayah antar</h1>
-    <p>Kami mengantar dari {{len .Kitchens}} dapur. Titik di luar semua wilayah tidak bisa checkout.</p>
+    <h1>{{t .L "nav.coverage"}}</h1>
+    <p>{{printf (t .L "cov.sub") (len .Kitchens)}}</p>
 
     <div class="table-wrap" style="margin-top:var(--space-6)">
       <table>
-        <caption class="visually-hidden">Dapur dan radius layanan</caption>
+        <caption class="visually-hidden">{{t .L "cov.caption"}}</caption>
         <thead>
           <tr>
-            <th scope="col">Kode</th><th scope="col">Dapur</th>
-            <th scope="col">Alamat</th><th scope="col" class="num">Radius layanan</th>
+            <th scope="col">{{t .L "cov.code"}}</th><th scope="col">{{t .L "cov.kitchen"}}</th>
+            <th scope="col">{{t .L "cov.address"}}</th><th scope="col" class="num">{{t .L "cov.radius"}}</th>
           </tr>
         </thead>
         <tbody>
@@ -27,10 +27,7 @@
     </div>
 
     <div class="callout callout-info" style="margin-top:var(--space-6)">
-      <p style="margin:0">
-        Poligon menang atas radius. Kalau alamatmu berada di dalam poligon sebuah
-        dapur, dapur itu melayani meski di luar radius — dan sebaliknya.
-      </p>
+      <p style="margin:0">{{t .L "cov.note"}}</p>
     </div>
   </div>
 </section>
