@@ -430,7 +430,7 @@ body.has-float-nav .wa-float { bottom: calc(var(--space-5) + 76px); }
 /* The user's rotation. --rx/--ry are written by the drag handler; these
  * defaults are the resting three-quarter view. */
 .bot-spin {
-  --rx: -16deg; --ry: -20deg;
+  --rx: -34deg; --ry: -22deg;
   display: block; transform-style: preserve-3d;
   transform: rotateX(var(--rx)) rotateY(var(--ry));
   transition: transform var(--dur) var(--ease);
@@ -514,40 +514,50 @@ body.has-float-nav .wa-float { bottom: calc(var(--space-5) + 76px); }
 }
 
 .bot-stage.is-open .bf-lid   { transform: rotateX(90deg) translateZ(48px) translateY(-200px) rotateZ(-24deg); opacity: 0; }
-.bot-stage.is-open .bf-front { transform: translateZ(70px) rotateX(98deg); opacity: .45; }
-.bot-stage.is-open .bf-back  { transform: rotateY(180deg) translateZ(70px) rotateX(98deg); opacity: .45; }
-.bot-stage.is-open .bf-left  { transform: rotateY(-90deg) translateZ(110px) rotateX(98deg); opacity: .45; }
-.bot-stage.is-open .bf-right { transform: rotateY(90deg) translateZ(110px) rotateX(98deg); opacity: .45; }
-.bot-stage.is-open .bf-base  { opacity: .7; }
+.bot-stage.is-open .bf-front { transform: translateZ(70px) rotateX(-30deg); }
+.bot-stage.is-open .bf-back  { transform: rotateY(180deg) translateZ(70px) rotateX(-30deg); }
+.bot-stage.is-open .bf-left  { transform: rotateY(-90deg) translateZ(110px) rotateX(-28deg); }
+.bot-stage.is-open .bf-right { transform: rotateY(90deg) translateZ(110px) rotateX(-28deg); }
 .bot-stage.is-open .bot-mark { opacity: 0; transition: opacity 240ms var(--ease); }
 
 /* ---- the food ----------------------------------------------------------
- * Drawn in CSS, not typed. Each piece is one element plus its two pseudo
- * elements: a mound of rice, a grilled fillet, a floret, a fried egg, a dish
- * of sambal, a citrus slice. No labels — the shapes carry it.
+ * Real photography, not drawn shapes. The menu stills are square, so they mask
+ * cleanly to a disc; each piece is a plated portion with a pale rim and a
+ * contact shadow, which is what makes it sit ON something rather than float.
  *
- * Three stages, not two: closed, then FULL (the parts sit in the base while
- * the walls fall), then scattered. The middle stage is the point — a box you
- * open should look like it had something in it. */
+ * Three stages: closed, FULL (the portions resting in the tray while the walls
+ * fold down), then scattered. */
 .bot-parts { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; }
+
+/* Compartment dividers. A bento has them, and they are what make the open
+ * base read as a tray rather than a plate. They fade in after the walls have
+ * started folding, so they are not competing with that motion. */
+.bot-divider {
+  position: absolute; left: 50%; top: 50%; translate: -50% -50%;
+  background: var(--warm);
+  box-shadow: inset 0 0 0 1px rgba(18,22,20,.14), 0 2px 5px rgba(18,22,20,.12);
+  border-radius: 2px;
+  opacity: 0; transition: opacity 360ms var(--ease) 240ms;
+}
+.bot-stage.is-open .bot-divider { opacity: 1; }
+.bd-1 { width: 212px; height: 10px; transform: rotateX(90deg) translateZ(-42px) translateY(-12px); }
+.bd-2 { width: 10px;  height: 62px; transform: rotateX(90deg) translateZ(-42px) translateY(34px); }
 
 .bot-part {
   position: absolute; top: 50%; left: 50%;
-  width: calc(var(--w) * var(--food)); height: calc(var(--h) * var(--food));
-  margin: calc(var(--h) * var(--food) / -2) 0 0 calc(var(--w) * var(--food) / -2);
+  width: calc(var(--w) * var(--food)); height: calc(var(--w) * var(--food));
+  margin: calc(var(--w) * var(--food) / -2) 0 0 calc(var(--w) * var(--food) / -2);
   opacity: 0;
   transform: translate3d(0,0,0) scale(.4);
   transition: transform 760ms var(--ease), opacity 360ms var(--ease);
   transition-delay: var(--d);
 }
-/* Stage 2 — in the box, arranged flat on the base. */
 .bot-stage.is-open .bot-part {
   opacity: 1;
-  transform: translate3d(calc(var(--ix) * 1px), calc(var(--iy) * 1px), -34px)
-             rotateX(90deg) rotate(var(--irot, 0deg)) scale(.82);
+  transform: translate3d(calc(var(--ix) * 1px), calc(var(--iy) * 1px), -14px)
+             rotateX(90deg) rotate(var(--irot, 0deg)) scale(.78);
   transition-delay: calc(var(--d) / 3);
 }
-/* Stage 3 — out and around. */
 .bot-stage.is-scattered .bot-part {
   transform: translate3d(calc(var(--xr) * var(--spread) * 1px),
                          calc(var(--yr) * var(--spread) * 1px),
@@ -556,99 +566,15 @@ body.has-float-nav .wa-float { bottom: calc(var(--space-5) + 76px); }
   transition-delay: var(--d);
 }
 
-.food { position: absolute; inset: 0; }
-.food::before, .food::after { content: ""; position: absolute; }
-
-/* Nasi merah — a mound of red rice, grains suggested by a dot pattern. */
-.f-rice {
-  border-radius: 48% 52% 44% 56% / 62% 58% 42% 38%;
-  background:
-    radial-gradient(circle at 26% 30%, rgba(255,255,255,.30) 0 2px, transparent 3px),
-    radial-gradient(circle at 62% 24%, rgba(255,255,255,.22) 0 2px, transparent 3px),
-    radial-gradient(circle at 44% 58%, rgba(255,255,255,.20) 0 2px, transparent 3px),
-    radial-gradient(circle at 74% 62%, rgba(255,255,255,.24) 0 2px, transparent 3px),
-    radial-gradient(circle at 30% 76%, rgba(255,255,255,.18) 0 2px, transparent 3px),
-    radial-gradient(ellipse at 36% 28%, #A4604F, #8C4A3F 62%, #6E3930);
-  box-shadow: inset 0 -6px 12px rgba(0,0,0,.26);
-}
-
-/* Ayam panggang — a fillet with char marks across it. */
-.f-chicken {
-  border-radius: 46% 54% 52% 48% / 58% 56% 44% 42%;
-  background: linear-gradient(160deg, #EFCB91, #E0B773 46%, #C2924E);
-  box-shadow: inset 0 -6px 12px rgba(0,0,0,.22);
-  overflow: hidden;
-}
-.f-chicken::before {
-  inset: 0;
-  background: repeating-linear-gradient(118deg,
-    transparent 0 9px, rgba(92,56,24,.42) 9px 13px, transparent 13px 22px);
-}
-
-/* Sayur — a broccoli floret: a bumpy crown over a pale stalk. */
-.f-greens { border-radius: 50%; background: none; }
-.f-greens::before {
-  left: 8%; right: 8%; top: 0; height: 74%;
-  border-radius: 52% 48% 46% 54% / 64% 62% 38% 36%;
-  background: radial-gradient(ellipse at 34% 26%, #6D9E4A, #4E7A3A 58%, #37592A);
+.food {
+  position: absolute; inset: 0; border-radius: 50%; overflow: hidden;
+  background: var(--card);
   box-shadow:
-    inset 0 -5px 10px rgba(0,0,0,.28),
-    6px -4px 0 -2px #4E7A3A, -7px -3px 0 -3px #578A40;
+    0 0 0 3px var(--card),
+    0 10px 20px rgba(18,22,20,.22),
+    inset 0 -10px 18px rgba(0,0,0,.14);
 }
-.f-greens::after {
-  left: 40%; bottom: 2%; width: 20%; height: 34%;
-  border-radius: 40% 40% 30% 30%;
-  background: linear-gradient(180deg, #BFCF9A, #9FB47A);
-}
-
-/* Telur — a fried egg, white with a yolk sitting off centre. */
-.f-egg { background: none; }
-.f-egg::before {
-  inset: 0;
-  border-radius: 54% 46% 58% 42% / 48% 56% 44% 52%;
-  background: radial-gradient(ellipse at 40% 36%, #FFFFFF, #F3F0E4 70%, #E2DDCB);
-  box-shadow: inset 0 -4px 10px rgba(0,0,0,.12);
-}
-.f-egg::after {
-  left: 30%; top: 26%; width: 42%; height: 42%;
-  border-radius: 50%;
-  background: radial-gradient(circle at 36% 32%, #FFD97A, #F2C14E 62%, #D79E2C);
-  box-shadow: inset 0 -3px 6px rgba(0,0,0,.20);
-}
-
-/* Sambal — a small dish, rim and chilli paste. */
-.f-sambal { background: none; }
-.f-sambal::before {
-  inset: 0; border-radius: 50%;
-  background: radial-gradient(circle at 38% 32%, #F3EFE6, #DED7C8);
-  box-shadow: inset 0 -4px 9px rgba(0,0,0,.18);
-}
-.f-sambal::after {
-  inset: 18%; border-radius: 50%;
-  background:
-    radial-gradient(circle at 60% 40%, rgba(255,255,255,.22) 0 2px, transparent 3px),
-    radial-gradient(circle at 36% 62%, rgba(255,255,255,.18) 0 2px, transparent 3px),
-    radial-gradient(circle at 44% 38%, #D4573A, #C0462B 60%, #93311C);
-}
-
-/* Buah — a citrus slice: rind, pith, and segments drawn with a conic sweep. */
-.f-fruit { background: none; }
-.f-fruit::before {
-  inset: 0; border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, #F6C28A 0 58%, #FFF4E4 58% 68%, #D98A5B 68%);
-  box-shadow: inset 0 -4px 10px rgba(0,0,0,.18);
-}
-.f-fruit::after {
-  inset: 16%; border-radius: 50%;
-  background:
-    conic-gradient(from 0deg,
-      #F2A765 0 56deg, rgba(255,255,255,.72) 56deg 60deg,
-      #F2A765 60deg 116deg, rgba(255,255,255,.72) 116deg 120deg,
-      #F2A765 120deg 176deg, rgba(255,255,255,.72) 176deg 180deg,
-      #F2A765 180deg 236deg, rgba(255,255,255,.72) 236deg 240deg,
-      #F2A765 240deg 296deg, rgba(255,255,255,.72) 296deg 300deg,
-      #F2A765 300deg 356deg, rgba(255,255,255,.72) 356deg 360deg);
-}
+.food img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 .bot-hint {
   display: inline-flex; align-items: center; gap: 10px;

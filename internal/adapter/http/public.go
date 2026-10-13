@@ -178,7 +178,7 @@ var funcs = template.FuncMap{
 func newkey() string { return uuid.NewString() }
 
 // photo maps a stable id to one of the food photographs in
-// web/public/images/thenie/. It is deterministic, so a meal keeps the same
+// web/public/images/food/. It is deterministic, so a meal keeps the same
 // picture between renders rather than shuffling on every page load — a grid
 // that reshuffles reads as a bug even when the data is right.
 //
@@ -186,9 +186,17 @@ func newkey() string { return uuid.NewString() }
 // asserted by the caller-side test so adding or removing a file cannot
 // silently start serving a 404.
 func photo(id uuid.UUID) string {
-	const n = 11
-	b := id[len(id)-1]
-	return fmt.Sprintf("/images/thenie/menu-%d.jpg", int(b)%n+1)
+	// Only photographs that have been LOOKED AT and confirmed to be food.
+	// This previously pointed at menu-1..11.jpg, which turned out to be
+	// Thenie marketing posters carrying another business's logo, phone number
+	// and pricing — every meal card would have published them as Evermore's
+	// own the moment a menu went live. Those files are out of web/ entirely
+	// now, under docs/design_reference/thenie-marketing-cards/.
+	shots := []string{
+		"page-hero-1.jpg", "box-ayam.jpg", "page-hero-2.jpg",
+		"box-daging.jpg", "hero-bg.jpg",
+	}
+	return "/images/food/" + shots[int(id[len(id)-1])%len(shots)]
 }
 
 // NewPublicHandler parses every page template against the base layout.

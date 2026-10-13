@@ -380,7 +380,7 @@
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var open = false, scatterTimer = null;
-  var rx = -16, ry = -20;              // the resting three-quarter view
+  var rx = -34, ry = -22;              // tipped down, so you can see into the tray
   var dragging = false, moved = false;
   var startX = 0, startY = 0, startRx = 0, startRy = 0;
 

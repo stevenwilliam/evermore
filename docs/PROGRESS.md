@@ -386,3 +386,31 @@ paper — under WCAG 1.4.11's 3:1 for UI components. Now `#828883`
    `/proc/<pid>/environ` and kill by PID — and it matters, because a stale
    process on 8082 briefly served the OLD build while I believed I was
    screenshotting the new one.
+
+---
+
+## D46 — real food, a tray with sides, and a branding leak closed (2026-10-13)
+
+| Item | Status |
+|---|---|
+| Six portions are real photographs, masked to discs | ✅ |
+| Open box keeps its sides (walls fold to −30°, not flat) | ✅ |
+| Compartment dividers in the tray | ✅ |
+| **Fourteen branded marketing cards removed from `web/`** | ✅ |
+
+**The leak.** `menu-1.jpg` … `menu-11.jpg` were never food photographs. They
+are Thenie marketing posters — another business's logo, WhatsApp number and
+pricing. `photo()` mapped every meal card to one of them, so Evermore would
+have published them as its own imagery the moment a menu went live. Nothing
+rendered only because the seeded menu is stale. They now live under
+`docs/design_reference/thenie-marketing-cards/`, outside `web/` entirely, and
+`/images/food/menu-1.jpg` returns **404**.
+
+**The rule going in:** only photographs that have been opened and looked at are
+referenced. Five are: `page-hero-1`, `box-ayam`, `page-hero-2`, `box-daging`,
+`hero-bg`, plus `testimonial` cropped left to avoid a leftover UI panel on its
+right edge. Other files remain in the directory unreferenced and **unverified**.
+
+Three geometry corrections, all found by screenshotting: the walls folded the
+wrong way and made a tent over the food; the camera sat too level to see into a
+tray once it had sides; and the portions sat on the floor rather than in it.
