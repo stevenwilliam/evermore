@@ -14,17 +14,17 @@
       </p>
     </div>
 
-    {{/* D45 — Bekal Bot. Six CSS-3D faces, a front-panel wordmark, and six
-         pieces of food drawn in CSS. Drag to turn it; tap to open. It is a
-         <button>, so Enter and Space open it and focus is visible; with
-         JavaScript off it sits closed, which is a correct resting state. */}}
     <div>
-      <button class="bot-stage" id="bot-stage" type="button" aria-pressed="false"
+    {{/* D52 — two boxes. A is the paper shell with three blades; B is the
+         light-green one that opens onto buffet trays. Each is its own
+         <button>, so both are reachable by keyboard and announce separately. */}}
+    <div class="bot-pair">
+      <button class="bot-stage" id="bot-a" type="button" aria-pressed="false"
               aria-describedby="bot-hint"
               aria-label="{{t .L "box.aria"}}">
         <span class="bot-floor" aria-hidden="true"></span>
         <span class="bot-rig" aria-hidden="true">
-          <span class="bot-spin" id="bot-spin">
+          <span class="bot-spin" id="bot-spin-a">
             <span class="bot-box">
               <span class="bot-face bf-back"></span>
               <span class="bot-face bf-left"></span>
@@ -36,17 +36,61 @@
 
               <span class="bot-parts">
                 <span class="bot-part" style="--ix:-56;--iy:-30;--irot:-6deg;--xr:-130;--yr:-92;--zr:70;--rot:-10deg;--d:220ms;--w:96px">
-                  <span class="food"><img src="/images/food/page-hero-1.jpg" alt="" loading="lazy" width="200" height="200"></span></span>
+                  <span class="food"><img src="/images/food/page-hero-1.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
                 <span class="bot-part" style="--ix:36;--iy:-32;--irot:8deg;--xr:122;--yr:-116;--zr:40;--rot:11deg;--d:290ms;--w:88px">
-                  <span class="food"><img src="/images/food/box-ayam.jpg" alt="" loading="lazy" width="200" height="200"></span></span>
+                  <span class="food"><img src="/images/food/box-ayam.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
                 <span class="bot-part" style="--ix:-60;--iy:34;--irot:5deg;--xr:-148;--yr:54;--zr:-30;--rot:7deg;--d:360ms;--w:84px">
-                  <span class="food"><img src="/images/food/page-hero-2.jpg" alt="" loading="lazy" width="200" height="200"></span></span>
+                  <span class="food"><img src="/images/food/page-hero-2.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
                 <span class="bot-part" style="--ix:18;--iy:36;--irot:-9deg;--xr:130;--yr:60;--zr:90;--rot:-12deg;--d:430ms;--w:80px">
-                  <span class="food"><img src="/images/food/box-daging.jpg" alt="" loading="lazy" width="200" height="200"></span></span>
+                  <span class="food"><img src="/images/food/box-daging.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
                 <span class="bot-part" style="--ix:74;--iy:10;--irot:3deg;--xr:-32;--yr:118;--zr:120;--rot:5deg;--d:500ms;--w:70px">
-                  <span class="food"><img src="/images/food/hero-bg.jpg" alt="" loading="lazy" width="200" height="200"></span></span>
+                  <span class="food"><img src="/images/food/hero-bg.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
                 <span class="bot-part" style="--ix:-8;--iy:-2;--irot:-4deg;--xr:42;--yr:-142;--zr:-60;--rot:-7deg;--d:570ms;--w:76px">
                   <span class="food"><img src="/images/food/testimonial.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:22% 50%"></span></span>
+              </span>
+
+              <span class="bot-hair" aria-hidden="true">
+                <span class="blade blade-1"></span><span class="blade blade-2"></span><span class="blade blade-3"></span>
+              </span>
+              <span class="bot-face bf-front">
+                <span class="bot-eyes"><span class="bot-eye"></span><span class="bot-eye"></span></span>
+              </span>
+              <span class="bot-face bf-lid">
+                <span class="bot-mark"><b>evermore</b><small>{{t .L "box.label"}}</small></span>
+              </span>
+            </span>
+          </span>
+        </span>
+      </button>
+
+      <button class="bot-stage" id="bot-b" type="button" aria-pressed="false"
+              aria-describedby="bot-hint"
+              aria-label="{{t .L "box.aria"}}">
+        <span class="bot-floor" aria-hidden="true"></span>
+        <span class="bot-rig" aria-hidden="true">
+          <span class="bot-spin" id="bot-spin-b">
+            <span class="bot-box">
+              <span class="bot-face bf-back"></span>
+              <span class="bot-face bf-left"></span>
+              <span class="bot-face bf-right"></span>
+              <span class="bot-face bf-base"></span>
+
+              <span class="bot-divider bd-1"></span>
+              <span class="bot-divider bd-2"></span>
+
+              <span class="bot-parts">
+                <span class="bot-part" style="--ix:-56;--iy:-30;--irot:-6deg;--xr:-130;--yr:-92;--zr:70;--rot:-10deg;--d:220ms;--w:96px">
+                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:8% 50%"></span></span>
+                <span class="bot-part" style="--ix:36;--iy:-32;--irot:8deg;--xr:122;--yr:-116;--zr:40;--rot:11deg;--d:290ms;--w:88px">
+                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:26% 50%"></span></span>
+                <span class="bot-part" style="--ix:-60;--iy:34;--irot:5deg;--xr:-148;--yr:54;--zr:-30;--rot:7deg;--d:360ms;--w:84px">
+                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:44% 50%"></span></span>
+                <span class="bot-part" style="--ix:18;--iy:36;--irot:-9deg;--xr:130;--yr:60;--zr:90;--rot:-12deg;--d:430ms;--w:80px">
+                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:60% 50%"></span></span>
+                <span class="bot-part" style="--ix:74;--iy:10;--irot:3deg;--xr:-32;--yr:118;--zr:120;--rot:5deg;--d:500ms;--w:70px">
+                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:78% 50%"></span></span>
+                <span class="bot-part" style="--ix:-8;--iy:-2;--irot:-4deg;--xr:42;--yr:-142;--zr:-60;--rot:-7deg;--d:570ms;--w:76px">
+                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:94% 50%"></span></span>
               </span>
 
               <span class="bot-face bf-front">
@@ -60,6 +104,8 @@
         </span>
       </button>
 
+    </div>
+
       <p class="bot-hint" id="bot-hint">
         <span class="bot-key">{{t .L "box.drag"}}</span>
         <span>{{t .L "box.drag.hint"}}</span>
@@ -67,7 +113,8 @@
         <span id="bot-hint-text" data-open="{{t .L "box.close"}}" data-closed="{{t .L "box.open"}}">{{t .L "box.open"}}</span>
       </p>
     </div>
-  </section>
+  </div>
+</section>
 
 {{/* D49 — today plus the next seven days. People eat with their eyes, so the
      picture leads and the dish name follows. Today is marked loudly: a filled
@@ -129,45 +176,6 @@
   </div>
 </section>
 
-<section class="section band-raised">
-  <div class="container">
-    <div class="section-head">
-      <div>
-        <h2>{{t .L "home.menu.title"}} {{.TodayLabel}}</h2>
-        <p>{{t .L "home.menu.sub"}}</p>
-      </div>
-      <a class="btn btn-outline" href="/menu">{{t .L "home.menu.all"}}</a>
-    </div>
-
-    <div class="filterbar">
-      {{range .Diets}}<a class="chip" href="/menu?diet={{.Slug}}">{{.Name}}</a>{{end}}
-    </div>
-
-    {{if .Meals}}
-    <div class="card-grid">
-      {{range .Meals}}
-      <article class="card">
-        <div class="card-media photo-frame"><img src="{{photo .ID}}" alt="" loading="lazy" width="400" height="300"></div>
-        <div class="card-body">
-          <p class="meta">{{.SlotAlias}} &middot; {{.SlotTime}}</p>
-          <h3><a href="/menu/{{.ID}}" style="color:inherit;text-decoration:none">{{.Name}}</a></h3>
-          <p class="meta">{{.Components}} komponen &middot; {{.Panel.CaloriesKcal}} kkal &middot; {{gram .Panel.ProteinMG}} g protein</p>
-          <div class="card-foot">
-            {{if .PriceIDR}}<span class="price">{{rupiah .PriceIDR}}<small>termasuk PPN</small></span>{{end}}
-            <a class="btn btn-solid" href="/menu/{{.ID}}">Lihat</a>
-          </div>
-        </div>
-      </article>
-      {{end}}
-    </div>
-    {{else}}
-    <div class="callout callout-info">
-      <p style="margin:0">Menu untuk hari ini belum terbit. Menu minggu berikutnya terbit tiap Jumat.</p>
-    </div>
-    {{end}}
-  </div>
-</section>
-
 <section class="section">
   <div class="container">
     <div class="section-head">
@@ -197,4 +205,45 @@
     </p>
   </div>
 </section>
+
+{{/* D53 — testimonials. The copy and the people are PLACEHOLDERS: lorem
+     ipsum quotes and initial avatars, not invented customers with invented
+     faces. Swap in real quotes and portraits before launch; the markup does
+     not change. */}}
+<section class="section" id="testimonials">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">{{t .L "testi.eyebrow"}}</p>
+      <h2>{{t .L "testi.title"}}</h2>
+    </div>
+
+    <div class="testi-grid">
+      <figure class="testi">
+        <blockquote>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
+          vehicula arcu nec sapien tempor, a congue nisi facilisis.</blockquote>
+        <figcaption>
+          <span class="testi-avatar" aria-hidden="true">AR</span>
+          <span><b>Lorem Ipsum</b><small>Dolor sit amet</small></span>
+        </figcaption>
+      </figure>
+      <figure class="testi">
+        <blockquote>Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam.</blockquote>
+        <figcaption>
+          <span class="testi-avatar" aria-hidden="true">BS</span>
+          <span><b>Consectetur Adipiscing</b><small>Elit sed do</small></span>
+        </figcaption>
+      </figure>
+      <figure class="testi">
+        <blockquote>At vero eos et accusamus et iusto odio dignissimos ducimus qui
+          blanditiis praesentium voluptatum deleniti atque corrupti.</blockquote>
+        <figcaption>
+          <span class="testi-avatar" aria-hidden="true">CW</span>
+          <span><b>Tempor Incididunt</b><small>Ut labore et dolore</small></span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
 {{end}}

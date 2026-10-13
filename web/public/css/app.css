@@ -115,6 +115,23 @@ main { flex: 1 0 auto; }
   border-bottom: 1px solid var(--head-line);
   position: sticky; top: 0; z-index: 200;
   color: var(--head-ink);
+  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+/* Once scrolled the bar goes translucent and frosts what passes under it.
+ * 94%, not less: the lightest thing that can sit behind it is the paper, and
+ * composited over that the idle links measure 4.84 at 0.94 but only 4.40 at
+ * 0.90 — under the body floor. The glass effect stops where legibility does.
+ * A browser without backdrop-filter simply keeps the solid bar. */
+.masthead.is-stuck {
+  background: color-mix(in srgb, var(--ctl-brand) 94%, transparent);
+  box-shadow: 0 10px 30px rgba(18, 22, 20, .28);
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .masthead.is-stuck {
+    -webkit-backdrop-filter: saturate(1.5) blur(14px);
+            backdrop-filter: saturate(1.5) blur(14px);
+  }
 }
 .masthead-inner { display: flex; align-items: center; gap: var(--space-4); min-height: 72px; padding-block: var(--space-3); }
 .masthead-brand { display: flex; align-items: center; gap: var(--space-3); margin-right: auto; min-height: var(--tap); }
@@ -176,12 +193,13 @@ main { flex: 1 0 auto; }
 /* ---------------------------------------------------------------- cards */
 
 .card {
+  position: relative;
   background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg);
   box-shadow: var(--shadow-1); overflow: hidden; display: flex; flex-direction: column;
   transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
               border-color var(--dur) var(--ease);
 }
-.card:hover { transform: translateY(var(--lift)); box-shadow: var(--shadow-3); border-color: var(--line-strong); }
+.card:hover { transform: translateY(var(--lift)) scale(1.04); box-shadow: var(--shadow-3); border-color: var(--ctl-brand); z-index: 2; }
 .card-body { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); flex: 1; }
 .card-body h3 { margin: 0; }
 .card-body h3 a { color: inherit; text-decoration: none; display: inline-flex; align-items: center; min-height: var(--tap); }
@@ -755,7 +773,7 @@ tbody tr:hover { background: var(--warm); }
  * divider before the account group so the two kinds of link read as two
  * groups, and a shadow that only appears once the page has scrolled. */
 .masthead { transition: box-shadow var(--dur) var(--ease), background var(--dur) var(--ease); }
-.masthead.is-stuck { box-shadow: 0 10px 30px rgba(18,22,20,.28); }
+
 
 .masthead-nav a, .masthead-actions a { position: relative; }
 .masthead-nav a::after {
@@ -790,3 +808,108 @@ tbody tr:hover { background: var(--warm); }
 .lang-flag { display: block; width: 21px; height: 15px; border-radius: 2px;
   box-shadow: 0 0 0 1px rgba(0,0,0,.18); flex: 0 0 auto; }
 @media (max-width: 640px) { .lang-switch span:not(.lang-flag) { display: none; } }
+
+/* ==========================================================================
+   D52 — two boxes.
+   A keeps the paper shell and grows three blades; B is a light green and
+   opens onto buffet trays. Each sensor light blinks on its own clock.
+   ========================================================================== */
+
+.bot-pair {
+  display: flex; align-items: center; justify-content: center;
+  gap: var(--space-5); flex-wrap: wrap;
+}
+.bot-pair .bot-stage {
+  --box-scale: .44; --spread: .54; --food: .58;
+  flex: 1 1 190px; height: 280px; min-width: 0;
+}
+@media (min-width: 640px)  { .bot-pair .bot-stage { --box-scale: .52; --spread: .68; --food: .72; height: 330px; } }
+@media (min-width: 1024px) { .bot-pair .bot-stage { --box-scale: .58; --spread: .78; --food: .82; height: 380px; } }
+
+/* Each light has its OWN duration and delay, so the four never land on the
+ * same frame. One shared animation reads as a machine; four clocks read as
+ * two things idling independently. */
+.bot-eye { animation-duration: 5.5s; }
+#bot-a .bot-eye:first-child  { animation-duration: 4.3s; animation-delay: .4s; }
+#bot-a .bot-eye:last-child   { animation-duration: 6.1s; animation-delay: 2.2s; }
+#bot-b .bot-eye:first-child  { animation-duration: 5.2s; animation-delay: 1.3s; }
+#bot-b .bot-eye:last-child   { animation-duration: 7.4s; animation-delay: 3.1s; }
+
+/* ---- Box A: three blades, grass green, each with its own stripe motif ---- */
+.bot-hair { position: absolute; left: 50%; top: 0; translate: -50% 0;
+  transform-style: preserve-3d; pointer-events: none; }
+.blade {
+  position: absolute; bottom: 0; width: 13px; transform-origin: bottom center;
+  border-radius: 60% 60% 24% 24% / 86% 86% 14% 14%;
+  background-image:
+    repeating-linear-gradient(74deg, rgba(255,255,255,.34) 0 2px, transparent 2px 6px),
+    linear-gradient(180deg, #8FCB5B, #4E7A3A 72%, #3A5F2B);
+  box-shadow: inset -2px 0 3px rgba(0,0,0,.18);
+  animation: sway 3.6s var(--ease-soft) infinite alternate;
+}
+.blade-1 { height: 46px; left: -20px; rotate: -16deg; animation-delay: -.2s; }
+.blade-2 { height: 62px; left: -4px;  rotate: 2deg;   animation-delay: -1.4s; }
+.blade-3 { height: 40px; left: 13px;  rotate: 17deg;  animation-delay: -2.6s; }
+@keyframes sway {
+  from { transform: rotate(-5deg) scaleY(.98); }
+  to   { transform: rotate(5deg)  scaleY(1.03); }
+}
+
+/* ---- Box B: a light green shell ----------------------------------------
+ * #D7E8D2 against the ink keeps every mark on it legible: the wordmark at
+ * 6.31 and the brand green at 5.03 (10 §2.2). */
+#bot-b .bot-face { background: #D7E8D2; }
+#bot-b .bf-base  { background: #E8F2E4; }
+#bot-b .bot-mark b { color: var(--ctl-brand-hi); }
+/* --ink-faint is 4.25 on this shell, under the body floor, so the small label
+ * takes a darker ink rather than inheriting the page one. */
+#bot-b .bot-mark small { color: #5B615D; }
+#bot-b .bot-eye  { background: var(--ctl-brand); box-shadow: 0 0 0 3px rgba(19,84,62,.18); }
+#bot-b.is-open .bot-eye { background: var(--ctl-brand-hi); }
+
+/* ---- a soft separator between the figures ------------------------------- */
+.stats-strip > .stat-item + .stat-item { position: relative; }
+.stats-strip > .stat-item + .stat-item::before {
+  content: ""; position: absolute; left: calc(var(--space-6) / -2); top: 10%; bottom: 10%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--line) 22%, var(--line) 78%, transparent);
+}
+/* On two columns only the second of each pair carries a rule, so the grid
+   does not grow a stray line down its left edge. */
+@media (max-width: 719px) {
+  .stats-strip > .stat-item:nth-child(odd)::before { content: none; }
+}
+
+@media (prefers-reduced-motion: reduce) { .blade { animation: none; } }
+
+/* ---- testimonials (D53) -------------------------------------------------- */
+.testi-grid { display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.testi {
+  margin: 0; background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--radius-lg); padding: var(--space-5);
+  display: flex; flex-direction: column; gap: var(--space-4);
+  box-shadow: var(--shadow-1);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.testi:hover { transform: translateY(var(--lift)); box-shadow: var(--shadow-3); }
+.testi blockquote {
+  margin: 0; font-family: var(--font-display); font-size: var(--text-lg);
+  line-height: 1.45; letter-spacing: -0.012em; color: var(--ink); flex: 1;
+}
+/* An opening quote set in the accent, drawn by the stylesheet rather than
+   typed into the markup where a screen reader would read it aloud. */
+.testi blockquote::before {
+  content: "\201C"; display: block; font-size: 44px; line-height: .6;
+  color: var(--accent); margin-bottom: var(--space-2);
+}
+.testi figcaption { display: flex; align-items: center; gap: var(--space-3); }
+.testi figcaption b { display: block; font-size: var(--text-sm); font-weight: 600; }
+.testi figcaption small { display: block; font-size: var(--text-xs); color: var(--ink-faint); }
+/* Initials, not a stock face: inventing a customer is one thing, giving them
+   someone's photograph is another. */
+.testi-avatar {
+  flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--brand-wash); color: var(--ctl-brand-hi);
+  font-size: var(--text-sm); font-weight: 700; letter-spacing: .04em;
+}
