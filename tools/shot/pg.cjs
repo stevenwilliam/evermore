@@ -1,0 +1,10 @@
+const { chromium } = require('playwright')
+;(async () => {
+  const b = await chromium.launch()
+  const p = await (await b.newContext({viewport:{width:1366,height:1000}})).newPage()
+  await p.goto('http://127.0.0.1:8082'+process.argv[3], {waitUntil:'domcontentloaded', timeout:20000})
+  await p.waitForTimeout(1800)
+  await p.screenshot({path:process.argv[2]+'/'+process.argv[4]})
+  console.log('ok')
+  await b.close()
+})()

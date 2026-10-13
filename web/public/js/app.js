@@ -373,12 +373,20 @@
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var hint = document.getElementById('bot-hint-text');
 
+  function startAngle(el, prop, fallback) {
+    var v = parseFloat(getComputedStyle(el).getPropertyValue(prop));
+    return isNaN(v) ? fallback : v;
+  }
+
   Array.prototype.forEach.call(document.querySelectorAll('.bot-stage'), function (stage) {
     var spin = stage.querySelector('.bot-spin');
     if (!spin) return;
 
     var open = false, scatterTimer = null;
-    var rx = -34, ry = -22;            // tipped down, so you can see into the tray
+    // Seeded from the stylesheet, not hardcoded, so a box can be given its own
+    // resting angle in CSS and keep it after the first drag (D59).
+    var rx = startAngle(spin, '--rx', -34);   // tipped down, so you can see into the tray
+    var ry = startAngle(spin, '--ry', -22);
     var dragging = false, moved = false;
     var startX = 0, startY = 0, startRx = 0, startRy = 0;
 

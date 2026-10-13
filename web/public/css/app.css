@@ -541,6 +541,9 @@ tbody tr:hover { background: var(--warm); }
 .bf-base  { transform: rotateX(90deg) translateZ(-24px); background: var(--card);
             box-shadow: inset 0 0 0 1px rgba(18,22,20,.14), inset 0 0 24px rgba(18,22,20,.10); }
 .bf-lid   {
+  /* preserve-3d so the tuft parented to this lid can stand UP out of it
+   * rather than being flattened into the lid's plane (D59). */
+  transform-style: preserve-3d;
   /* Centre origin, NOT `center top`. The lid is placed with rotateX(90deg),
    * so a top origin rotates it about its own edge and parks it floating
    * above the box instead of resting on it. The open animation translates
@@ -678,7 +681,7 @@ tbody tr:hover { background: var(--warm); }
   .bot-rig { animation: none; transform: rotateX(-15deg) rotateY(-10deg); }
   .bot-eye { animation: none; }
   /* The lid and its tuft stop together — stopping one would detach them. */
-  .bf-lid, .bot-hair, .bot-tuft { animation: none; }
+  .bf-lid { animation: none; }
   .bot-face, .bot-part, .bot-floor { transition-duration: 1ms; }
 }
 
@@ -842,70 +845,58 @@ tbody tr:hover { background: var(--warm); }
 #bot-b .bot-eye:first-child  { animation-duration: 5.2s; animation-delay: 1.3s; }
 #bot-b .bot-eye:last-child   { animation-duration: 7.4s; animation-delay: 3.1s; }
 
+/* Box A turns 120 degrees to the right of the resting -22deg, as asked, so the
+ * pair read as facing one another rather than both facing out. app.js seeds
+ * its drag state from this value, so it survives the first drag.
+ *
+ * It sat at 98deg briefly, where the lid goes nearly edge-on and the wordmark
+ * reads vertically; 38 keeps the turn but keeps the label legible. */
+#bot-spin-a { --ry: 38deg; }   /* -22 + 120, then 60 back to the left */
+
 /* ---- Box A: three blades, grass green, each with its own stripe motif ---- */
 /* The tuft sits ON TOP of the lid, drawn in 2D over the stage rather than
  * inside the 3D box. Three attempts at parenting it to the lid failed for the
  * same reason each time: .bf-lid has no preserve-3d, so its children flatten
  * into the lid's own plane and the blades disappeared edge-on. A flat overlay
  * is both visible and far easier to reason about. */
-/* The tuft rides the lid, and the lid rides the rig.
+/* The tuft is PARENTED TO THE LID, standing up off it in 3D.
  *
- * It cannot inherit the lid's transform — it is a 2D overlay precisely because
- * .bf-lid has no preserve-3d — so it reproduces the lid's motion in screen
- * space instead, in two layers that mirror the box's own two layers:
+ * Every earlier version drew it as a 2D overlay and replicated the lid's
+ * motion in screen space. That tracked the bob to within half a pixel, but it
+ * could never survive the drag: rotate the box and a flat overlay stays
+ * flat-on while the lid turns away, and the two visibly come apart. Nothing
+ * short of real parenting is sticky.
  *
- *   .bot-tuft  carries .bot-rig's float, by running the SAME animation with
- *              the same duration and easing, so it is in phase by construction
- *   .bot-hair  carries the lid's own bob
+ * What blocked parenting before was that `.bf-lid` had no `transform-style`,
+ * so its children flattened into the lid's own plane and the blades vanished
+ * edge-on. Giving the lid `preserve-3d` is the whole fix — see `.bf-lid`.
  *
- * Replicating only the lid's bob is what a first attempt did, and it beat
- * visibly against the 6s rig float: equal amplitude, drifting phase. The two
- * periods are 3.2s and 6s and never line up.
- *
- * The bob numbers are MEASURED, not derived. The lid moves on a plane turned
- * by rotateX(-90deg), so its `translateY` is not a screen-space Y and
- * arithmetic on the keyframe values gives the wrong answer. Sampling the lid's
- * CENTRE — not its bounding box, which the lid's yaw inflates on both sides —
- * through a full cycle at 1280px gives:
- *
- *   closed (lidRest, 3.2s)  rises 12.8px, drifts 8.3px right
- *   open   (lidBob,  2.8s)  rises 11.1px, drifts 6.6px right
- *   opening                 lifts the centre 28.6px, moves it 20.2px right
- *
- * Those figures are the lid's motion with the RIG FLOAT FROZEN. Measuring it
- * running instead folds the rig's 16px into the lid's own numbers, and feeding
- * that back in double-counts the float — which is what a second attempt did.
- *
- * The lid's `from` is its LOW point, so the tuft's `from` is low too, and the
- * offsets are mean-centred so `bottom` stays the resting position. */
-.bot-tuft {
-  position: absolute; left: 50%; z-index: 3;
-  /* Centred with a margin, not `translate`: `translate` carries the motion. */
-  margin-left: -30px;
+ * The blades then stand up out of the lid with `rotateX(90deg)`. In the lid's
+ * local frame that maps the blade's height onto world up and its face toward
+ * the front of the box, so the tuft grows upward and faces the viewer. It now
+ * inherits the rig float, the lid bob and the user's rotation at no cost, and
+ * all the measured keyframes that used to chase them are gone. */
+.bot-hair {
+  position: absolute; left: 50%; top: 50%;
+  width: 60px; height: 58px;
+  transform-origin: bottom center;
+  /* Placed from the lid's CENTRE, not its edge. The lid's own content is
+   * mirrored (see .bot-mark), so an offset measured from the top edge lands
+   * the tuft below the wordmark and half-buried in the lid. 30px was found by
+   * sweeping the value and looking at each one. */
+  transform: translate(-50%, -100%) translateY(30px) rotateX(90deg);
+  transform-style: preserve-3d;
   pointer-events: none;
-  /* Identical to .bot-rig, so the float matches rather than approximates. */
-  scale: var(--box-scale);
-  animation: botHover 6s var(--ease-soft) infinite alternate;
-  transition: bottom var(--dur) var(--ease), margin-left var(--dur) var(--ease);
 }
-.bot-hair { display: block; width: 60px; height: 58px; }
 
-/* Positioned against the lid, which sits a little above the box centre. */
-.bot-pair .bot-stage .bot-tuft { bottom: calc(50% + 51px * var(--box-scale)); }
-.bot-stage.is-open .bot-tuft {
-  bottom: calc(50% + 79px * var(--box-scale));
-  margin-left: calc(-30px + 20px * var(--box-scale));
-}
-/* The bob is inside .bot-tuft, which is already scaled, so these are plain px. */
-.bot-hair           { animation: hairRest 3.2s var(--ease-soft) infinite alternate; }
-.is-open .bot-hair  { animation: hairBob  2.8s var(--ease-soft) infinite alternate; }
-@keyframes hairRest {
-  from { translate: -4.2px 6.4px; }
-  to   { translate: 4.2px -6.4px; }
-}
-@keyframes hairBob {
-  from { translate: -3.3px 5.6px; }
-  to   { translate: 3.3px -5.6px; }
+/* Two crossed planes, the way foliage is normally built.
+ *
+ * A single flat tuft disappears when the box is yawed far enough to see it
+ * edge-on — which box A's resting angle does. A second copy turned 90 degrees
+ * about the blades' own vertical axis means one plane always faces the viewer,
+ * at no cost in markup that matters. */
+.tuft { position: absolute; inset: 0; transform-style: preserve-3d; }
+.tuft-x { transform: rotateY(90deg); }
 }
 }
 
@@ -914,7 +905,7 @@ tbody tr:hover { background: var(--warm); }
  * apart they overlapped into a single blob and read as one leaf. */
 .bot-hair::after {
   content: ""; position: absolute; left: 50%; bottom: 0; translate: -50% 0;
-  width: 26px; height: 6px; border-radius: 46% 46% 50% 50%;
+  width: 13px; height: 5px; border-radius: 46% 46% 50% 50%;
   background: linear-gradient(180deg, #5E9340, #3E652B);
 }
 .blade {
@@ -929,9 +920,10 @@ tbody tr:hover { background: var(--warm); }
 }
 /* Standing up, not fanned out: the lean is just enough to stop them looking
  * like a printed bar chart. */
-.blade-1 { height: 36px; rotate: -7deg; margin-left: -12px; animation-delay: -.2s; }
-.blade-2 { height: 46px; rotate: 0deg;  margin-left: -3.5px; animation-delay: -1.4s; }
-.blade-3 { height: 32px; rotate: 7deg;  margin-left: 5px;   animation-delay: -2.6s; }
+.blade { margin-left: -3.5px; }
+.blade-1 { height: 42px; rotate: -17deg; animation-delay: -.2s; }
+.blade-2 { height: 54px; rotate: 0deg;   animation-delay: -1.4s; }
+.blade-3 { height: 38px; rotate: 16deg;  animation-delay: -2.6s; }
 
 @keyframes sway {
   from { transform: rotate(-2.5deg) scaleY(.99); }
@@ -964,6 +956,52 @@ tbody tr:hover { background: var(--warm); }
 }
 
 @media (prefers-reduced-motion: reduce) { .blade { animation: none; } }
+
+/* ==========================================================================
+   D58 — the signature ribbon.
+
+   A word written as one continuous cursive line, drawn very faintly across a
+   section, with two soft colour ribbons gliding along it like a pen retracing
+   the signature. It is background TEXTURE: it must never compete with the
+   content, which is why every opacity here is between .06 and .32.
+
+   The section that holds one takes `.has-sig`, and its container sits above.
+   Cards and tiles already carry a solid background, so the ribbon shows only
+   in the gaps between them — which is the whole effect.
+   ========================================================================== */
+@keyframes sigRibbon{from{stroke-dashoffset:2000}to{stroke-dashoffset:0}}
+@keyframes sigFloat{from{transform:translateY(-16px)}to{transform:translateY(16px)}}
+@media (prefers-reduced-motion:reduce){.sig-ribbon *{animation:none!important}}
+.sig-ribbon{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.sig-ribbon .float{animation:sigFloat 14s ease-in-out infinite alternate}
+.sig-ribbon .r1{animation:sigRibbon 34s linear infinite}
+.sig-ribbon .r2{animation:sigRibbon 34s linear -17s infinite}
+
+.has-sig { position: relative; overflow: hidden; }
+.has-sig > .container { position: relative; z-index: 1; }
+
+/* ---- surfaces over the signature ribbon (D60) ---------------------------
+ * The cards in a ribboned section are translucent, so the signature reads
+ * through them instead of being blocked by a row of white blocks.
+ *
+ * That has a contrast cost, and it is the reason `--ink-on-glass` exists. The
+ * ribbon's two hairline strokes run along the same path as the wide ones, so
+ * they stack: the darkest pixel under a card is #77968A, and through a 50%
+ * card that leaves #BBCBC5, where `--ink-faint` measures 3.23 and fails. The
+ * muted ink on these cards is darker for exactly that reason — 5.22 on the
+ * worst pixel, and still clearly muted (8.59) on the common one. */
+.has-sig .card { background: var(--glass); }
+.has-sig .card .meta,
+.has-sig .card small,
+.has-sig .card .text-muted { color: var(--ink-on-glass); }
+
+/* The packages cards take a tinted glass rather than plain white. */
+.sig-pkg .card { background: var(--glass-tint); }
+
+/* The resting day-card header: a soft grey so the today card is the only one
+ * that reads as filled, without the rest looking switched off. */
+.daycard-head { background: var(--card-quiet); }
+.daycard.is-today .daycard-head { background: var(--ctl-brand); }
 
 /* ---- testimonials (D53) -------------------------------------------------- */
 .testi-grid { display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }

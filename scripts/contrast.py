@@ -181,6 +181,24 @@ CHECKS: list[tuple[str, str, str, dict]] = [
     ("info-lt on the dark ground", "#8FB8DC", DARK, {}),
     ("focus-lt on the dark ground", "#9CC0FF", DARK, {"non_text": True}),
 
+    # --- surfaces over the signature ribbon (D60)
+    #
+    # The ribbon's hairline strokes run along the same path as the wide ones
+    # and so stack. #77968A is the darkest pixel it can produce over paper;
+    # the two "under glass" grounds below are that pixel seen through a 50%
+    # card, which is the worst background any text on these cards can get.
+    ("ink on the quiet day-card head", INK, "#F0F1ED", {}),
+    ("ink-soft on the quiet day-card head", "#555D58", "#F0F1ED", {}),
+    ("ink-faint on the quiet day-card head", "#656B67", "#F0F1ED", {}),
+    ("ink on glass over paper", INK, "#FCFCFA", {}),
+    ("ink-on-glass over paper", "#454C48", "#FCFCFA", {}),
+    ("ink-on-glass on tinted glass over paper", "#454C48", "#F2F5F1", {}),
+    ("ink-on-glass under glass, worst ribbon pixel", "#454C48", "#BBCBC5", {}),
+    ("ink-on-glass under tinted glass, worst ribbon pixel", "#454C48", "#B0C4BB", {}),
+    ("ink-faint under glass, worst ribbon pixel (REJECTED)", "#656B67", "#BBCBC5", {}),
+    ("ink-soft under glass, worst ribbon pixel (REJECTED)", "#555D58", "#BBCBC5", {}),
+    ("ink-on-glass on the dark glass, lightest ribbon pixel", "#C3C9C5", "#304F42", {}),
+
     # --- the WhatsApp float
     ("WA teal on paper", "#128C7E", PAPER, {"non_text": True}),
     ("WA white glyph on the teal", WHITE, "#128C7E", {"non_text": True}),
@@ -230,6 +248,17 @@ RECORDED: dict[str, float] = {
     "accent on the dark ground": 14.99,
     "info-lt on the dark ground": 8.95,
     "focus-lt on the dark ground": 10.15,
+    "ink on the quiet day-card head": 16.09,
+    "ink-soft on the quiet day-card head": 5.98,
+    "ink-faint on the quiet day-card head": 4.80,
+    "ink on glass over paper": 17.77,
+    "ink-on-glass over paper": 8.59,
+    "ink-on-glass on tinted glass over paper": 8.03,
+    "ink-on-glass under glass, worst ribbon pixel": 5.24,
+    "ink-on-glass under tinted glass, worst ribbon pixel": 4.81,
+    "ink-faint under glass, worst ribbon pixel (REJECTED)": 3.23,
+    "ink-soft under glass, worst ribbon pixel (REJECTED)": 4.03,
+    "ink-on-glass on the dark glass, lightest ribbon pixel": 5.37,
     "WA teal on paper": 3.92,
     "WA white glyph on the teal": 4.14,
 }

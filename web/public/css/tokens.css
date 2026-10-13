@@ -29,6 +29,14 @@
   --ink:       #121614;  /* 17.30 on paper — near-black with a green cast */
   --ink-soft:  #555D58;  /*  6.44 */
   --ink-faint: #656B67;  /*  5.17 paper / 5.45 card / 4.53 warm — the floor */
+  /* Surfaces that sit OVER the signature ribbon, and the ink they take.
+   * --ink-faint is the floor on an opaque card, but a translucent card lets
+   * the ribbon's core stroke through and the floor drops to 3.23 there, so
+   * glass surfaces get their own, darker muted ink (D60). */
+  --ink-on-glass: #454C48;
+  --glass:      rgba(255, 255, 255, .50);
+  --glass-tint: rgba(234, 241, 236, .50);
+  --card-quiet: #F0F1ED;   /* the resting day-card header: soft, not disabled */
 
   /* ---- Brand ---- */
   --brand:     #13543E;  /* 8.42 as text; white on it 8.88 */
@@ -127,6 +135,10 @@
     --ink:       #F2F3EF;  /* 16.77 */
     --ink-soft:  #B4BBB6;  /*  9.55 */
     --ink-faint: #8E9691;  /*  6.16 */
+    --ink-on-glass: #C3C9C5;
+    --glass:      rgba(24, 28, 25, .50);
+    --glass-tint: rgba(30, 36, 32, .50);
+    --card-quiet: #202622;
     --brand:     #5FD1A4;  /*  9.92 */
     --brand-hi:  #8FE3C1;
     --brand-wash:#173026;
@@ -150,6 +162,10 @@
   --ink:       #F2F3EF;
   --ink-soft:  #B4BBB6;
   --ink-faint: #8E9691;
+  --ink-on-glass: #C3C9C5;
+  --glass:      rgba(24, 28, 25, .50);
+  --glass-tint: rgba(30, 36, 32, .50);
+  --card-quiet: #202622;
   --brand:     #5FD1A4;
   --brand-hi:  #8FE3C1;
   --brand-wash:#173026;

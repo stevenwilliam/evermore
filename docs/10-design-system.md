@@ -138,7 +138,34 @@ fails; it is kept as a REJECTED row so it cannot drift back.
 | info-lt on the dark ground | **8.95** | AAA |
 | focus-lt on the dark ground | **10.15** | PASS 1.4.11 |
 
-### 2.6 The WhatsApp float
+### 2.6 Surfaces over the signature ribbon (D60)
+
+The cards in a ribboned section are translucent, so the signature reads through
+them. The ribbon's hairline strokes run along the same path as its wide ones
+and therefore stack: the darkest pixel it can put under a card is `#77968A`,
+which through a 50% card leaves `#BBCBC5`. That is the worst background any
+text on these cards can sit on, and it is what the "worst ribbon pixel" rows
+below are measured against — not the common case, which is far lighter.
+
+`--ink-faint` fails there at 3.23 and `--ink-soft` at 4.03. That is the entire
+reason `--ink-on-glass` (`#454C48`) exists: it holds at 5.24 on the worst pixel
+and still reads as muted (8.59) on the ordinary one.
+
+| Pairing | Ratio | Verdict |
+|---|---|---|
+| ink on the quiet day-card head | **16.09** | AAA |
+| ink-soft on the quiet day-card head | **5.98** | AA |
+| ink-faint on the quiet day-card head | **4.80** | AA |
+| ink on glass over paper | **17.77** | AAA |
+| ink-on-glass over paper | **8.59** | AAA |
+| ink-on-glass on tinted glass over paper | **8.03** | AAA |
+| ink-on-glass under glass, worst ribbon pixel | **5.24** | AA |
+| ink-on-glass under tinted glass, worst ribbon pixel | **4.81** | AA |
+| ink-faint under glass, worst ribbon pixel (REJECTED) | **3.23** | FAIL |
+| ink-soft under glass, worst ribbon pixel (REJECTED) | **4.03** | FAIL |
+| ink-on-glass on the dark glass, lightest ribbon pixel | **5.37** | AA |
+
+### 2.7 The WhatsApp float
 
 | Pairing | Ratio | Verdict |
 |---|---|---|

@@ -61,6 +61,7 @@ var messages = i18n.Bundle{
 			// --- the hero box
 			"box.aria":      "Evermore catering box. Drag to turn it, tap to open.",
 			"box.label":     "catering",
+			"box.label.a":   "healthy",
 			"box.drag":      "Drag",
 			"box.drag.hint": "to turn",
 			"box.click":     "Click",
@@ -439,6 +440,7 @@ var messages = i18n.Bundle{
 
 			"box.aria":      "Kotak catering Evermore. Putar dengan menyeret, ketuk untuk membuka.",
 			"box.label":     "catering",
+			"box.label.a":   "healthy",
 			"box.drag":      "Seret",
 			"box.drag.hint": "untuk memutar",
 			"box.click":     "Klik",
