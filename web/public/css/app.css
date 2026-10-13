@@ -853,32 +853,36 @@ tbody tr:hover { background: var(--warm); }
   transition: bottom var(--dur) var(--ease);
 }
 /* Positioned against the lid, which sits a little above the box centre. */
-.bot-pair .bot-stage .bot-hair { bottom: calc(50% + 52px * var(--box-scale)); }
-.bot-stage.is-open .bot-hair   { bottom: calc(50% + 78px * var(--box-scale)); }
+.bot-pair .bot-stage .bot-hair { bottom: calc(50% + 51px * var(--box-scale)); }
+.bot-stage.is-open .bot-hair   { bottom: calc(50% + 77px * var(--box-scale)); }
 
-/* The three blades meet in one base, so they read as a single tuft. */
+/* One root, three separate blades. They have to be narrow enough, and spaced
+ * far enough apart, that the lid shows between them — at 10px wide and 6px
+ * apart they overlapped into a single blob and read as one leaf. */
 .bot-hair::after {
   content: ""; position: absolute; left: 50%; bottom: 0; translate: -50% 0;
-  width: 28px; height: 10px; border-radius: 50% 50% 42% 42%;
-  background: linear-gradient(180deg, #6FA846, #46702F);
+  width: 26px; height: 6px; border-radius: 46% 46% 50% 50%;
+  background: linear-gradient(180deg, #5E9340, #3E652B);
 }
 .blade {
-  position: absolute; bottom: 4px; left: 50%; margin-left: -6px;
-  width: 12px; transform-origin: bottom center;
-  border-radius: 60% 60% 24% 24% / 86% 86% 14% 14%;
+  position: absolute; bottom: 3px; left: 50%;
+  width: 7px; transform-origin: bottom center;
+  border-radius: 58% 58% 30% 30% / 88% 88% 12% 12%;
   background-image:
-    repeating-linear-gradient(74deg, rgba(255,255,255,.34) 0 2px, transparent 2px 6px),
+    repeating-linear-gradient(78deg, rgba(255,255,255,.30) 0 2px, transparent 2px 5px),
     linear-gradient(180deg, #8FCB5B, #4E7A3A 72%, #3A5F2B);
-  box-shadow: inset -2px 0 3px rgba(0,0,0,.18);
+  box-shadow: inset -1px 0 2px rgba(0,0,0,.20);
   animation: sway 3.6s var(--ease-soft) infinite alternate;
 }
-.blade-1 { height: 36px; rotate: -26deg; animation-delay: -.2s; }
-.blade-2 { height: 52px; rotate: 0deg;   animation-delay: -1.4s; }
-.blade-3 { height: 32px; rotate: 26deg;  animation-delay: -2.6s; }
+/* Standing up, not fanned out: the lean is just enough to stop them looking
+ * like a printed bar chart. */
+.blade-1 { height: 36px; rotate: -7deg; margin-left: -12px; animation-delay: -.2s; }
+.blade-2 { height: 46px; rotate: 0deg;  margin-left: -3.5px; animation-delay: -1.4s; }
+.blade-3 { height: 32px; rotate: 7deg;  margin-left: 5px;   animation-delay: -2.6s; }
 
 @keyframes sway {
-  from { transform: rotate(-5deg) scaleY(.98); }
-  to   { transform: rotate(5deg)  scaleY(1.03); }
+  from { transform: rotate(-2.5deg) scaleY(.99); }
+  to   { transform: rotate(2.5deg)  scaleY(1.02); }
 }
 
 /* ---- Box B: a light green shell ----------------------------------------

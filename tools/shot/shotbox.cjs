@@ -1,0 +1,11 @@
+const { chromium } = require('playwright')
+;(async () => {
+  const b = await chromium.launch()
+  const p = await (await b.newContext({viewport:{width:1280,height:700}})).newPage()
+  await p.goto('http://127.0.0.1:8082/', {waitUntil:'domcontentloaded', timeout:20000})
+  await p.waitForTimeout(1500)
+  const box = await p.locator('#bot-a').boundingBox()
+  await p.screenshot({ path: process.argv[2]+'/boxa.png', clip:{x:box.x, y:box.y, width:box.width, height:box.height} })
+  console.log('ok')
+  await b.close()
+})()
