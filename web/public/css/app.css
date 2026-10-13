@@ -1,835 +1,503 @@
-/* Evermore — public site.
+/* Evermore — ORCHARD (D41, 2026-10-13). A complete redesign.
  *
- * Mobile-first, designed at 360px. Every colour is a token from tokens.css;
- * nothing here invents a hex value, because a hex value invented in a
- * stylesheet is a contrast ratio nobody measured.
+ * Riso/sticker-book: solid offset shadows, 2px ink outlines, uneven rotations,
+ * paper grain. Motion is on by default and switched off wholesale by the
+ * duration tokens under prefers-reduced-motion (tokens.css).
  */
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
-
-/* Sticky footer: the page is a column at least as tall as the viewport, and
- * <main> takes the slack. On a short page — a 404, an empty cart — the footer
- * sits on the bottom edge instead of floating halfway up with dead space
- * beneath it. It is NOT position:fixed: a permanently pinned footer would eat vertical
- * space on a 360px phone and collide with the WhatsApp float. */
-html { min-height: 100%; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
   margin: 0;
-  min-height: 100vh;
-  min-height: 100dvh;          /* dvh accounts for mobile browser chrome */
-  display: flex;
-  flex-direction: column;
-  background: var(--page-bg);
-  color: var(--page-ink);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--text-base);
   font-weight: var(--w-body);
-  line-height: 1.6;
-  font-variant-numeric: tabular-nums;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  display: flex; flex-direction: column; min-height: 100vh;
+  overflow-x: hidden;
 }
 
-main { flex: 1 0 auto; }
-.footer, .footer-fineprint { flex-shrink: 0; }
+/* Paper grain. A real texture, cheap: one tiling SVG of fractal noise at very
+ * low opacity. This is the detail that stops large flat areas reading as a
+ * screenshot of a template. */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+  opacity: .035; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body::before { mix-blend-mode: screen; opacity: .05; }
+}
 
 img, svg, video { max-width: 100%; height: auto; display: block; }
 
 h1, h2, h3, h4 {
-  color: var(--page-ink);
   font-family: var(--font-display);
   font-weight: var(--w-display);
-  line-height: 1.15;
+  line-height: 1.06;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
   margin: 0 0 var(--space-4);
-  letter-spacing: -0.01em;
 }
 h1 { font-size: var(--text-3xl); }
+@media (min-width: 768px) { h1 { font-size: var(--text-4xl); } }
 h2 { font-size: var(--text-2xl); }
-h3 { font-size: var(--text-xl); font-weight: var(--w-display-sub); }
-h4 { font-size: var(--text-lg); font-weight: var(--w-display-sub); }
+h3 { font-size: var(--text-xl); font-weight: var(--w-sub); letter-spacing: -0.01em; }
 p  { margin: 0 0 var(--space-4); }
 
-a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-a:hover { text-decoration-thickness: 2px; }
+a { color: var(--green); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+a:hover { color: var(--green-hi); }
 
-/* A visible focus ring on everything focusable. Never --border-subtle: it
- * measures 1.69 and a ring nobody can see is not a ring. */
-:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-  outline: 3px solid var(--focus-ring);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-xs);
 }
 
 .skip-link {
-  position: absolute; left: -9999px; top: 0;
-  background: var(--nourish-deep); color: var(--beige);
-  padding: var(--space-3) var(--space-4); z-index: 100;
-  font-weight: var(--w-ui);
+  position: absolute; left: var(--space-4); top: -100px; z-index: 300;
+  background: var(--ink); color: var(--paper); padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-pill); text-decoration: none; font-weight: var(--w-ui);
+  transition: top var(--dur) var(--ease-out);
 }
-.skip-link:focus { left: var(--space-4); top: var(--space-4); }
+.skip-link:focus { top: var(--space-4); }
 
-.container { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: var(--space-4); }
-.container-narrow { max-width: var(--container-narrow); }
-
-@media (min-width: 768px) { .container { padding-inline: var(--space-6); } }
-
-/* ---------------------------------------------------------------- masthead */
-
-/* THE BAR RULE (10 §2.4). It was forced by the old mid-green bar, where
- * nothing reached AA at reading size. D32 moved the bar to --ink #2B2620,
- * where cream-soft measures 13.78 and the rule is no longer load-bearing HERE.
- * It is kept because it is the established masthead look, and because the rule
- * still binds on .card-media, whose lightest gradient stop is --olive #5F7A33
- * — cream-soft on it is 4.47, four hundredths under the body floor. */
-.masthead {
-  background: var(--bar-bg);
-  color: var(--bar-ink);
-  font-size: var(--text-bar);
-  font-weight: var(--w-eyebrow);
-}
-.masthead a { color: var(--bar-ink); text-decoration: none; }
-.masthead a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
-.masthead :focus-visible { outline-color: var(--bar-ink); }
-
-.masthead-inner {
-  display: flex; align-items: center; gap: var(--space-4);
-  min-height: 72px; padding-block: var(--space-3);
-}
-.masthead-brand {
-  display: flex; align-items: center; gap: var(--space-3); margin-right: auto;
-  min-height: var(--tap);
-}
-/* Standalone links on the bar are controls, not prose, so they take the 44px
- * touch floor rather than their text height. */
-.masthead-nav a, .masthead-actions a {
-  display: inline-flex; align-items: center; min-height: var(--tap);
-}
-.masthead-brand img { height: 30px; width: auto; }
-
-.masthead-nav { display: none; gap: var(--space-5); align-items: center; }
-@media (min-width: 1024px) { .masthead-nav { display: flex; } }
-
-.masthead-actions { display: flex; align-items: center; gap: var(--space-3); }
-
-.nav-toggle {
-  display: inline-flex; align-items: center; justify-content: center;
-  min-width: var(--tap); min-height: var(--tap);
-  background: transparent; border: 2px solid var(--bar-ink);
-  color: var(--bar-ink); border-radius: var(--radius-sm);
-  font: inherit; cursor: pointer;
-}
-@media (min-width: 1024px) { .nav-toggle { display: none; } }
-
-.mobile-nav {
-  background: var(--nourish-deep); color: var(--beige);
-  font-size: var(--text-base); font-weight: var(--w-ui);
-}
-.mobile-nav a {
-  color: var(--beige); display: block;
-  padding: var(--space-3) var(--space-4); min-height: var(--tap);
-  border-bottom: 1px solid var(--border-subtle); text-decoration: none;
-}
-.mobile-nav a:hover { background: rgba(250, 245, 233, 0.08); }
-
-/* ------------------------------------------------------------------ hero */
-
-/* D32: the hero is LIGHT, as Thenie's is. The dark panel is still available
- * as .ground-deep on any section that wants the inverse. */
-.hero { background: var(--cream); color: var(--ink); padding-block: var(--space-8) var(--space-9); }
-.hero h1 { font-size: var(--text-3xl); margin-bottom: var(--space-5); }
-@media (min-width: 768px) { .hero h1 { font-size: var(--text-4xl); } }
-.hero p.lede { font-size: var(--text-lg); max-width: 56ch; color: var(--ink-soft); }
-.hero-grid { display: grid; gap: var(--space-7); }
-@media (min-width: 1024px) { .hero-grid { grid-template-columns: 1.1fr 0.9fr; align-items: center; } }
-
-/* Thenie's eyebrow: uppercase, tracked, in the brand colour. The source sets
- * it at 0.72rem in --maroon, which is 11.5px small text at 3.49 and illegal.
- * This is --coral-deep at 13px/700: 5.12 on white, 4.70 on the band (10 §2.3). */
-.eyebrow {
-  display: inline-block; font-size: var(--text-xs); font-weight: var(--w-eyebrow);
-  letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--brand-ink); margin-bottom: var(--space-4);
-}
-.ground-deep .eyebrow { color: var(--coral-light); }   /* 6.14 on --ink */
-/* --brand-ink already flips with the scheme; this covers a dark PANEL on a
- * light page, which the media query cannot see. */
-
-.hero-stats { display: flex; flex-wrap: wrap; gap: var(--space-6); margin-top: var(--space-6); }
-.hero-stat strong { display: block; font-family: var(--font-display); font-size: var(--text-xl); font-weight: var(--w-display); }
-.hero-stat span { color: var(--ink-soft); font-size: var(--text-sm); }
-.ground-deep .hero-stat span { color: var(--beige-deep); }   /* 8.60 on --ink */
-
-/* --------------------------------------------------------------- buttons */
-
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
-  min-height: var(--tap); padding: var(--space-3) var(--space-5);
-  border-radius: var(--radius-pill); border: 2px solid transparent;
-  font-family: var(--font-body); font-size: var(--text-base); font-weight: var(--w-ui);
-  text-decoration: none; cursor: pointer; transition: transform .08s ease, box-shadow .15s ease;
-}
-.btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); text-decoration: none; }
-.btn:active { transform: none; }
-
-/* D32: Thenie's primary is the coral pill. The fill is --coral-deep, NOT
- * --coral: white on #E1614A measures 3.49 and fails AA at reading size.
- * White on #B84B39 is 5.12, and the hover deepens to 6.68. */
-.btn-primary { background: var(--btn-solid-bg); color: var(--btn-solid-ink); }
-.btn-primary:hover { background: var(--btn-solid-bg-hover); }
-
-/* The olive ghost, Thenie's .btn-ghost-olive: olive-deep on olive-tint, 7.16. */
-.btn-secondary { background: var(--btn-ghost-bg); color: var(--btn-ghost-ink); border-color: transparent; }
-.btn-secondary:hover { background: var(--olive); color: #FFFFFF; }
-
-/* Read from tokens, never from a fixed colour. A button inside a card inside
- * a dark section has to flip twice, and enumerating those contexts by selector
- * is how one gets missed — which is exactly what happened: `.btn-outline`
- * painted beige ink on a white callout at 1.05:1. */
-.btn-solid   { background: var(--btn-solid-bg); color: var(--btn-solid-ink); }
-.btn-outline { background: transparent; color: var(--btn-outline-ink); border-color: var(--btn-outline-border); }
-
-.ground-deep .btn-primary { background: var(--cream-soft); color: var(--ink); }
-.ground-deep .btn-primary:hover { background: #FFFFFF; }
-.ground-deep .btn-secondary { background: transparent; color: var(--cream-soft); border-color: var(--cream-soft); }
-.ground-deep .btn-secondary:hover { background: rgba(250, 245, 233, 0.12); color: var(--cream-soft); }
-
-.btn[aria-disabled="true"], .btn:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
-
-/* A disabled control explains itself (CLAUDE.md §7) rather than being a grey
- * box: the reason sits beside it, not in a tooltip nobody opens. */
-.btn-reason { font-size: var(--text-sm); color: var(--ink-muted); margin-top: var(--space-2); }
-
-/* ----------------------------------------------------------------- cards */
-
-.section { padding-block: var(--space-8); }
-.section-head { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: baseline; justify-content: space-between; margin-bottom: var(--space-6); }
-/* :not(.eyebrow) keeps this from capturing the eyebrow, which carries its own
- * colour. Relying on source order here would break the moment the file is
- * reordered — design.md §4, "win on specificity". */
-.section-head p:not(.eyebrow) { color: var(--ink-muted); margin: 0; }
-.section-head .eyebrow { margin: 0 0 var(--space-2); }
-
-.card-grid { display: grid; gap: var(--space-5); grid-template-columns: 1fr; }
-@media (min-width: 640px)  { .card-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1024px) { .card-grid { grid-template-columns: repeat(3, 1fr); } }
-
-/* An element that paints a background must also set its ink. A card dropped
- * inside the dark section inherited `color: var(--beige)` from that section
- * and painted it on its own white ground: 1.05:1, invisible. Measured by
- * tools/shot, not visible anywhere in the source. */
-.card {
-  color: var(--page-ink);
-  background: var(--card-bg); border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg); overflow: hidden;
-  display: flex; flex-direction: column; box-shadow: var(--shadow-sm);
-}
-/* .card-media is defined ONCE, further down under "media panels". Two rules
- * of equal specificity setting the same property leave source order deciding,
- * and the last reorder of this file would silently change the design. */
-.card-body { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); flex: 1; }
-.card-body h3 { margin: 0; }
-/* A card title is the card's primary control on mobile; give it the touch
- * floor rather than the line height of its text. */
-.card-body h3 a { display: inline-flex; align-items: center; min-height: var(--tap); }
-.card-foot { margin-top: auto; padding-top: var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
-
-.meta { color: var(--ink-muted); font-size: var(--text-sm); margin: 0; }
-.price { font-family: var(--font-display); font-size: var(--text-xl); font-weight: var(--w-display); }
-.price small { display: block; font-family: var(--font-body); font-size: var(--text-xs); font-weight: var(--w-body); color: var(--ink-muted); }
-
-/* ------------------------------------------------------------------ pills */
-
-.pill {
-  display: inline-flex; align-items: center; gap: var(--space-2);
-  padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill);
-  font-size: var(--text-sm); font-weight: var(--w-strong);
-  border: 1px solid var(--border);
-}
-.pill-info    { background: var(--blue-light);   color: var(--nourish-deep); border-color: transparent; }
-.pill-warn    { background: var(--orange-light); color: var(--nourish-deep); border-color: transparent; }
-.pill-ok      { background: var(--nourish-deep); color: var(--beige);        border-color: transparent; }
-.pill-quiet   { background: transparent; color: var(--ink-muted); }
-
-/* Status is never colour alone (CLAUDE.md §7): each pill carries a glyph. */
-.pill::before { font-weight: var(--w-eyebrow); }
-.pill-ok::before   { content: "\2713\00a0"; }
-.pill-warn::before { content: "\26A0\00a0"; }
-.pill-info::before { content: "\2139\00a0"; }
-
-/* --------------------------------------------------------------- filters */
-
-.filterbar { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-5); }
-.chip {
-  display: inline-flex; align-items: center; min-height: var(--tap);
-  padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill);
-  border: 2px solid var(--border); background: transparent; color: var(--page-ink);
-  font: inherit; font-weight: var(--w-ui); font-size: var(--text-sm);
-  cursor: pointer; text-decoration: none;
-}
-.chip[aria-current="true"], .chip.is-active { background: var(--nourish-deep); color: var(--beige); border-color: var(--nourish-deep); }
-
-/* Every text-entry control takes the 44px touch floor, wherever it appears.
- * The floor used to live only on `.searchbox input`, so a form that put the
- * class ON the input rather than on a wrapper got a 21px control — found by
- * the tap-target probe on the login and register forms, not by reading this
- * file. */
-input[type="text"], input[type="email"], input[type="password"],
-input[type="tel"], input[type="search"], input[type="number"],
-input[type="file"], select, textarea {
-  min-height: var(--tap);
-  font: inherit;
-  font-size: var(--text-base);
-  padding: var(--space-2) var(--space-4);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--card-bg);
-  color: var(--page-ink);
-  max-width: 100%;
-}
-input[type="radio"], input[type="checkbox"] { min-height: 0; width: 20px; height: 20px; }
-
-/* A search box on every list (CLAUDE.md §7). */
-.searchbox { position: relative; flex: 1 1 240px; min-width: 200px; }
-.searchbox input {
-  width: 100%; min-height: var(--tap);
-  padding: var(--space-2) var(--space-4); font: inherit; font-size: var(--text-base);
-  border: 2px solid var(--border); border-radius: var(--radius-pill);
-  background: var(--card-bg); color: var(--page-ink);
-}
-.searchbox input::placeholder { color: var(--ink-muted); }
-
-/* --------------------------------------------------------------- calendar */
-
-.daystrip { display: flex; gap: var(--space-2); overflow-x: auto; padding-bottom: var(--space-2); scrollbar-width: thin; }
-.day {
-  flex: 0 0 auto; min-width: 76px; min-height: var(--tap);
-  padding: var(--space-2) var(--space-3); border-radius: var(--radius-md);
-  border: 2px solid var(--border); background: var(--card-bg); color: var(--page-ink);
-  text-align: center; text-decoration: none; font-weight: var(--w-ui);
-}
-.day span { display: block; font-size: var(--text-xs); color: var(--ink-muted); font-weight: var(--w-body); }
-.day[aria-current="date"], .day.is-active { background: var(--nourish-deep); color: var(--beige); border-color: var(--nourish-deep); }
-.day[aria-current="date"] span, .day.is-active span { color: var(--beige-deep); }
-
-/* --------------------------------------------------------------- callout */
-
-.callout {
-  display: flex; gap: var(--space-3); padding: var(--space-4) var(--space-5);
-  border-radius: var(--radius-md); border-left: 4px solid var(--nourish-deep);
-  background: var(--card-bg); font-size: var(--text-base);
-}
-.callout-info { border-left-color: var(--blue-deep); }
-.callout-warn { border-left-color: var(--brown-deep); }
-
-/* ---------------------------------------------------------------- tables */
-
-/* The wrapper paints a surface rather than being transparent. It is listed as
- * a light surface in the deep-ground remap, and a "light surface" with no
- * background put deep ink on the deep green at 1:1 — invisible. If it claims
- * the light inks it has to provide the light ground. */
-.table-wrap {
-  overflow-x: auto;
-  background: var(--card-bg);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-}
-table { border-collapse: collapse; width: 100%; font-size: var(--text-sm); }
-th, td { text-align: left; padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border-subtle); }
-th { font-weight: var(--w-strong); background: rgba(43, 38, 32, 0.04); white-space: nowrap; }
-tbody tr:last-child td { border-bottom: none; }
-td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-
-/* ---------------------------------------------------------------- footer */
-
-.footer {
-  /* The SAME tokens as the masthead, not --nourish/--beige (D39).
-   * Those are scheme-flipping aliases: in dark mode --beige resolves to
-   * #2B2620 and painted dark ink on the mid-green footer at 2.67, a real AA
-   * failure, while the masthead went dark green — two chromes again. Reading
-   * --bar-bg/--bar-ink makes the two bars one thing by construction. */
-  background: var(--bar-bg);
-  color: var(--bar-ink);
-  font-size: var(--text-bar);      /* the bar rule applies to the footer too */
-  font-weight: var(--w-eyebrow);
-  /* Bottom padding is 0: .footer-fineprint is the last child and paints its
-   * own darker ground, so 48px of padding under it left a mid-green band
-   * below the copyright strip at the very bottom of the page. No top margin
-   * either — that let the beige page ground show as a stripe between a dark
-   * section and the footer. */
-  padding-block: var(--space-7) 0;
-}
-.footer a { color: var(--bar-ink); }
-.footer :focus-visible { outline-color: var(--bar-ink); }
-.footer-grid { display: grid; gap: var(--space-6); }
-@media (min-width: 768px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr; } }
-/* Body copy inside the footer drops back to the deep ground for legibility:
- * on the mid-green, 17px beige is 3.93 and fails. Anything not at 19px/700
- * lives in this block, which paints its own darker ground. */
-.footer-fineprint {
-  /* A DEEPER GREEN band, not the near-black it used to be: the footer should
-   * step down within one colour family rather than change chrome. Measured on
-   * #3E5321 — muted ink 4.89, the link tint 6.92 (D39). */
-  background: var(--bar-green-deep); color: var(--beige-deep);
-  font-size: var(--text-sm); font-weight: var(--w-body);
-  padding-block: var(--space-4);
-  margin-top: var(--space-7);
-  /* Room for the WhatsApp float so it never sits on the copyright line at the
-   * very bottom of a scrolled page. */
-  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
-}
-.footer-fineprint a { color: var(--blue-light); }
-
-/* -------------------------------------------------------------- utilities */
-
-.stack > * + * { margin-top: var(--space-4); }
 .visually-hidden {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
-.text-muted { color: var(--ink-muted); }
+
+/* ------------------------------------------------------------- layout */
+
+.container { width: 100%; max-width: var(--container); margin: 0 auto; padding: 0 var(--space-5); }
+.container-narrow { max-width: var(--container-narrow); }
+main { flex: 1 0 auto; }
+
+.section { padding-block: var(--space-8); position: relative; }
+.section.tight { padding-block: var(--space-6); }
+.band-raised { background: var(--paper-2); }
+
+/* The band edges are a torn paper line, not a straight rule — drawn with a
+ * repeating conic mask so it is geometry, not an image file. */
+.band-raised { position: relative; }
+.band-raised::before,
+.band-raised::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 12px;
+  background: var(--paper-2);
+  -webkit-mask-image: radial-gradient(circle at 10px 12px, transparent 11px, #000 12px);
+          mask-image: radial-gradient(circle at 10px 12px, transparent 11px, #000 12px);
+  -webkit-mask-size: 24px 24px; mask-size: 24px 24px;
+  -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x;
+}
+.band-raised::before { top: -11px; transform: scaleY(-1); }
+.band-raised::after  { bottom: -11px; }
+
+.section-head { margin-bottom: var(--space-6); max-width: 62ch; }
+.section-head.center { margin-inline: auto; text-align: center; }
+.stack > * + * { margin-top: var(--space-4); }
 .text-center { text-align: center; }
+.text-muted  { color: var(--ink-soft); }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important; animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important; scroll-behavior: auto !important;
-  }
-  .btn:hover { transform: none; }
+.card-grid {
+  display: grid; gap: var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+.hero-grid { display: grid; gap: var(--space-7); }
+@media (min-width: 1024px) { .hero-grid { grid-template-columns: 1.05fr .95fr; align-items: center; } }
+
+/* --------------------------------------------------------- the eyebrow */
+
+/* A sticker, not a label: rotated, filled, outlined. */
+.eyebrow {
+  display: inline-block;
+  font-family: var(--font-body); font-size: var(--text-xs); font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--on-brand); background: var(--ctl-butter);
+  border: var(--edge); border-radius: var(--radius-pill);
+  padding: 5px var(--space-4);
+  box-shadow: var(--shadow-pop-sm);
+  transform: rotate(-1.4deg);
+  margin-bottom: var(--space-4);
+}
+.hero-eyebrow { background: var(--ctl-orange); color: var(--on-brand); transform: rotate(1.2deg); }
+
+.lede { font-size: var(--text-lg); color: var(--ink-soft); max-width: 58ch; }
+.script { font-family: var(--font-display); font-style: italic; color: var(--green); }
+
+/* ------------------------------------------------------------ masthead */
+
+.masthead {
+  background: var(--paper);
+  border-bottom: var(--edge);
+  position: sticky; top: 0; z-index: 200;
+}
+.masthead-inner {
+  display: flex; align-items: center; gap: var(--space-4);
+  min-height: 68px; padding-block: var(--space-3);
+}
+.masthead-brand { display: flex; align-items: center; gap: var(--space-3); margin-right: auto; min-height: var(--tap); }
+.masthead-brand img { width: 148px; }
+.masthead-nav { display: none; gap: var(--space-2); }
+@media (min-width: 960px) { .masthead-nav { display: flex; } }
+.masthead-nav a, .masthead-actions a {
+  color: var(--ink); text-decoration: none; font-weight: var(--w-ui);
+  font-size: var(--text-sm); padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill); border: 2px solid transparent;
+  transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+  display: inline-flex; align-items: center; min-height: var(--tap);
+}
+.masthead-nav a:hover, .masthead-actions a:hover { background: var(--green-wash); border-color: var(--rule); }
+.masthead-nav a[aria-current="page"] { background: var(--green-wash); border-color: var(--rule); }
+.masthead-actions { display: flex; align-items: center; gap: var(--space-2); }
+
+.nav-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: var(--tap); height: var(--tap); border: var(--edge); background: var(--card);
+  border-radius: var(--radius-sm); cursor: pointer; box-shadow: var(--shadow-pop-sm);
+  color: var(--ink); font-size: var(--text-lg);
+  transition: transform var(--dur-fast) var(--ease-pop), box-shadow var(--dur-fast);
+}
+.nav-toggle:active { transform: translate(2px, 2px); box-shadow: none; }
+@media (min-width: 960px) { .nav-toggle { display: none; } }
+
+.mobile-nav { display: grid; border-top: var(--edge); background: var(--card); }
+.mobile-nav a {
+  padding: var(--space-4) var(--space-5); min-height: var(--tap);
+  border-bottom: 1px solid var(--rule-soft); text-decoration: none; color: var(--ink);
+  font-weight: var(--w-ui); display: flex; align-items: center;
+}
+.mobile-nav a:hover { background: var(--green-wash); }
+
+/* -------------------------------------------------------------- buttons */
+
+/* Pill, ink outline, solid offset shadow. Pressing it moves the button INTO
+ * its own shadow, which is the one interaction everyone recognises as
+ * physical rather than rendered. */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: var(--tap); padding: var(--space-3) var(--space-5);
+  font-family: var(--font-body); font-size: var(--text-base); font-weight: 700;
+  line-height: 1; text-decoration: none; cursor: pointer;
+  border: var(--edge); border-radius: var(--radius-pill);
+  background: var(--card); color: var(--ink);
+  box-shadow: var(--shadow-pop);
+  transition: transform var(--dur-fast) var(--ease-pop),
+              box-shadow var(--dur-fast) var(--ease-out),
+              background var(--dur-fast) var(--ease-out);
+}
+.btn:hover { transform: translate(-1px, var(--lift)); box-shadow: var(--shadow-pop-lg); text-decoration: none; }
+.btn:active { transform: translate(4px, 4px); box-shadow: none; }
+
+.btn-primary, .btn-solid { background: var(--ctl-green); color: #FFFFFF; }   /* 4.99 both schemes */
+.btn-primary:hover, .btn-solid:hover { background: var(--ctl-green-hi); color: #FFFFFF; }  /* 7.10 */
+.btn-secondary { background: var(--ctl-butter); color: var(--on-brand); }   /* 9.49 */
+.btn-secondary:hover { background: var(--ctl-orange); color: var(--on-brand); }  /* 5.46 */
+.btn-outline { background: transparent; color: var(--ink); }
+.btn-outline:hover { background: var(--green-wash); color: var(--ink); }
+.btn-sm { min-height: 36px; padding: var(--space-2) var(--space-4); font-size: var(--text-sm); box-shadow: var(--shadow-pop-sm); }
+
+.btn[aria-disabled="true"], .btn:disabled {
+  opacity: .55; cursor: not-allowed; transform: none; box-shadow: var(--shadow-pop-sm);
+}
+/* A disabled control explains itself rather than being a grey box. */
+.btn-reason { font-size: var(--text-sm); color: var(--ink-soft); margin-top: var(--space-2); }
+
+/* ---------------------------------------------------------------- cards */
+
+.card {
+  background: var(--card); border: var(--edge); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop); overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: transform var(--dur) var(--ease-pop), box-shadow var(--dur) var(--ease-out);
+}
+.card:hover { transform: translate(-2px, var(--lift)) rotate(-.35deg); box-shadow: var(--shadow-pop-lg); }
+
+/* Uneven by design. A grid where every card sits at exactly 0deg is the
+ * signature of a generated layout; nth-child rotations cost nothing and read
+ * as things placed by a hand. They are tiny on purpose — large tilts look
+ * like a bug, fractions of a degree look deliberate. */
+.card-grid > .card:nth-child(3n+1) { transform: rotate(-.5deg); }
+.card-grid > .card:nth-child(3n+2) { transform: rotate(.35deg); }
+.card-grid > .card:nth-child(3n+3) { transform: rotate(-.2deg); }
+.card-grid > .card:hover { transform: translate(-2px, var(--lift)) rotate(0deg); }
+
+.card-body { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); flex: 1; }
+.card-body h3 { margin: 0; }
+.card-body h3 a { color: inherit; text-decoration: none; display: inline-flex; align-items: center; min-height: var(--tap); }
+.card-body h3 a:hover { color: var(--green); }
+.card-foot {
+  margin-top: auto; padding-top: var(--space-4);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
 }
 
-@media print {
-  .masthead, .footer, .nav-toggle, .filterbar, .btn { display: none !important; }
-  body { background: #FFFFFF; color: #000000; font-size: 11pt; }
-  .card { break-inside: avoid; border: 1px solid #000; }
-}
-
-
-/* ------------------------------------------------------- WhatsApp float */
-
-/* 10 §2 governs every value here and the reasoning is worth keeping next to
- * the code. D32 CHANGED WHAT CARRIES THE AFFORDANCE:
- *
- *   - #128C7E is WhatsApp's own green. Do not recolour it; recolouring stops
- *     the mark reading as WhatsApp.
- *   - On the retired deep-green ground the teal measured 2.87 and FAILED
- *     1.4.11 on its own, so the beige ring was the affordance. On the white
- *     ground the teal measures **4.14** and on the dark scheme **4.18** — it
- *     now clears 3:1 unaided.
- *   - So the ring is DECORATION, not the affordance. It is --page-bg, which
- *     means it reads as a halo on either scheme instead of a cream disc that
- *     measures 1.09 against a white page.
- *   - The glyph is white on the teal at 4.14. It is an icon, so 1.4.11's 3:1
- *     applies rather than 1.4.3's 4.5.
- *
- * scripts/contrast.py measures these.
- */
-.wa-float {
-  position: fixed;
-  right: max(var(--space-4), env(safe-area-inset-right));
-  bottom: max(var(--space-4), env(safe-area-inset-bottom));
-  z-index: 90;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;                 /* comfortably over the 44px touch floor */
-  height: 56px;
-  border-radius: 50%;
-
-  background: #128C7E;         /* WhatsApp's own colour — see above */
-  color: #FFFFFF;              /* the glyph */
-  /* Decoration, not the affordance (see above). --page-bg so it halos on
-   * either scheme; 3px so it survives a busy photo behind it. */
-  box-shadow: 0 0 0 3px var(--page-bg), var(--shadow-lg);
-
-  text-decoration: none;
-  transition: transform .12s ease, box-shadow .12s ease;
-}
-
-.wa-float:hover {
-  transform: scale(1.06);
-  box-shadow: 0 0 0 4px var(--beige), var(--shadow-lg);
-  text-decoration: none;
-}
-
-/* The focus ring must not be the beige ring, which is decoration here and
- * would be indistinguishable from the resting state. */
-.wa-float:focus-visible {
-  outline: 3px solid var(--focus-ring);
-  outline-offset: 4px;
-}
-
-.wa-float-glyph { display: block; }
-
-/* On a narrow screen the float sits above the footer's fine print rather than
- * over it, so it never covers a link. */
-@media (max-width: 480px) {
-  .wa-float { width: 52px; height: 52px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .wa-float, .wa-float:hover { transition: none; transform: none; }
-}
-
-@media print { .wa-float { display: none !important; } }
-
-
-/* ------------------------------------------------- the deep-green ground */
-
-/* The brand's deep green as a page ground, applied to <main> in base.html so
- * every page gets it and the bars keep their own treatment.
- *
- * This is a TOKEN REMAP. The sheet tokens are not merely different on the
- * dark ground, they are wrong in a way that hides text:
- *
- *     --ink-soft   #615848  7.01 on white  ->  1.58 on --ink
- *     --coral      #E1614A  3.49 on white  ->  4.29 on --ink, still under 4.5
- *
- * Remapped values, every one measured by scripts/contrast.py (D32):
- *     cream-soft      13.78   headings and body
- *     #CDC3B2          8.60   muted text
- *     --coral-light    6.14   links  (--coral is 4.29 here and FAILS)
- *     cream .55        5.23   control borders, clears 1.4.11's 3:1
- *     --focus-ring-on-dark 8.05
- */
-.ground-deep {
-  background: var(--nourish-deep);
-  color: var(--beige);
-
-  --page-ink:      var(--beige);
-  --ink-muted:     var(--beige-deep);
-  --link:          var(--link-on-dark);
-  --border:        rgba(250, 245, 233, 0.55);
-  --border-subtle: rgba(250, 245, 233, 0.22);
-  --focus-ring:    var(--focus-ring-on-dark);
-
-  /* On the dark ground the filled button inverts: cream fill, ink (13.78). */
-  --btn-solid-bg:       var(--beige);
-  --btn-solid-ink:      var(--ink);
-  --btn-outline-ink:    var(--beige);
-  --btn-outline-border: var(--beige);
-}
-
-/* ANY element that paints its own light surface restores the sheet's tokens.
- *
- * This is one rule over a set, not a rule per element, because the per-element
- * version missed callouts and table headers: beige-deep landed on white at
- * 1.84 and an outline button at 1.05. Everything downstream reads the tokens,
- * so nesting resolves itself however deep it goes.
- */
-.ground-deep :is(.card, .callout, .table-wrap, .searchbox input,
-                 input, select, textarea) {
-  --page-ink:      var(--ink);
-  --ink-muted:     var(--ink-soft);
-  --link:          var(--coral-deep);
-  --border:        var(--border-strong);
-  --border-subtle: var(--paper-line);
-  --focus-ring:    #1F6FB2;
-
-  --btn-solid-bg:       var(--coral-deep);
-  --btn-solid-ink:      #FFFFFF;
-  --btn-outline-ink:    var(--ink);
-  --btn-outline-border: var(--border-strong);
-
-  color: var(--page-ink);
-}
-
-/* Chips and day pills are controls ON the green: outlined beige at rest,
- * filled beige when chosen. Both clear 3:1 either way round. They are
- * deliberately NOT in the light-surface set above. */
-.ground-deep .chip,
-.ground-deep .day {
-  background: transparent;
-  color: var(--beige);
-  border-color: var(--beige);
-}
-.ground-deep .chip[aria-current="true"], .ground-deep .chip.is-active,
-.ground-deep .day[aria-current="date"],  .ground-deep .day.is-active {
-  background: var(--beige);
-  color: var(--nourish-deep);
-  border-color: var(--beige);
-}
-.ground-deep .day span { color: var(--beige-deep); }         /* 8.60 on --ink */
-.ground-deep .day[aria-current="date"] span,
-.ground-deep .day.is-active span { color: var(--ink-soft); }   /* 6.44 on cream-soft */
-
-.ground-deep .searchbox input::placeholder { color: var(--ink-soft); }
-
-/* The table header tints its own surface, so it is a light surface too. */
-.ground-deep th { background: rgba(43, 38, 32, 0.04); color: var(--nourish-deep); }
-
-
-/* ------------------------------------------------------- section rhythm */
-
-/* A section on the raised band. Alternating this with the deep ground gives
- * the page rhythm without leaving the light ground. The band is --cream-soft
- * #FAF5E9; every ink clears AA on it (13.78 / 6.44 / 4.50), so nothing inside
- * needs a special case. --ink-faint is the tight one at exactly 4.50, which is
- * why Thenie's own #8B8271 (3.49 here) was darkened — see 10 §2.3. */
-.band-raised { background: var(--band-raised); }
-
-/* A hairline between bands, so the step reads as deliberate rather than as a
- * rendering seam. Decorative, not a control boundary, so --border-subtle is
- * the right token here. */
-.band-raised + .section,
-.section + .band-raised { border-top: 1px solid var(--border-subtle); }
-
-/* --------------------------------------------------------- media panels */
-
-/* The photo placeholders were flat. A soft three-stop gradient toward
- * the dark ink gives them depth and stops a row of cards reading as a row of
- * identical rectangles. All three stops are palette colours, and the label
- * sits at 19px/700 — the bar rule — because cream-soft on the lightest stop
- * (--olive #5F7A33) is 4.47 and is large text only. */
 .card-media {
-  aspect-ratio: 4 / 3;
-  display: grid;
-  place-items: center;
-  color: var(--media-ink);
-  /* 19px/700 is the bar rule, and it applies here: the lightest gradient stop
-   * is --olive #5F7A33, where cream-soft measures 4.47 — large text only.
-   * A 15px label here would look fine and be an AA failure. */
-  font-size: var(--text-bar);
-  font-weight: var(--w-eyebrow);
-
-  /* background-color is the LIGHTEST stop, not the middle one, for two
-   * reasons. It is the real fallback if the gradient does not paint, and it is
-   * what a contrast checker measures — so the reported number is the worst
-   * case across the gradient rather than a flattering average. */
-  background-color: var(--media-stop-1);
-  background-image: linear-gradient(160deg, var(--media-stop-1) 0%, var(--media-stop-2) 62%, var(--media-stop-3) 100%);
-  position: relative;
+  aspect-ratio: 4 / 3; display: grid; place-items: center;
+  border-bottom: var(--edge); background: var(--green-wash);
+  color: var(--ink); font-weight: 700; font-size: var(--text-lg);
   overflow: hidden;
 }
+.card-media img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease-out); }
+.card:hover .card-media img { transform: scale(1.045); }
+.photo-frame { overflow: hidden; }
 
-/* The brand pattern, held well back so it textures the panel without
- * competing with the label. */
-.card-media::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("/images/pattern.png");
-  background-size: 220px auto;
-  background-repeat: repeat;
-  opacity: .10;
-  pointer-events: none;
-}
-.card-media > * { position: relative; z-index: 1; }
+/* ----------------------------------------------------------------- hero */
 
-/* ------------------------------------------------------------ hero art */
-
-/* The hero's right column was an empty green rectangle with a caption in it.
- * This gives it the same treatment as a meal card plus a taller aspect, so it
- * reads as intentional art direction rather than a missing image. */
-.hero-art {
-  aspect-ratio: 4 / 5;
-  border-radius: var(--radius-lg);
-  display: grid;
-  place-items: center;
-  text-align: center;
-  padding: var(--space-6);
-  /* --media-ink, not --beige: --beige flips with the scheme and painted this
-   * label #2B2620 on the dark green panel in dark mode. Pinned literal, so the
-   * panel's ink does not move when the page's does. 4.47 on the lightest
-   * gradient stop — hence 19px/700 below. */
-  color: var(--media-ink);
-  font-size: var(--text-bar);
-  font-weight: var(--w-eyebrow);
-  box-shadow: var(--shadow-lg);
-}
-@media (max-width: 1023px) { .hero-art { aspect-ratio: 16 / 10; } }
-
-/* ------------------------------------------------------------- accents */
-
-/* An accent rule under a stat. Orange-light and blue-light are tints that take
- * deep ink at 7.27 and 8.15; here they are used as 3px rules, which is
- * decoration and carries no text, so no ink ratio applies. */
-.hero-stat { padding-left: var(--space-3); border-left: 3px solid var(--nourish); }
-.hero-stat:nth-child(1) { border-left-color: var(--orange-light); }
-.hero-stat:nth-child(2) { border-left-color: var(--blue-light); }
-.hero-stat:nth-child(3) { border-left-color: var(--beige); }
-
-/* The featured package's ribbon. Deep ink on the base gold is 5.65 (design.md
- * §3), and that base is the worst case — the sheet notes the shimmer only ever
- * lifts it. Kept as a static fill: an animated one is a promise about
- * something nobody asked for. */
-.ribbon-gold {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-pill);
-  background: var(--gold);
-  color: var(--nourish-deep);
-  font-size: var(--text-sm);
-  font-weight: var(--w-eyebrow);
-}
-.ribbon-gold::before { content: "\2605"; }   /* a star, so the badge is not colour alone */
-
-/* ==========================================================================
-   D34 — the Thenie page architecture
-   Ported from docs/design_reference/thenie_site_FINAL_14.html. Steven,
-   2026-09-30: "i want 99.99999999% same". Structure, spacing and component
-   shapes are Thenie's; the typefaces stay Erode + Inter (D32) and the inks
-   are the AA-corrected palette (10 §1).
-   ========================================================================== */
-
-/* ---- Full-bleed photo hero ---------------------------------------------
- * Thenie's hero is the whole viewport: a photograph, a scrim, the brand
- * centred at the top and the copy centred at the bottom. */
 .hero-full {
-  position: relative; overflow: hidden; padding: 0;
-  min-height: 100vh; min-height: 100svh;
-  display: flex; flex-direction: column; justify-content: space-between;
-  background: var(--ink);
+  position: relative; overflow: hidden;
+  padding-block: var(--space-9) var(--space-8);
+  background: var(--paper);
 }
-.hero-media { position: absolute; inset: 0; }
-.hero-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
-/* The scrim is what makes white text legal over an UNKNOWN photograph, so
- * every stop is set from the worst case: the pixel behind it is pure white.
- * Composited against white and measured (10 §2.10):
- *
- *   0.88  bottom, where the copy sits   -> 15.27  AAA
- *   0.62  top, where the wordmark sits  ->  5.82  AA
- *   0.56  the lightest middle band      ->  4.66  AA
- *
- * Thenie's own middle stop is 0.15, which composites to 3.23 and fails body
- * text. Nothing is positioned in that band today, so it is a latent trap
- * rather than a live defect — raised to 0.56 so it cannot become one. */
-.hero-media::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(to top,
-    rgba(9,7,5,0.88) 0%, rgba(9,7,5,0.62) 38%, rgba(9,7,5,0.56) 60%, rgba(9,7,5,0.62) 100%);
+/* Two soft organic blobs drifting behind the headline. The blob radius is
+ * asymmetric (--radius-blob), so even frozen it never reads as a circle. */
+.hero-full::before, .hero-full::after {
+  content: ""; position: absolute; z-index: 0; pointer-events: none;
+  border-radius: var(--radius-blob);
+  filter: blur(2px); opacity: .5;
+  animation: drift var(--dur-drift) ease-in-out infinite alternate;
 }
-.hero-brand {
-  position: relative; z-index: 2; padding: 34px 24px 0; text-align: center;
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
+.hero-full::before { width: 420px; height: 380px; background: var(--green-wash); top: -110px; left: -130px; }
+.hero-full::after  { width: 340px; height: 320px; background: var(--butter-wash); bottom: -120px; right: -90px; animation-delay: -6s; }
+@keyframes drift {
+  from { transform: translate3d(0,0,0) rotate(0deg) scale(1); }
+  to   { transform: translate3d(26px,-22px,0) rotate(12deg) scale(1.07); }
 }
-.hero-brand img { width: 260px; max-width: 62vw; height: auto; display: block;
-  filter: drop-shadow(0 10px 32px rgba(0,0,0,0.5)); }
-.hero-brand .word {
-  font-family: var(--font-body); font-weight: var(--w-ui); color: #FFFFFF;
-  font-size: var(--text-lg); line-height: 1.15; text-shadow: 0 2px 14px rgba(0,0,0,0.55);
-}
-.hero-inner {
-  position: relative; z-index: 2; width: 100%;
-  padding: 0 24px 150px; max-width: var(--container); margin: 0 auto; text-align: center;
-}
-.hero-inner h1 { color: #FFFFFF; text-shadow: 0 2px 18px rgba(0,0,0,0.5); margin-bottom: var(--space-4); }
-.hero-inner p.lede { color: #FFFFFF; text-shadow: 0 1px 12px rgba(0,0,0,0.6);
-  max-width: 62ch; margin-inline: auto; }
-.hero-eyebrow {
-  font-family: var(--font-display); font-style: italic; font-weight: var(--w-display-sub);
-  color: #FFFFFF; font-size: var(--text-xl); text-shadow: 0 2px 14px rgba(0,0,0,0.6);
-  display: block; margin-bottom: var(--space-3);
-}
-/* Thenie's headline puts the second half in an italic accent. Erode's italic
- * carries this where Thenie used Baloo 2's; --gold is legal here because it
- * sits on the scrim, not on white (10 §2.5). */
-.script { font-family: var(--font-display); font-style: italic; font-weight: var(--w-display); color: var(--gold); }
-@media (max-width: 767px) {
-  .hero-brand img { width: 190px; }
-  .hero-inner { padding: 0 20px 128px; }
-}
+.hero-inner, .hero-grid { position: relative; z-index: 1; }
+.hero-media { position: relative; border: var(--edge); border-radius: var(--radius-lg);
+  overflow: hidden; box-shadow: var(--shadow-pop-lg); transform: rotate(1.1deg); }
+.hero-media img { width: 100%; height: 100%; object-fit: cover; }
+.hero-brand { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-5); }
+.hero-brand img { width: 230px; }
+.hero-brand .word { font-weight: var(--w-ui); color: var(--ink-soft); }
 
-/* ---- The sticky mark --------------------------------------------------- */
-.sticky-logo {
-  position: fixed; top: 16px; left: 16px; z-index: 190;
-  opacity: 0; transform: translateY(-10px); pointer-events: none;
-  transition: opacity .25s ease, transform .25s ease;
-}
-.sticky-logo.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-.sticky-logo img { width: 120px; height: auto; display: block;
-  filter: drop-shadow(0 4px 14px rgba(0,0,0,0.35)); }
-@media (prefers-reduced-motion: reduce) { .sticky-logo { transition: none; } }
+/* ---------------------------------------------------------------- pills */
 
-/* ---- The floating bottom nav — Thenie's signature ---------------------- */
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--text-xs); font-weight: 700; letter-spacing: .02em;
+  padding: 4px var(--space-3); border: var(--edge); border-radius: var(--radius-pill);
+  background: var(--card); color: var(--ink); white-space: nowrap;
+}
+.pill-ok    { background: var(--green-wash); }
+.pill-warn  { background: var(--ctl-butter); color: var(--on-brand); }
+.pill-info  { background: var(--blue-wash); }
+.pill-quiet { background: transparent; border-color: var(--rule-soft); color: var(--ink-soft); }
+.ribbon-gold { background: var(--ctl-butter); border: var(--edge); border-radius: var(--radius-pill);
+  padding: 4px var(--space-3); font-weight: 700; color: var(--on-brand); }
+
+/* ---------------------------------------------------- forms and filters */
+
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--space-4); }
+.field label { font-weight: var(--w-ui); font-size: var(--text-sm); }
+
+.searchbox, input[type="text"], input[type="email"], input[type="tel"],
+input[type="password"], input[type="number"], input[type="search"],
+input[type="date"], select, textarea {
+  font: inherit; color: var(--ink); background: var(--card);
+  border: var(--edge); border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4); min-height: var(--tap); width: 100%;
+  transition: box-shadow var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.searchbox:focus, input:focus, select:focus, textarea:focus {
+  box-shadow: var(--shadow-pop-sm); transform: translate(-1px, -1px);
+}
+::placeholder { color: var(--ink-faint); opacity: 1; }   /* 4.52 */
+
+.filterbar, .daystrip {
+  display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center;
+  margin-block: var(--space-5);
+}
+.daystrip { flex-wrap: nowrap; overflow-x: auto; padding-bottom: var(--space-2); scrollbar-width: thin; }
+
+.chip, .day {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: var(--tap); padding: var(--space-2) var(--space-4);
+  border: var(--edge); border-radius: var(--radius-pill);
+  background: var(--card); color: var(--ink); text-decoration: none;
+  font-weight: var(--w-ui); font-size: var(--text-sm); white-space: nowrap;
+  box-shadow: var(--shadow-pop-sm);
+  transition: transform var(--dur-fast) var(--ease-pop), background var(--dur-fast);
+}
+.chip:hover, .day:hover { background: var(--green-wash); transform: translate(-1px,-1px); }
+.chip[aria-current="true"], .chip.is-active,
+.day[aria-current="date"], .day.is-active {
+  background: var(--ctl-green); color: #FFFFFF; box-shadow: none; transform: translate(2px,2px);
+}
+.day { flex-direction: column; gap: 0; min-width: 62px; padding: var(--space-2); }
+.day span { font-size: var(--text-xs); font-weight: var(--w-body); color: var(--ink-soft); }
+.day[aria-current="date"] span, .day.is-active span { color: #FFFFFF; }
+
+/* ------------------------------------------------- callouts and tables */
+
+/* A taped note, not a coloured box: the left edge is a thick ink rule and the
+ * whole thing sits slightly off-axis. */
+.callout {
+  background: var(--green-wash); border: var(--edge); border-left-width: 8px;
+  border-radius: var(--radius-sm); padding: var(--space-4) var(--space-5);
+  box-shadow: var(--shadow-pop-sm);
+}
+.callout-info { background: var(--blue-wash); }
+.callout-warn { background: var(--butter-wash); }
+.callout p:last-child { margin-bottom: 0; }
+
+.table-wrap {
+  overflow-x: auto; border: var(--edge); border-radius: var(--radius-sm);
+  background: var(--card); box-shadow: var(--shadow-pop-sm);
+}
+table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+th, td { padding: var(--space-3) var(--space-4); text-align: left; border-bottom: 1px solid var(--rule-soft); }
+th { font-weight: 700; background: var(--paper-2); white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover { background: var(--green-wash); }
+
+/* Tabular figures everywhere a number must line up in a column. */
+.num, .price, .count, .eq, td.num, .stat-item .count {
+  font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1;
+}
+.price { font-family: var(--font-display); font-size: var(--text-xl); font-weight: var(--w-display); }
+.price small { display: block; font-family: var(--font-body); font-size: var(--text-xs);
+  font-weight: var(--w-body); color: var(--ink-soft); letter-spacing: 0; }
+.meta { color: var(--ink-soft); font-size: var(--text-sm); margin: 0; }
+
+/* --------------------------------------------------------------- stats */
+
+.stats-strip { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-5); text-align: center; }
+@media (min-width: 720px) { .stats-strip { grid-template-columns: repeat(4, 1fr); } }
+.stat-item { position: relative; }
+.stat-item b { display: block; font-family: var(--font-display); font-size: var(--text-2xl);
+  font-weight: var(--w-display); color: var(--green); line-height: 1; }
+.stat-item .count { font-size: inherit; }
+.stat-item > span { display: block; font-size: var(--text-sm); color: var(--ink-soft); margin-top: 6px; }
+
+/* -------------------------------------------------------------- footer */
+
+.footer {
+  background: var(--ink); color: var(--paper);
+  border-top: var(--edge); margin-top: var(--space-9);
+  padding-block: var(--space-8) var(--space-5); flex-shrink: 0;
+}
+.footer a { color: var(--paper); }
+.footer a:hover { color: var(--butter); }
+.footer :focus-visible { outline-color: var(--butter); }
+.footer-grid { display: grid; gap: var(--space-6); }
+@media (min-width: 720px) { .footer-grid { grid-template-columns: 1.4fr 1fr 1fr; } }
+.footer h2, .footer h3 { color: var(--paper); font-size: var(--text-lg); }
+.footer img { width: 160px; }
+.footer-fineprint {
+  margin-top: var(--space-7); padding-top: var(--space-4);
+  border-top: 1px solid rgba(246, 242, 233, .28);
+  font-size: var(--text-sm); color: #CFC7B9;   /* 8.98 on --ink */
+}
+.footer-fineprint a { color: var(--butter); }
+
+/* ------------------------------------------------ floating nav + float */
+
 .float-nav {
-  position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
-  z-index: 260; display: flex; align-items: center; gap: 6px;
-  background: var(--cream-raised); border: 1px solid var(--border-strong);
-  border-radius: var(--radius-pill); padding: 7px;
-  box-shadow: var(--shadow-lg);
-}
-.navToggle {
-  display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
-  width: var(--tap); height: var(--tap); border-radius: 50%;
-  background: transparent; border: 0; cursor: pointer;
-}
-.navToggle span, .navToggle span::before, .navToggle span::after {
-  content: ""; display: block; width: 18px; height: 2px;
-  background: var(--ink); position: relative; transition: .2s;
-}
-.navToggle span::before { position: absolute; top: -6px; }
-.navToggle span::after  { position: absolute; top: 6px; }
-.navToggle[aria-expanded="true"] span { background: transparent; }
-.navToggle[aria-expanded="true"] span::before { transform: rotate(45deg); top: 0; }
-.navToggle[aria-expanded="true"] span::after  { transform: rotate(-45deg); top: 0; }
-@media (prefers-reduced-motion: reduce) {
-  .navToggle span, .navToggle span::before, .navToggle span::after { transition: none; }
+  position: fixed; left: 50%; bottom: var(--space-5); transform: translateX(-50%);
+  z-index: 260; display: flex; align-items: center; gap: var(--space-2);
+  background: var(--card); border: var(--edge); border-radius: var(--radius-pill);
+  padding: 6px; box-shadow: var(--shadow-pop);
 }
 .nav-cta {
-  display: inline-flex; align-items: center; gap: var(--space-2);
-  background: var(--btn-solid-bg); color: var(--btn-solid-ink);
-  padding: var(--space-3) var(--space-5); min-height: var(--tap);
-  border-radius: var(--radius-pill); font-weight: 700; font-size: var(--text-sm);
-  text-decoration: none; white-space: nowrap;
-  transition: background .2s, transform .15s;
+  display: inline-flex; align-items: center; min-height: var(--tap);
+  padding: var(--space-3) var(--space-5); border-radius: var(--radius-pill);
+  background: var(--ctl-green); color: #FFFFFF; font-weight: 700; text-decoration: none;
+  transition: background var(--dur-fast) var(--ease-out);
 }
-.nav-cta:hover { background: var(--btn-solid-bg-hover); transform: translateY(-1px); text-decoration: none; }
-@media (prefers-reduced-motion: reduce) { .nav-cta { transition: none; } }
-
+.nav-cta:hover { background: var(--ctl-green-hi); color: #FFFFFF; }
 .navlinks {
-  position: fixed; left: 50%; bottom: 88px; transform: translateX(-50%) translateY(10px);
-  list-style: none; margin: 0; padding: 10px;
+  position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(8px);
+  z-index: 259; list-style: none; margin: 0; padding: var(--space-2);
   display: flex; flex-direction: column; gap: 2px; min-width: 250px;
-  background: var(--cream-raised); border: 1px solid var(--border-strong);
-  border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);
-  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 259;
+  background: var(--card); border: var(--edge); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop-lg);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-pop);
 }
 .navlinks.open { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
 .navlinks a {
-  display: block; padding: var(--space-3) var(--space-4); min-height: var(--tap);
-  border-radius: var(--radius-md); text-decoration: none;
-  font-weight: var(--w-ui); font-size: var(--text-sm); color: var(--ink);
-  transition: background .2s, color .2s; white-space: nowrap;
+  display: flex; align-items: center; min-height: var(--tap);
+  padding: var(--space-3) var(--space-4); border-radius: var(--radius-sm);
+  color: var(--ink); text-decoration: none; font-weight: var(--w-ui);
 }
-.navlinks a:hover { background: var(--coral-tint); color: var(--coral-deep); text-decoration: none; }
-.navlinks a[aria-current="page"] { background: var(--btn-solid-bg); color: #FFFFFF; }
-@media (prefers-reduced-motion: reduce) { .navlinks { transition: none; } }
+.navlinks a:hover { background: var(--green-wash); }
+.navlinks a[aria-current="page"] { background: var(--ctl-green); color: #FFFFFF; }
 
-/* The float and the nav pill must not collide. The class is set by the
- * template from .Public rather than inferred with body:has(.float-nav) — one
- * source of truth for "this is the marketing chrome", and no selector that
- * has to re-evaluate the subtree. */
-body.has-float-nav .wa-float { bottom: calc(var(--space-4) + 76px); }
-
-/* ---- The eyebrow dash -------------------------------------------------- */
-/* Thenie's eyebrow is preceded by a short rule in the brand colour. */
-.eyebrow { display: inline-flex; align-items: center; gap: var(--space-2); letter-spacing: 0.14em; }
-.eyebrow::before {
-  content: ""; width: 20px; height: 2px; display: inline-block;
-  background: currentColor; flex: 0 0 auto;
+/* The float nav's hamburger. camelCase, which is why the first class audit
+ * missed it entirely — the regex only matched kebab-case and it rendered as a
+ * bare 2px dash until a screenshot showed it. */
+.navToggle {
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  width: var(--tap); height: var(--tap); border-radius: 50%;
+  background: transparent; border: 0; cursor: pointer; color: var(--ink);
 }
-/* The hero eyebrow is a script line, not a tracked label — no dash. */
-.hero-eyebrow::before { content: none; }
-
-/* ---- The stats strip --------------------------------------------------- */
-.stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; text-align: center; }
-.stat-item b {
-  display: flex; align-items: baseline; justify-content: center; gap: 4px;
-  font-family: var(--font-display); font-size: var(--text-lg);
-  font-weight: var(--w-display); color: var(--brand-ink);
+.navToggle span, .navToggle span::before, .navToggle span::after {
+  content: ""; display: block; width: 20px; height: 2.5px; border-radius: 2px;
+  background: currentColor; position: relative;
+  transition: transform var(--dur) var(--ease-pop), background var(--dur-fast);
 }
-.stat-item .count { font-size: var(--text-2xl); font-weight: var(--w-display); line-height: 1; }
-.stat-item > span { display: block; font-size: var(--text-sm); color: var(--ink-soft);
-  letter-spacing: .02em; margin-top: 6px; }
-@media (max-width: 620px) { .stats-strip { grid-template-columns: repeat(2, 1fr); gap: 22px 14px; } }
+.navToggle span::before { position: absolute; top: -7px; }
+.navToggle span::after  { position: absolute; top: 7px; }
+.navToggle[aria-expanded="true"] span { background: transparent; }
+.navToggle[aria-expanded="true"] span::before { transform: rotate(45deg); top: 0; }
+.navToggle[aria-expanded="true"] span::after  { transform: rotate(-45deg); top: 0; }
 
-/* ---- Photo frames ------------------------------------------------------ */
-.photo-frame { border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); }
-.photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.tilt-frame { transform: rotate(-2deg); }
-.tilt-frame.right { transform: rotate(2deg); }
-@media (prefers-reduced-motion: reduce) { .tilt-frame, .tilt-frame.right { transform: none; } }
+.sticky-logo { position: fixed; top: var(--space-4); left: var(--space-4); z-index: 190;
+  opacity: 0; transform: translateY(-8px); pointer-events: none;
+  transition: opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out); }
+.sticky-logo.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.sticky-logo img { width: 112px; }
+
+/* WhatsApp. Its own green is kept — recolouring stops the mark reading as
+ * WhatsApp — and the ink ring is what separates it from any ground. */
+.wa-float {
+  position: fixed; z-index: 90;
+  right: max(var(--space-4), env(safe-area-inset-right));
+  bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  width: 56px; height: 56px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #128C7E; color: #FFFFFF; text-decoration: none;
+  border: var(--edge); box-shadow: var(--shadow-pop);
+  transition: transform var(--dur-fast) var(--ease-pop), box-shadow var(--dur-fast);
+}
+.wa-float:hover { transform: translate(-1px,-3px); box-shadow: var(--shadow-pop-lg); }
+.wa-float:active { transform: translate(3px,3px); box-shadow: none; }
+.wa-float-glyph { display: block; }
+body.has-float-nav .wa-float { bottom: calc(var(--space-4) + 78px); }
+@media (max-width: 600px) { .wa-float { width: 52px; height: 52px; } }
+@media print { .wa-float, .float-nav, .navlinks, .sticky-logo { display: none !important; } }
+
+/* --------------------------------------------------------------- motion */
+
+/* Scroll reveal. The element is hidden by .reveal and shown by .in, both
+ * added by JS — so with JavaScript off nothing is ever invisible, which is
+ * the failure mode of every scroll-animation library. */
+.reveal { opacity: 0; transform: translateY(14px); }
+.reveal.in {
+  opacity: 1; transform: none;
+  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* The underline that draws itself under a heading when it scrolls in. */
+.underline-draw { position: relative; display: inline; background-image:
+  linear-gradient(var(--butter), var(--butter));
+  background-repeat: no-repeat; background-position: 0 88%;
+  background-size: 0% 36%;
+  transition: background-size var(--dur-slow) var(--ease-out);
+}
+.in .underline-draw, .underline-draw.in { background-size: 100% 36%; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* Belt and braces: the duration tokens already collapse, and these two
+   * cannot be allowed to leave anything invisible or half-drawn. */
+  .reveal { opacity: 1; transform: none; }
+  .underline-draw { background-size: 100% 36%; }
+  .hero-full::before, .hero-full::after { animation: none; }
+  .card-grid > .card:nth-child(n) { transform: none; }
+}

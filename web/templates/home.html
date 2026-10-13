@@ -1,27 +1,26 @@
 {{define "content"}}
-{{/* D34 — the Thenie hero: the whole viewport is a photograph under a scrim,
-     the brand centred at the top and the copy centred at the bottom. */}}
+{{/* D41 — the Orchard hero. Two columns: the claim on the left, a framed and
+     slightly tilted photograph on the right. The drifting blobs behind it are
+     drawn by .hero-full::before/::after, not by markup. */}}
 <section class="hero-full">
-  <div class="hero-media">
-    <img src="/images/thenie/hero-bg.jpg" alt="" width="800" height="405" fetchpriority="high">
-  </div>
+  <div class="container hero-grid">
+    <div class="hero-inner">
+      <span class="eyebrow hero-eyebrow">Diantar di Jakarta &middot; sejak 2024</span>
+      <h1>Makan sehat,<br><span class="underline-draw">rasa</span> <span class="script">restoran.</span></h1>
+      <p class="lede">
+        Menu baru tiap minggu, disusun ahli gizi, dimasak pagi hari, dan diantar
+        ke meja kerja atau rumah pada jam yang kamu pilih.
+      </p>
+      <p style="display:flex;gap:var(--space-3);flex-wrap:wrap;margin-top:var(--space-6)">
+        <a class="btn btn-primary" href="/menu">Lihat menu minggu ini</a>
+        <a class="btn btn-secondary" href="/wilayah-antar">Cek wilayah antar</a>
+      </p>
+    </div>
 
-  <div class="hero-brand">
-    <img src="/images/evermore-wordmark-light.png" alt="Evermore" width="260" height="52">
-    <span class="word">Healthy Catering</span>
-  </div>
-
-  <div class="hero-inner">
-    <span class="hero-eyebrow">Sejak 2024 &middot; Jakarta</span>
-    <h1>Makan sehat,<br>rasa <span class="script">restoran.</span></h1>
-    <p class="lede">
-      Menu baru tiap minggu, disusun ahli gizi, dimasak pagi hari dan diantar
-      ke meja kerja atau rumah pada jam yang kamu pilih.
-    </p>
-    <p class="stack" style="display:flex;gap:var(--space-3);flex-wrap:wrap;justify-content:center;margin-top:var(--space-6)">
-      <a class="btn btn-primary" href="/menu">Lihat menu minggu ini</a>
-      <a class="btn btn-secondary" href="/wilayah-antar">Cek wilayah antar</a>
-    </p>
+    <div class="hero-media">
+      <img src="/images/thenie/hero-bg.jpg" alt="Satu porsi makan siang Evermore"
+           width="800" height="405" fetchpriority="high">
+    </div>
   </div>
 </section>
 
@@ -31,7 +30,7 @@
     <div class="stats-strip">
       <div class="stat-item"><b><span class="count">{{len .Diets}}</span></b><span>Tipe diet</span></div>
       <div class="stat-item"><b><span class="count">{{len .Kitchens}}</span></b><span>Dapur</span></div>
-      <div class="stat-item"><b><span class="count">7</span><span>hari</span></b><span>Antar seminggu</span></div>
+      <div class="stat-item"><b><span class="count">7</span> <span style="font-size:var(--text-lg)">hari</span></b><span>Antar seminggu</span></div>
       <div class="stat-item"><b><span class="count">{{.CutOff}}</span></b><span>Cut-off H-1</span></div>
     </div>
   </div>

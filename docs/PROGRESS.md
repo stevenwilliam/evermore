@@ -314,3 +314,42 @@ identical rules to both input paths.
 
 A test account exists in the **dev** database: `budi.test@example.com` /
 `KopiSusuGulaAren2026`.
+
+---
+
+## D41/D42 — the Orchard redesign (2026-10-13)
+
+A complete redesign. Both previous palettes retired; **only the typefaces
+survive**, which is what was asked.
+
+**Backup taken and verified before anything was touched:**
+
+| Artefact | Verification |
+|---|---|
+| `evermore-20261013-1019.bundle` | `git bundle verify` + restored to a scratch clone, **31/31 commits**, HEAD matches |
+| `evermore-20261013-1019-full.tar.gz` | gzip CRC ok, 1570 entries, critical files present, one file extracted and **byte-compared** |
+
+**Screenshots work again.** The "broken environment" of the previous session
+was a bad Playwright build in the npx cache; `tools/shot/node_modules` has a
+working one. Every claim below was checked by **looking**.
+
+| Gate | Result |
+|---|---|
+| `go build`, `go vet`, `go test ./...` | ✅ 10 packages |
+| `scripts/contrast.py` | ✅ **52/52**, sheet cross-checked |
+| `tools/shot/verify-ui.mjs` | ✅ **0 FAIL** |
+| Screenshots, light + dark + 360 | ✅ `docs/screenshots/d41-orchard/` |
+
+**Three defects found by looking, not by reading CSS:**
+
+1. The homepage was wrecked — the template still carried the retired Thenie
+   full-bleed hero while the new CSS defines `.hero-media` as a framed photo.
+   The hero markup was redesigned to match.
+2. `.navToggle` was **never styled**: the first class audit used a kebab-case
+   regex and silently skipped the only camelCase class in the codebase. It
+   rendered as a bare 2px dash.
+3. Dark mode had three invisible controls (2.24 / 1.43 / 1.85) — fixed brand
+   fills under a flipping ink token. Fixed structurally by D42.
+
+Still not built: credit redemption (M10). The map picker is still unverified —
+Maps is referrer-restricted on this host.

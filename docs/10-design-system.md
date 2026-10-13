@@ -1,420 +1,307 @@
-# Design System — Evermore
+# Design System — Evermore · ORCHARD
 
-**Re-skinned 2026-09-30 (D32) to the Thenie palette.** Steven: *"forget all
-design I mention before for evermore but follow as close as possible to thenie
-project, my boss really like this thenie design — but keep the font type that
-evermore has before."*
+**A complete redesign, 2026-10-13 (D41).** Steven: *"forget all the design
+guideline, only preserve the font type, redo all design 100%, make a new design
+that very fresh color, young soft enthusiast, humanize, not seems created by AI,
+with moving animation."*
 
-Two consequences, and they are the whole brief:
+Everything before this is retired — the deep-green Nourish palette (pre-D32)
+and the Thenie coral/olive palette (D32–D39). **The typefaces are the only
+thing carried over**, because they were the one thing asked to survive.
 
-- **Colour, surfaces, radii and component shapes come from Thenie.** The source
-  is `docs/design_reference/thenie_site_FINAL_14.html` — a 7,117,002-byte
-  single-file capture, SHA-256 `e5227336e7c3feef8f80e4ab5f71f5bc121290beb4feb9cded10cca404134ad0`.
-  The deep-green "Nourish" palette that this document used to describe is
-  **retired**. Nothing from it survives.
-- **Typography does not change.** Thenie is set in Baloo 2 throughout. Evermore
-  stays on **Erode + Inter**, self-hosted. §3 is carried over intact.
+A full backup was taken before any file was touched:
 
-Every ratio below is **computed by `scripts/contrast.py`**, not estimated.
-CLAUDE.md §7: *contrast is calculated, not eyeballed.* Run
-`scripts/contrast.py` to re-earn these numbers rather than trusting the table.
+```
+/home/dev/backups/evermore-20261013-1019.bundle        31/31 commits, verified by restore
+/home/dev/backups/evermore-20261013-1019-full.tar.gz   1570 entries, .git and .env included
+```
+
+Every ratio below is computed by `scripts/contrast.py`. Run it to re-earn these
+numbers rather than trusting the table.
 
 ---
 
-## 1. What was taken from Thenie, and what was corrected
+## 1. The idea, and why it looks like this
 
-Thenie's palette is read verbatim into §2. **Five of its own values fail WCAG
-AA**, and a brief to copy a design is not a licence to copy an accessibility
-defect — CLAUDE.md §7 sets AA as the floor. Each is corrected by the smallest
-change that reaches AA, hue and saturation held, and each correction is
-**checked in `contrast.py` beside the value it replaces** so the original is
-recorded rather than quietly dropped.
+"Not seems created by AI" is a design constraint, so it is worth stating what
+it rules **out**. Generated pages converge on a narrow set of moves: soft
+purple-blue gradients, one radius on everything, perfectly even grids, blurred
+drop shadows, full symmetry. This design goes the other way on each of them.
 
-| Thenie value | Measured | Why it fails | Evermore uses | Measured |
-|---|---|---|---|---|
-| `--maroon #E1614A` as a **button fill** under white text | **3.49** | under the 4.5 body floor — this is the primary action on every page | `--coral-deep #B84B39` | **5.12** |
-| `--ink-faint #8B8271` | **3.80** white / **3.49** band | body text below 4.5 on both grounds | `#787061` (−6.8% lightness) | **4.90** / **4.50** |
-| `--focus-ring #8FC4EC` on white | **1.86** | an invisible focus ring is a keyboard user with no cursor | `#1F6FB2` on light, `#8FC4EC` kept on dark | **5.28** / **8.05** |
-| `--gold #D9A867` as text | **2.15** | fails AA even as large text, and fails 1.4.11 as a border | gold is **fill and rule only** on light grounds | ink on gold **6.96** |
-| `--paper-line` at 0.45 alpha as a **control** edge | **1.64** | under 1.4.11's 3:1 | `--border-strong #968773` for controls; paper-line stays decorative | **3.49** |
+| Generic | Orchard |
+|---|---|
+| gradient ground | **warm paper `#FDFBF6`** with a real grain texture |
+| blurred drop shadow | **solid offset shadow**, `4px 4px 0` in ink |
+| hairline borders | **2px ink outlines** |
+| one radius everywhere | **five different radii**, plus an asymmetric blob |
+| perfectly aligned grid | cards rotated **−0.5°, +0.35°, −0.2°** by `nth-child` |
+| pure `#FFFFFF` | paper, with white reserved for cards *on* it |
+| static | drifting blobs, scroll reveal, counters, press-into-shadow buttons |
 
-`--coral #E1614A` itself is **kept exactly** — it is the colour the brand is
-recognised by. It is simply not a body-text colour: legal as large text
-(≥24px, or ≥19px bold) and as a non-text edge, and nothing smaller.
-
-Two more traps found while measuring, recorded so they are not re-proposed:
-
-- **`--olive #5F7A33` as the footer bar** puts cream-soft at **4.47** — four
-  hundredths under the body floor. The bar is `--olive-deep #3E5321` (**7.83**).
-- **`--coral` as a link on the dark ground** is **4.29**, also under the floor.
-  Dark grounds take `--coral-light #F08A75` (**6.14**).
+The reference is **risograph printing and sticker books**: flat spot colours,
+visible registration offsets, things placed slightly askew by hand. The
+rotations are fractions of a degree on purpose — a large tilt reads as a bug,
+a small one reads as a decision.
 
 ---
 
 ## 2. Palette
 
-Implemented in `web/public/css/tokens.css`. Token names follow Thenie's own,
-with `maroon` renamed `coral` because the colour is coral and the old name
-misled every reader of the source file.
-
-### 2.1 Surfaces
-
-| Token | Value | Use |
-|---|---|---|
-| `--cream` | `#FFFFFF` | page ground |
-| `--cream-soft` | `#FAF5E9` | alternating section band, table stripes |
-| `--cream-raised` | `#FFFFFF` | cards, nav pill, modal |
-
-The page ground is **white**. This is the single biggest change from the
-retired design, which grounded every page in deep green.
-
-### 2.2 Ink
-
-| Token | Value | on white | on `--cream-soft` |
-|---|---|---|---|
-| `--ink` | `#2B2620` | **14.99** AAA | **13.78** AAA |
-| `--ink-soft` | `#615848` | **7.01** AAA | **6.44** AA |
-| `--ink-faint` | `#787061` | **4.90** AA | **4.50** AA |
-
-`--ink-faint` is the corrected value. Thenie's `#8B8271` measures **3.80** and
-**3.49** — recorded in `contrast.py` as `THENIE #8B8271 (REJECTED)`.
-
-`--ink-faint` on the band is **exactly 4.50**. It has no margin: darken the
-band or lighten the ink and it drops below AA silently.
-
-### 2.3 Coral — the primary brand mark
-
 | Token | Value | Role |
 |---|---|---|
-| `--coral` | `#E1614A` | eyebrows, accents, borders, **large text only** |
-| `--coral-deep` | `#B84B39` | the filled button; body-size text on white |
-| `--coral-deepest` | `#9C3E2E` | filled-button hover |
-| `--coral-light` | `#F08A75` | links on a dark ground |
-| `--coral-tint` | `#FCE3DE` | tinted panels — ink on it **12.27** |
-| `--coral-tint-strong` | `#F6C7BC` | stronger tint |
+| `--paper` | `#FDFBF6` | page ground — warm, deliberately not white |
+| `--paper-2` | `#F6F1E6` | alternating band |
+| `--card` | `#FFFFFF` | cards, brighter than the paper they sit on |
+| `--ink` | `#2A2521` | a soft black-brown, never `#000` |
+| `--ink-soft` | `#5C544A` | body and meta |
+| `--ink-faint` | `#766D62` | placeholders — **the floor** |
+| `--green` | `#2F7D5C` | primary: links, the filled button |
+| `--green-hi` | `#246349` | hover |
+| `--green-lt` | `#5FBF95` | dark-scheme text |
+| `--green-wash` | `#DCEFE5` | tinted panels, callouts |
+| `--orange` | `#F2784B` | the accent — **a fill, never ink on paper** |
+| `--orange-deep` | `#C8471D` | the orange that carries white text |
+| `--blue` | `#4C6FBF` | informational |
+| `--butter` | `#F6C65B` | the eyebrow sticker, warn pills |
+| `--focus` | `#1F4FD8` | focus ring |
+
+### 2.1 Ink on the three light grounds
+
+There are three, and `--ink-faint` is measured against the **worst** of them
+(the band) rather than the most flattering:
 
 | Pairing | Ratio | Verdict |
 |---|---|---|
-| white on `--coral` | **3.49** | **FAIL** — never the fill under white text |
-| white on `--coral-deep` | **5.12** | AA — this is the button |
-| white on `--coral-deepest` | **6.68** | AA — hover |
-| `--coral` as body text on white | **3.49** | **FAIL** |
-| `--coral` as **large** text on white | **3.49** | AA (large) |
-| `--coral` as a border on white | **3.49** | PASS 1.4.11 |
-| `--coral-deep` as text on white | **5.12** | AA |
-| `--coral-deep` as text on the band | **4.70** | AA |
-| `--coral` on the dark ground | **4.29** | **FAIL** — use `--coral-light` |
-| `--coral-light` on the dark ground | **6.14** | AA |
+| ink on paper | **14.66** | AAA |
+| ink-soft on paper | **7.20** | AAA |
+| ink-faint on paper | **4.91** | AA |
+| ink on the band | **13.46** | AAA |
+| ink-soft on the band | **6.61** | AA |
+| ink-faint on the band | **4.51** | AA |
+| ink on a card | **15.16** | AAA |
+| ink-soft on a card | **7.44** | AAA |
+| ink-faint on a card (placeholder) | **5.08** | AA |
 
-**The eyebrow.** Thenie's `.eyebrow` is `0.72rem` uppercase in `--maroon`.
-At 11.5px that is small text at **3.49** and illegal. Evermore's eyebrow is
-`--coral-deep` (**5.12**) at `--text-xs` 13px / weight 700 / `0.1em` tracking.
+`--ink-faint` was first set to `#857B6E`, which measures **4.02 / 3.69 / 4.15**
+— under the body floor on all three. It is `#766D62` precisely so the
+placeholder text in a search box is legal on every ground it can land on.
 
-### 2.4 Olive — the secondary
-
-| Token | Value | Note |
-|---|---|---|
-| `--olive` | `#5F7A33` | white on it **4.86** AA |
-| `--olive-deep` | `#3E5321` | **8.52** on white; the footer bar |
-| `--olive-tint` | `#E7EEDA` | ghost-button ground |
-| `--olive-tint-strong` | `#D6E3C2` | |
-
-The ghost button is Thenie's `.btn-ghost-olive`: `--olive-deep` on
-`--olive-tint`, **7.16** AAA, hovering to white on `--olive` (**4.86**).
-
-**The bar rule.** The retired design forced every bar string to 19px/700
-because nothing reached AA on the mid-green. The masthead is now `--ink`,
-where cream-soft is **13.78**, and the rule is no longer load-bearing there.
-It is kept, for two reasons: it is the established masthead look, and it still
-**binds** on `.card-media`, whose lightest gradient stop is `--olive` — where
-cream-soft is **4.47** and is large text only.
-
-### 2.5 Gold — decoration only
-
-| Token | Value |
-|---|---|
-| `--gold` | `#D9A867` |
-| `--ribbon` | `#E4D3AA` |
+### 2.2 Green — the primary
 
 | Pairing | Ratio | Verdict |
 |---|---|---|
-| gold as text on white | **2.15** | **FAIL** |
-| gold as **large** text on white | **2.15** | **FAIL** — it does not even reach 3:1 |
-| gold as a border on white | **2.15** | **FAIL 1.4.11** |
-| `--ink` on the gold fill | **6.96** | AA |
-| `--ink` on the ribbon | **10.13** | AAA |
+| green as text on paper | **4.82** | AA |
+| green as text on a card | **4.99** | AA |
+| white on the green button | **4.99** | AA |
+| white on green hover | **7.10** | AAA |
+| ink on the green wash | **12.65** | AAA |
+| ink-soft on the green wash | **6.21** | AA |
 
-On light grounds gold is a **fill or a rule that carries ink**, never ink
-itself and never a load-bearing edge. In the dark scheme it becomes legal as
-text (**8.03**) — the one colour that gains from the flip.
-
-### 2.6 Lines and focus
-
-| Token | Value | Ratio | Verdict |
-|---|---|---|---|
-| `--paper-line` | `rgba(150,135,115,0.45)` | **1.64** | decorative hairline **only** |
-| `--border-strong` | `#968773` | **3.49** white / **3.21** band | PASS 1.4.11 — control edges |
-| `--focus-ring` | `#1F6FB2` | **5.28** white / **4.86** band | PASS 1.4.11 |
-| `--focus-ring-on-dark` | `#8FC4EC` | **8.05** on `--ink` | PASS 1.4.11 |
-
-Thenie's `#8FC4EC` on white measures **1.86**. It is kept for dark grounds,
-where it is excellent, and replaced on light ones.
-
-### 2.7 The dark ground (`.ground-deep`)
-
-Applied to the hero and any section that wants the inverse. The ground is
-`--ink #2B2620`, and it is a **token remap**, not a background swap — the light
-tokens are not merely different there, they are wrong in a way that hides text.
-
-| Role | Value | Ratio |
-|---|---|---|
-| headings and body | `--cream-soft` | **13.78** |
-| muted text | `#CDC3B2` | **8.60** |
-| links | `--coral-light` | **6.14** (`--coral` is **4.29** and fails) |
-| control borders | `rgba(250,245,233,0.55)` | **5.23** |
-| focus ring | `--focus-ring-on-dark` | **8.05** |
-
-Any element inside it that paints its own light surface — card, callout,
-table, input — restores the light tokens through a single `:is()` rule. That
-is one rule over a set, not a rule per element, because the per-element version
-is what previously missed callouts and table headers.
-
-### 2.8 Semantic rules and tints
-
-| Role | Rule | on white | Tint | ink on tint |
-|---|---|---|---|---|
-| informational | `#2E55A3` | **7.13** | `#DCE9F7` | **12.17** |
-| warning | `#8A5A26` | **5.88** | `#F7E8CE` | **12.41** |
-| destructive | `#91253D` | **8.28** | — | — |
-| success | `--olive-deep` | **8.52** | `--olive-tint` | **12.59** |
-
-### 2.9 Dark scheme
-
-Thenie ships a single light theme. CLAUDE.md §7 requires
-`prefers-color-scheme` to be respected, so this is **derived, not supplied**:
-the ink becomes the ground and the cream becomes the ink.
-
-| Role | Value | on `#1E1A16` |
-|---|---|---|
-| ground / card | `#1E1A16` / `#2B2620` | — |
-| body ink | `#FAF5E9` | **15.89** |
-| soft ink | `#CDC3B2` | **9.92** |
-| faint ink | `#A79D8C` | **6.46** |
-| links | `--coral-light` | **7.08** |
-| gold as text | `#D9A867` | **8.03** |
-| olive | `#A3C16B` | **8.56** |
-
-`--olive #5F7A33` does **not** survive the flip — **3.56** — which is why the
-dark scheme substitutes the lighter olive rather than reusing the token.
-
-### 2.10 The hero scrim (D34)
-
-The homepage hero is a photograph filling the viewport with white text over it.
-The photograph is **unknown** — it changes with the season and the menu — so
-every scrim stop is set from the **worst case: the pixel behind it is pure
-white**, and measured composited against white.
-
-| Stop | Position | Composite | White text | Verdict |
-|---|---|---|---|---|
-| `0.88` | bottom — where the copy sits | `#272523` | **15.27** | AAA |
-| `0.62` | top — where the wordmark sits | `#666564` | **5.82** | AA |
-| `0.56` | the lightest middle band | `#908F8E` | **4.66** | AA |
-| `0.15` | **Thenie's own middle stop** | — | **1.40** | **REJECTED** |
-
-Thenie's middle stop is `0.15`, which composites to **1.40** against a white
-photo. Nothing is positioned in that band today, so it is a *latent* trap
-rather than a live defect — raised to `0.56` so it cannot become one when a
-section is later moved up.
-
-This is arithmetic on the worst case, not a sample of the rendered pixels.
-Sampling the real composite needs a screenshot, and **screenshots were
-unavailable when this was written** — recorded in `RUN-WHEN-BACK.md §Z2`.
-
-### 2.11 The bars — one chrome (D39)
-
-The masthead was `--ink` (near-black) while the footer was green. On a page
-carrying both — every `/app/*` screen — that read as two unrelated chromes.
-They are now **one colour**, and both read the same pair of tokens so they
-cannot drift apart again:
-
-```css
-.masthead, .footer { background: var(--bar-bg); color: var(--bar-ink); }
-```
-
-| Token | Light | Dark |
-|---|---|---|
-| `--bar-bg` | `#55702E` | `#2B3A18` |
-| `--bar-ink` | `--cream-soft` | `--cream-soft` |
+### 2.3 Orange and butter — fills, not inks
 
 | Pairing | Ratio | Verdict |
 |---|---|---|
-| cream-soft on the bar `#55702E` | **5.16** | AA |
-| white on the bar `#55702E` | **5.61** | AA |
-| cream-soft on the dark bar `#2B3A18` | **11.21** | AAA |
-| muted `#CDC3B2` on the fine-print band `#3E5321` | **4.89** | AA |
-| link tint on the fine-print band | **6.92** | AA |
-| `--ink` on the bar | **2.67** | **REJECTED** |
+| orange as text on paper (REJECTED) | **2.68** | FAIL |
+| ink on the orange fill | **5.46** | AA |
+| orange-deep as text on paper | **4.64** | AA |
+| white on orange-deep | **4.80** | AA |
+| ink on the orange wash | **12.66** | AAA |
+| ink on the butter sticker | **9.49** | AAA |
+| butter as text on paper (REJECTED) | **1.54** | FAIL |
+| ink on the butter wash | **13.61** | AAA |
 
-**Why `#55702E` and not `--olive #5F7A33`.** The lighter olive is the obvious
-choice and puts cream-soft at **4.47** — under the body floor, legal only for
-as long as every string in a bar stays 19px/700. `#55702E` clears AA at
-**body** size, so the bar is safe whatever size a string ends up.
+Both rejected rows are kept in `contrast.py` by name, so using either as a text
+colour is caught rather than argued about. `--orange-deep` is the cut that
+carries white.
 
-**The 2.67 row is a defect this change introduced and then fixed.** `.footer`
-read `--nourish` and `--beige`, which are **scheme-flipping aliases**: in dark
-mode `--beige` resolves to `#2B2620`, so the footer painted dark ink on the
-mid-green bar while the masthead went dark green — a contrast failure and the
-two-chrome problem back again, in the other scheme. Reading `--bar-bg` and
-`--bar-ink` makes the bars one thing by construction. It is the same class of
-bug as `.hero-art` in D34: an alias that changes meaning with the scheme.
+### 2.4 Blue, lines and focus
 
-The fine-print strip is `#3E5321` — a **deeper green**, not the near-black it
-used to be, so the footer steps down within one colour family.
+| Pairing | Ratio | Verdict |
+|---|---|---|
+| blue as text on paper | **4.69** | AA |
+| ink on the blue wash | **12.26** | AAA |
+| the ink rule on paper | **14.66** | PASS 1.4.11 |
+| rule-soft on paper (decorative) | **1.48** | FAIL 1.4.11 |
+| focus ring on paper | **6.41** | PASS 1.4.11 |
+| focus ring on a card | **6.63** | PASS 1.4.11 |
+| focus ring on the band | **5.88** | PASS 1.4.11 |
+
+`--rule-soft` is **decorative only** at 1.48 — table row separators and the
+footer hairline. Every control edge is the full ink rule at 2px.
+
+### 2.5 The footer
+
+Ink-grounded in both schemes, so it reads the same way day or night.
+
+| Pairing | Ratio | Verdict |
+|---|---|---|
+| paper on the ink footer | **14.66** | AAA |
+| fineprint #CFC7B9 on the footer | **9.04** | AAA |
+| butter link on the footer | **9.49** | AAA |
+
+### 2.6 Dark scheme
+
+The paper becomes board and the ink becomes chalk. The brand colours **lighten**
+rather than invert, because the mid green fails outright on the dark ground.
+Button fills keep their light-scheme values so a control stays recognisable.
+
+| Pairing | Ratio | Verdict |
+|---|---|---|
+| ink on the dark ground | **15.54** | AAA |
+| ink-soft on the dark ground | **8.95** | AAA |
+| ink-faint on the dark ground | **5.67** | AA |
+| ink on the dark card | **13.99** | AAA |
+| green-lt on the dark ground | **7.75** | AAA |
+| green on the dark ground (REJECTED) | **3.48** | FAIL |
+| orange-lt on the dark ground | **8.40** | AAA |
+| blue-lt on the dark ground | **7.44** | AAA |
+| butter on the dark ground | **10.87** | AAA |
+| focus-lt on the dark ground | **8.74** | PASS 1.4.11 |
+
+### 2.7 The WhatsApp float
+
+| Pairing | Ratio | Verdict |
+|---|---|---|
+| WA teal on paper | **4.00** | PASS 1.4.11 |
+| WA white glyph on the teal | **4.14** | PASS 1.4.11 |
+
+WhatsApp's own green is never recoloured; the 2px ink ring is what separates it
+from any ground.
 
 ---
 
-## 3. Typography — unchanged
-
-**This section is carried over intact.** Thenie's Baloo 2 is not adopted.
+## 3. Typography — the one thing carried over
 
 Two faces, both **self-hosted** — never a font CDN, which leaks every visitor's
 IP and page to a third party.
 
-| Role | Family | Use |
-|---|---|---|
-| Display | **Erode** | titles, headlines, subtitles |
-| Body / UI | **Inter** | body copy, longer text, smaller-scale applications |
-
-**Erode is not on Google Fonts.** It is an Indian Type Foundry face distributed
-through Fontshare; check its licence before first use. Inter is SIL OFL. Both
-live in `web/public/fonts/` with their licence beside them.
+| Role | Family |
+|---|---|
+| Display | **Erode** — headings, prices, stat figures |
+| Body / UI | **Inter** — everything else |
 
 Erode ships four discrete cuts, so a display weight must land on 600 or 700
-exactly — ask for 650 and the browser synthesises a fake bold.
+exactly; asking for 650 makes the browser synthesise a fake bold.
 
-| Role | Face | Size | Weight | Tracking |
-|---|---|---|---|---|
-| `h1` | Erode | 44px → 64px ≥768px | 700 | −0.022em |
-| `h2` | Erode | 32px | 700 | −0.015em |
-| `h3`, card titles | Erode | 24px | 600 | −0.01em |
-| `.lede` | Inter | 20px | 600 | — |
-| body | Inter | 17px | 450 | — |
-| `.eyebrow` | Inter | 13px | 700 | +0.1em, uppercase |
-| nav, buttons, labels | Inter | 15–17px | 600–700 | — |
+| Role | Face | Size | Weight |
+|---|---|---|---|
+| `h1` | Erode | 48px → 72px ≥768px | 700 |
+| `h2` | Erode | 34px | 700 |
+| `h3` | Erode | 25px | 600 |
+| `.price`, `.stat-item b` | Erode | 25–34px | 700 |
+| `.lede` | Inter | 20px | 450 |
+| body | Inter | 17px | 450 |
+| `.eyebrow` | Inter | 13px | 700, `0.12em`, uppercase |
 
-One number moved with the re-skin: the `.lede` and `h2` sizes were
-**load-bearing for accessibility** on the retired beige-on-green pairing, which
-no longer exists. They are kept at those sizes as a type decision rather than a
-contrast workaround — on the white ground every ink clears AA at every size in
-this table.
-
-### 3.1 The wordmark
-
-`docs/design_guideline/logo.png` is 7582×1989 flat `#1C3D34` lettering, and
-`#1C3D34` is a retired colour. `scripts/mklogo.py` reduces the artwork to a
-coverage mask and re-emits it in any colour, so the cuts are regenerated rather
-than re-drawn:
-
-- `evermore-wordmark-deep.png` → re-emit in `--ink #2B2620` for light surfaces
-- `evermore-wordmark-light.png` → re-emit in `--cream-soft` for the dark bar
-- `og-default.png` → 1200×630 share card
-
-**This is an outstanding build step**, listed in `RUN-WHEN-BACK.md`: the PNGs
-on disk are still the old green and have not been regenerated.
+Every figure that lands in a column — `.num`, `.price`, `.count`, `.eq`,
+table cells — is set in **tabular numerals**, so digits do not shift width as
+a counter animates or a total updates.
 
 ---
 
-## 4. Component layer
+## 4. Components
 
-Shapes follow Thenie. Sizes and type follow §3.
+### 4.1 Radii — deliberately uneven
 
-### 4.1 Radii
-
-Thenie is a **pill-and-round-card** system: `999px` on every interactive pill
-(16 uses), `16px` on cards, `8–20px` elsewhere.
-
-| Token | Value |
-|---|---|
-| `--radius-sm` | 8px |
-| `--radius-md` | 12px |
-| `--radius-lg` | 16px — cards |
-| `--radius-xl` | 20px |
-| `--radius-pill` | 999px — buttons, chips, nav, status pills |
+| Token | Value | Used by |
+|---|---|---|
+| `--radius-xs` | 6px | focus ring |
+| `--radius-sm` | 10px | inputs, callouts, tables |
+| `--radius-md` | 18px | cards, the nav panel |
+| `--radius-lg` | 26px | the hero frame |
+| `--radius-pill` | 999px | buttons, chips, pills |
+| `--radius-blob` | `62% 38% 55% 45% / 45% 55% 45% 55%` | the drifting hero shapes |
 
 ### 4.2 Buttons
 
-All pills, `2px` transparent border, `min-height: var(--tap)` 44px,
-`translateY(-2px)` on hover — Thenie's `.btn`.
+Pill, 2px ink outline, solid offset shadow. **Pressing moves the button into
+its own shadow** (`translate(4px,4px)`, shadow removed) — the one interaction
+that reads as physical rather than rendered.
 
-| Variant | Rest | Hover | Ratio |
+| Variant | Fill | Ink | Ratio |
 |---|---|---|---|
-| `.btn-primary` | `--coral-deep` / white | `--coral-deepest` | **5.12** → **6.68** |
-| `.btn-secondary` | `--olive-tint` / `--olive-deep` | `--olive` / white | **7.16** → **4.86** |
-| `.btn-outline` | transparent / `--ink`, `--ink` border | `--ink` / white | **14.99** |
+| `.btn-primary` / `.btn-solid` | `--green` | white | **4.99** → hover **7.10** |
+| `.btn-secondary` | `--butter` | ink | **9.49** → hover orange **5.46** |
+| `.btn-outline` | transparent | ink | **14.66** |
 
-On `.ground-deep` the primary inverts to a cream fill with ink (**13.78**) and
-the secondary becomes a cream outline — otherwise a coral-deep pill sits on
-near-black at **2.93**.
+### 4.3 The eyebrow is a sticker
 
-### 4.3 Cards
+Filled butter, 2px outline, small offset shadow, rotated −1.4°. The hero's is
+orange and rotated the other way, so the two never look stamped from one die.
 
-`--cream-soft` ground, `1px --paper-line`, `--radius-lg` 16px, 26px padding,
-`0 6px 20px rgba(43,38,32,0.07)`. Thenie's `.card` verbatim, including the
-local `--ink*` re-declaration that lets a card sit on any ground without a
-per-context override.
+### 4.4 Cards
 
-### 4.4 The floating nav
+White on paper, 2px outline, `4px 4px 0` shadow, and a per-position rotation
+from `nth-child`. On hover a card straightens to 0° and lifts — the motion
+resolves the tilt rather than adding to it.
 
-Thenie's signature: a fixed pill, bottom-centre, `--cream-raised`,
-`1px --paper-line`, `999px`, `0 14px 34px rgba(43,38,32,0.22)`, with a
-`--coral-deep` CTA pill inside it.
+### 4.5 Controls are pinned in both schemes
 
-### 4.5 Shadows
+A control keeps its identity day and night — a green button is the same green.
+That is partly a design choice and mostly a **defect fix**.
 
-| Token | Value |
-|---|---|
-| `--shadow-sm` | `0 1px 2px rgba(43,38,32,0.08)` |
-| `--shadow-md` | `0 6px 20px rgba(43,38,32,0.07)` |
-| `--shadow-lg` | `0 14px 34px rgba(43,38,32,0.22)` |
+Brand fills like `--green`, `--butter` and `--orange` are redefined in the dark
+scheme, and `--ink` flips too. Put a flipping ink on a fixed fill, or fixed
+white on a flipping fill, and the pair silently stops working. Measured in dark
+before this was fixed:
 
-### 4.6 The WhatsApp float
-
-`#128C7E` is WhatsApp's own green and is **not recoloured** — recolouring stops
-the mark reading as WhatsApp.
-
-| Pairing | Ratio | Verdict |
+| Pairing | Ratio | |
 |---|---|---|
-| teal on the white page | **4.14** | PASS 1.4.11 |
-| teal on the dark scheme | **4.18** | PASS 1.4.11 |
-| white glyph on the teal | **4.14** | PASS 1.4.11 (it is an icon) |
-| cream ring on white | **1.09** | **REJECTED** |
+| white on the lightened green button | **2.24** | **REJECTED** |
+| `--ink` on the butter button, eyebrow and warn pill | **1.43** | **REJECTED** |
+| `--ink` on the lightened orange hero eyebrow | **1.85** | **REJECTED** |
 
-**D32 moved what carries the affordance.** On the retired deep-green ground the
-teal measured 2.87 and failed 1.4.11 alone, so a beige ring was the findable
-boundary. On both of the new grounds the teal clears 3:1 unaided, so the ring
-is **decoration** and is painted `--page-bg` — a cream ring on a white page
-measures **1.09** and separates nothing.
+The rule, and it is structural rather than another patch:
 
-`tools/shot/verify-ui.mjs` asserted the retired beige `#FFFAE0` by hex and
-would have failed forever after the re-skin. It now asserts the ring matches
-the computed page ground.
+> **Any element whose background is a fixed brand colour takes `--on-brand` as
+> its ink, and `--on-brand` is never redefined in a dark block.**
 
-### 4.7 Container
+| Token | Value | Ink | Ratio |
+|---|---|---|---|
+| `--ctl-green` | `#2F7D5C` | white | **4.99** |
+| `--ctl-green-hi` | `#246349` | white | **7.10** |
+| `--ctl-butter` | `#F6C65B` | `--on-brand` | **9.49** |
+| `--ctl-orange` | `#F2784B` | `--on-brand` | **5.46** |
 
-`--container: 1180px` (Thenie's `.container`), 24px side padding.
+This is the **third** time a flipping token has broken a fixed fill — D34
+`.hero-art`, D39 `.footer`, and this. All three were found by looking at the
+rendered page in both schemes, never by reading the CSS. The three rejected
+rows above are kept in `contrast.py` by name so the pattern cannot return
+quietly a fourth time.
+
+### 4.6 Torn band edges
+
+`.band-raised` draws its top and bottom edge with a repeating radial mask, so
+the join between bands is a scalloped tear rather than a ruled line. It is
+geometry, not an image, so it recolours with the theme.
 
 ---
 
-## 5. What is not carried over from Thenie
+## 5. Motion
 
-- **Baloo 2.** Erode + Inter stay (§3).
-- **`font-family:'Brush Script MT', cursive`** — appears in the source with no
-  webfont behind it, so it renders differently on every machine. Thenie's
-  `.script` class uses italic Baloo 2 anyway; Evermore uses italic Erode.
-- **The single-theme comment.** The source says *"single committed dark theme:
-  no OS/toggle variants needed"* while shipping a light theme. Evermore ships
-  both schemes (§2.9).
-- **The inline base64 images.** 45 of them, 5.1 MB. Evermore serves real files.
+Motion is on by default and governed entirely by duration **tokens**, so
+`prefers-reduced-motion` collapses it in one place rather than per rule.
+
+| Effect | Where |
+|---|---|
+| drifting blobs | behind the hero, 14s alternating |
+| scroll reveal | section heads, cards, callouts, tables, stat strips |
+| stagger | siblings reveal 70ms apart, capped at 6 |
+| counters | `.count` animates to the number already in the HTML |
+| press | buttons, chips and the float move into their own shadow |
+| image scale | card photos grow 4.5% on hover |
+| underline draw | `.underline-draw` paints a butter highlight on reveal |
+
+**Two rules this obeys.** Nothing is hidden by CSS alone — `.reveal` is added
+by JavaScript, so with JS off every element is simply visible, which is the
+usual failure of scroll-animation libraries. And the counter reads its target
+from the markup, so a visitor without JS sees the real number rather than a
+zero.
+
+Under `prefers-reduced-motion: reduce` the duration tokens drop to **1ms**
+(not 0, so `transitionend` still fires and nothing waiting on it hangs), the
+blob animation stops, the card rotations are removed, and the reveal and
+underline are forced to their finished state.
 
 ---
 
@@ -424,8 +311,6 @@ the computed page ground.
 /home/dev/projects/evermore/scripts/contrast.py
 ```
 
-53 pairings, including every **REJECTED** source value, so a regression that
-restores one is caught by name. The script also asserts that every ratio it
-computes actually appears in this document — a design sheet and its checker
-that disagree mean one of them is wrong, and the incident log records a guard
-that silently stopped guarding because nobody compared them.
+52 pairings, including every **REJECTED** value, so a regression that restores
+one is caught by name. The script also asserts that every ratio it computes
+appears in this document.

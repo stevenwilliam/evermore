@@ -97,201 +97,162 @@ def to_rgb(s: str, over: tuple[int, int, int] | None = None) -> tuple[int, int, 
 
 
 # --- the documented palette -------------------------------------------------
-# D32 (2026-09-30): the Thenie palette. Read out of
-# docs/design_reference/thenie_site_FINAL_14.html. Five of its own values fail
-# AA; each correction is checked below beside the value it replaces, so the
-# failure is recorded rather than quietly fixed.
+# ORCHARD (D41, 2026-10-13). A complete redesign; nothing survives from the
+# Nourish palette (pre-D32) or the Thenie palette (D32-D39) but the typefaces.
 
-CREAM = "#FFFFFF"          # page ground
-SOFT = "#FAF5E9"           # alternating band
-INK = "#2B2620"
-INK_SOFT = "#615848"
-INK_FAINT = "#787061"      # CORRECTED from Thenie's #8B8271
-CORAL = "#E1614A"          # large text and borders only
-CORAL_DEEP = "#B84B39"     # the fill under white text
-CORAL_DEEPEST = "#9C3E2E"  # fill hover
-CORAL_LIGHT = "#F08A75"    # links on a dark ground
-OLIVE = "#5F7A33"
-OLIVE_DEEP = "#3E5321"
-OLIVE_TINT = "#E7EEDA"
-GOLD = "#D9A867"           # decoration only on light grounds
-DARK = "#1E1A16"           # dark-scheme ground
+PAPER = "#FDFBF6"        # warm paper, deliberately not #FFFFFF
+PAPER2 = "#F6F1E6"       # alternating band
+CARD = "#FFFFFF"
+INK = "#2A2521"
+INK_SOFT = "#5C544A"
+INK_FAINT = "#766D62"
+GREEN = "#2F7D5C"
+GREEN_HI = "#246349"
+GREEN_LT = "#5FBF95"
+GREEN_WASH = "#DCEFE5"
+ORANGE = "#F2784B"       # a FILL that carries ink, never ink on paper
+ORANGE_DEEP = "#C8471D"  # the text/white-on cut
+ORANGE_WASH = "#FDE6DC"
+BLUE = "#4C6FBF"
+BLUE_WASH = "#E1E7F8"
+BUTTER = "#F6C65B"
+BUTTER_WASH = "#FDF2D6"
+FOCUS = "#1F4FD8"
+RULE_SOFT = "#D8D0C2"
+DARK = "#1C1A17"         # dark-scheme ground
+DARK_CARD = "#262320"
+WHITE = "#FFFFFF"
 
 CHECKS: list[tuple[str, str, str, dict]] = [
-    # --- ink on the two light grounds
-    ("ink on white", INK, CREAM, {}),
-    ("ink-soft on white", INK_SOFT, CREAM, {}),
-    ("ink-faint on white", INK_FAINT, CREAM, {}),
-    ("ink on cream-soft band", INK, SOFT, {}),
-    ("ink-soft on cream-soft band", INK_SOFT, SOFT, {}),
-    ("ink-faint on cream-soft band", INK_FAINT, SOFT, {}),
-    # Thenie's own value, kept so nobody restores it. 3.80 / 3.49 — both under
-    # the 4.5 body floor, which is why --ink-faint was darkened.
-    ("THENIE #8B8271 on white (REJECTED)", "#8B8271", CREAM, {}),
-    ("THENIE #8B8271 on cream-soft (REJECTED)", "#8B8271", SOFT, {}),
+    # --- ink on the three light grounds
+    ("ink on paper", INK, PAPER, {}),
+    ("ink-soft on paper", INK_SOFT, PAPER, {}),
+    ("ink-faint on paper", INK_FAINT, PAPER, {}),
+    ("ink on the band", INK, PAPER2, {}),
+    ("ink-soft on the band", INK_SOFT, PAPER2, {}),
+    ("ink-faint on the band", INK_FAINT, PAPER2, {}),
+    ("ink on a card", INK, CARD, {}),
+    ("ink-soft on a card", INK_SOFT, CARD, {}),
+    ("ink-faint on a card (placeholder)", INK_FAINT, CARD, {}),
 
-    # --- coral. The headline failure of the source palette.
-    ("white on coral #E1614A (REJECTED fill)", CREAM, CORAL, {}),
-    ("white on coral-deep (the fill)", CREAM, CORAL_DEEP, {}),
-    ("white on coral-deepest (hover)", CREAM, CORAL_DEEPEST, {}),
-    ("coral as body text on white (REJECTED)", CORAL, CREAM, {}),
-    ("coral as LARGE text on white", CORAL, CREAM, {"large": True}),
-    ("coral as a border on white", CORAL, CREAM, {"non_text": True}),
-    ("coral-deep as text on white", CORAL_DEEP, CREAM, {}),
-    ("coral-deep as text on cream-soft", CORAL_DEEP, SOFT, {}),
-    ("ink on coral-tint", INK, "#FCE3DE", {}),
+    # --- green: text and the primary button
+    ("green as text on paper", GREEN, PAPER, {}),
+    ("green as text on a card", GREEN, CARD, {}),
+    ("white on the green button", WHITE, GREEN, {}),
+    ("white on green hover", WHITE, GREEN_HI, {}),
+    ("ink on the green wash", INK, GREEN_WASH, {}),
+    ("ink-soft on the green wash", INK_SOFT, GREEN_WASH, {}),
 
-    # --- olive
-    ("olive-deep on olive-tint (ghost btn)", OLIVE_DEEP, OLIVE_TINT, {}),
-    ("white on olive (ghost hover)", CREAM, OLIVE, {}),
-    ("olive as text on white", OLIVE, CREAM, {}),
-    ("olive-deep as text on white", OLIVE_DEEP, CREAM, {}),
-    # The footer bar. --olive is four hundredths under the floor, which is why
-    # the bar is olive-deep.
-    ("cream-soft on olive (REJECTED bar)", SOFT, OLIVE, {}),
-    ("cream-soft on olive-deep (the bar)", SOFT, OLIVE_DEEP, {}),
-    # .card-media's lightest gradient stop — this is what keeps the bar rule.
-    ("cream-soft on olive (card-media)", SOFT, OLIVE, {"large": True}),
+    # --- orange: a fill, not an ink
+    ("orange as text on paper (REJECTED)", ORANGE, PAPER, {}),
+    ("ink on the orange fill", INK, ORANGE, {}),
+    ("orange-deep as text on paper", ORANGE_DEEP, PAPER, {}),
+    ("white on orange-deep", WHITE, ORANGE_DEEP, {}),
+    ("ink on the orange wash", INK, ORANGE_WASH, {}),
 
-    # --- gold: decoration only
-    ("gold as text on white (REJECTED)", GOLD, CREAM, {}),
-    ("gold as LARGE text on white (REJECTED)", GOLD, CREAM, {"large": True}),
-    ("gold as a border on white (REJECTED)", GOLD, CREAM, {"non_text": True}),
-    ("ink on the gold fill", INK, GOLD, {}),
-    ("ink on the ribbon", INK, "#E4D3AA", {}),
+    # --- butter: the eyebrow sticker and the warn pill
+    ("ink on the butter sticker", INK, BUTTER, {}),
+    ("butter as text on paper (REJECTED)", BUTTER, PAPER, {}),
+    ("ink on the butter wash", INK, BUTTER_WASH, {}),
+
+    # --- blue
+    ("blue as text on paper", BLUE, PAPER, {}),
+    ("ink on the blue wash", INK, BLUE_WASH, {}),
 
     # --- lines and focus
-    ("paper-line over white (decorative)", "rgba(150,135,115,0.45)", CREAM, {"non_text": True}),
-    ("border-strong on white", "#968773", CREAM, {"non_text": True}),
-    ("border-strong on cream-soft", "#968773", SOFT, {"non_text": True}),
-    ("THENIE focus #8FC4EC on white (REJECTED)", "#8FC4EC", CREAM, {"non_text": True}),
-    ("focus-ring #1F6FB2 on white", "#1F6FB2", CREAM, {"non_text": True}),
-    ("focus-ring #1F6FB2 on cream-soft", "#1F6FB2", SOFT, {"non_text": True}),
-    ("focus-ring-on-dark on ink", "#8FC4EC", INK, {"non_text": True}),
+    ("the ink rule on paper", INK, PAPER, {"non_text": True}),
+    ("rule-soft on paper (decorative)", RULE_SOFT, PAPER, {"non_text": True}),
+    ("focus ring on paper", FOCUS, PAPER, {"non_text": True}),
+    ("focus ring on a card", FOCUS, CARD, {"non_text": True}),
+    ("focus ring on the band", FOCUS, PAPER2, {"non_text": True}),
 
-    # --- the dark ground (.ground-deep = --ink)
-    ("cream-soft on the dark ground", SOFT, INK, {}),
-    ("muted #CDC3B2 on the dark ground", "#CDC3B2", INK, {}),
-    ("coral on the dark ground (REJECTED link)", CORAL, INK, {}),
-    ("coral-light on the dark ground", CORAL_LIGHT, INK, {}),
-    ("cream .55 border on the dark ground", "rgba(250,245,233,0.55)", INK, {"non_text": True}),
+    # --- the footer, which is ink-grounded in both schemes
+    ("paper on the ink footer", PAPER, INK, {}),
+    ("fineprint #CFC7B9 on the footer", "#CFC7B9", INK, {}),
+    ("butter link on the footer", BUTTER, INK, {}),
 
     # --- dark scheme
-    ("cream-soft on the dark scheme ground", SOFT, DARK, {}),
-    ("ink-soft-dark on the dark scheme", "#CDC3B2", DARK, {}),
-    ("ink-faint-dark on the dark scheme", "#A79D8C", DARK, {}),
-    ("coral-light on the dark scheme", CORAL_LIGHT, DARK, {}),
-    ("gold as text on the dark scheme", GOLD, DARK, {}),
-    ("olive on the dark scheme (REJECTED)", OLIVE, DARK, {}),
-    ("olive-light on the dark scheme", "#A3C16B", DARK, {}),
+    ("ink on the dark ground", "#F6F2E9", DARK, {}),
+    ("ink-soft on the dark ground", "#C2B9AC", DARK, {}),
+    ("ink-faint on the dark ground", "#9C9284", DARK, {}),
+    ("ink on the dark card", "#F6F2E9", DARK_CARD, {}),
+    ("green-lt on the dark ground", GREEN_LT, DARK, {}),
+    ("green on the dark ground (REJECTED)", GREEN, DARK, {}),
+    ("orange-lt on the dark ground", "#FF9B6E", DARK, {}),
+    ("blue-lt on the dark ground", "#8FA8EE", DARK, {}),
+    ("butter on the dark ground", BUTTER, DARK, {}),
+    ("focus-lt on the dark ground", "#9DB6FF", DARK, {"non_text": True}),
 
-    # --- semantic rules
-    ("info rule on white", "#2E55A3", CREAM, {}),
-    ("warn rule on white", "#8A5A26", CREAM, {}),
-    ("danger rule on white", "#91253D", CREAM, {}),
-    ("ink on the info tint", INK, "#DCE9F7", {}),
-    ("ink on the warn tint", INK, "#F7E8CE", {}),
+    # --- controls are PINNED in both schemes (D41).
+    # Any element whose background is a fixed brand colour takes --on-brand,
+    # which is never redefined in a dark block. The three REJECTED rows are
+    # what the dark scheme actually measured before pinning.
+    ("white on the pinned green control", WHITE, "#2F7D5C", {}),
+    ("white on the pinned green hover", WHITE, "#246349", {}),
+    ("on-brand on the pinned butter control", INK, BUTTER, {}),
+    ("on-brand on the pinned orange control", INK, ORANGE, {}),
+    ("UNPINNED white on dark green (REJECTED)", WHITE, "#5FBF95", {}),
+    ("UNPINNED dark ink on butter (REJECTED)", "#F6F2E9", BUTTER, {}),
+    ("UNPINNED dark ink on orange-lt (REJECTED)", "#F6F2E9", "#FF9B6E", {}),
 
-    # The WhatsApp float. The teal is WhatsApp's own colour and is NOT
-    # recoloured. On the retired deep-green ground it measured 2.87 and the
-    # beige ring was the affordance; on both of these grounds it clears 3:1
-    # unaided, so the ring is decoration (10 §4.7).
-    ("WA teal on the white page", "#128C7E", CREAM, {"non_text": True}),
-    ("WA teal on the dark scheme", "#128C7E", DARK, {"non_text": True}),
-    ("WA white glyph on the teal", CREAM, "#128C7E", {"non_text": True}),
-    ("cream ring on white (REJECTED)", SOFT, CREAM, {"non_text": True}),
-
-    # The D34 hero scrim. The photograph behind it is unknown, so every stop
-    # is measured against the WORST case: a pure-white pixel underneath.
-    ("hero scrim .88 — the copy band", CREAM, "rgba(9,7,5,0.88)", {"over_white": True}),
-    ("hero scrim .62 — the wordmark band", CREAM, "rgba(9,7,5,0.62)", {"over_white": True}),
-    ("hero scrim .56 — lightest band", CREAM, "rgba(9,7,5,0.56)", {"over_white": True}),
-    ("THENIE scrim .15 (REJECTED)", CREAM, "rgba(9,7,5,0.15)", {"over_white": True}),
-
-    # The bars (D39). The masthead and the footer are ONE colour, and both
-    # read --bar-bg/--bar-ink so they cannot drift apart per scheme.
-    ("cream-soft on the bar #55702E", SOFT, "#55702E", {}),
-    ("white on the bar #55702E", CREAM, "#55702E", {}),
-    ("cream-soft on the dark bar #2B3A18", SOFT, "#2B3A18", {}),
-    ("muted on the fine-print band #3E5321", "#CDC3B2", "#3E5321", {}),
-    ("link tint on the fine-print band", "#DCE9F7", "#3E5321", {}),
-    # The dark-scheme defect this change introduced and then fixed: .footer
-    # read --beige, which resolves to #2B2620 in dark mode, and painted dark
-    # ink on the mid-green bar. Kept so the alias cannot creep back.
-    ("ink on the bar (REJECTED dark-mode footer)", INK, "#55702E", {}),
+    # --- the WhatsApp float keeps its own colour
+    ("WA teal on paper", "#128C7E", PAPER, {"non_text": True}),
+    ("WA white glyph on the teal", WHITE, "#128C7E", {"non_text": True}),
 ]
 
-# What 10-design-system.md records. A drift between the sheet and the
-# arithmetic is a defect in one of them, so the checker reports it rather
-# than printing a number nobody compares.
 RECORDED: dict[str, float] = {
-    "ink on white": 14.99,
-    "ink-soft on white": 7.01,
-    "ink-faint on white": 4.90,
-    "ink on cream-soft band": 13.78,
-    "ink-soft on cream-soft band": 6.44,
-    "ink-faint on cream-soft band": 4.50,
-    "THENIE #8B8271 on white (REJECTED)": 3.80,
-    "THENIE #8B8271 on cream-soft (REJECTED)": 3.49,
-    "white on coral #E1614A (REJECTED fill)": 3.49,
-    "white on coral-deep (the fill)": 5.12,
-    "white on coral-deepest (hover)": 6.68,
-    "coral as body text on white (REJECTED)": 3.49,
-    "coral as LARGE text on white": 3.49,
-    "coral as a border on white": 3.49,
-    "coral-deep as text on white": 5.12,
-    "coral-deep as text on cream-soft": 4.70,
-    "ink on coral-tint": 12.27,
-    "olive-deep on olive-tint (ghost btn)": 7.16,
-    "white on olive (ghost hover)": 4.86,
-    "olive as text on white": 4.86,
-    "olive-deep as text on white": 8.52,
-    "cream-soft on olive (REJECTED bar)": 4.47,
-    "cream-soft on olive-deep (the bar)": 7.83,
-    "cream-soft on olive (card-media)": 4.47,
-    "gold as text on white (REJECTED)": 2.15,
-    "gold as LARGE text on white (REJECTED)": 2.15,
-    "gold as a border on white (REJECTED)": 2.15,
-    "ink on the gold fill": 6.96,
-    "ink on the ribbon": 10.13,
-    "paper-line over white (decorative)": 1.64,
-    "border-strong on white": 3.49,
-    "border-strong on cream-soft": 3.21,
-    "THENIE focus #8FC4EC on white (REJECTED)": 1.86,
-    "focus-ring #1F6FB2 on white": 5.28,
-    "focus-ring #1F6FB2 on cream-soft": 4.86,
-    "focus-ring-on-dark on ink": 8.05,
-    "cream-soft on the dark ground": 13.78,
-    "muted #CDC3B2 on the dark ground": 8.60,
-    "coral on the dark ground (REJECTED link)": 4.29,
-    "coral-light on the dark ground": 6.14,
-    "cream .55 border on the dark ground": 5.23,
-    "cream-soft on the dark scheme ground": 15.89,
-    "ink-soft-dark on the dark scheme": 9.92,
-    "ink-faint-dark on the dark scheme": 6.46,
-    "coral-light on the dark scheme": 7.08,
-    "gold as text on the dark scheme": 8.03,
-    "olive on the dark scheme (REJECTED)": 3.56,
-    "olive-light on the dark scheme": 8.56,
-    "info rule on white": 7.13,
-    "warn rule on white": 5.88,
-    "danger rule on white": 8.28,
-    "ink on the info tint": 12.17,
-    "ink on the warn tint": 12.41,
-    "WA teal on the white page": 4.14,
-    "WA teal on the dark scheme": 4.18,
+    "ink on paper": 14.66,
+    "ink-soft on paper": 7.20,
+    "ink-faint on paper": 4.91,
+    "ink on the band": 13.46,
+    "ink-soft on the band": 6.61,
+    "ink-faint on the band": 4.51,
+    "ink on a card": 15.16,
+    "ink-soft on a card": 7.44,
+    "ink-faint on a card (placeholder)": 5.08,
+    "green as text on paper": 4.82,
+    "green as text on a card": 4.99,
+    "white on the green button": 4.99,
+    "white on green hover": 7.10,
+    "ink on the green wash": 12.65,
+    "ink-soft on the green wash": 6.21,
+    "orange as text on paper (REJECTED)": 2.68,
+    "ink on the orange fill": 5.46,
+    "orange-deep as text on paper": 4.64,
+    "white on orange-deep": 4.80,
+    "ink on the orange wash": 12.66,
+    "ink on the butter sticker": 9.49,
+    "butter as text on paper (REJECTED)": 1.54,
+    "ink on the butter wash": 13.61,
+    "blue as text on paper": 4.69,
+    "ink on the blue wash": 12.26,
+    "the ink rule on paper": 14.66,
+    "rule-soft on paper (decorative)": 1.48,
+    "focus ring on paper": 6.41,
+    "focus ring on a card": 6.63,
+    "focus ring on the band": 5.88,
+    "paper on the ink footer": 14.66,
+    "fineprint #CFC7B9 on the footer": 9.04,
+    "butter link on the footer": 9.49,
+    "ink on the dark ground": 15.54,
+    "ink-soft on the dark ground": 8.95,
+    "ink-faint on the dark ground": 5.67,
+    "ink on the dark card": 13.99,
+    "green-lt on the dark ground": 7.75,
+    "green on the dark ground (REJECTED)": 3.48,
+    "orange-lt on the dark ground": 8.40,
+    "blue-lt on the dark ground": 7.44,
+    "butter on the dark ground": 10.87,
+    "focus-lt on the dark ground": 8.74,
+    "white on the pinned green control": 4.99,
+    "white on the pinned green hover": 7.10,
+    "on-brand on the pinned butter control": 9.49,
+    "on-brand on the pinned orange control": 5.46,
+    "UNPINNED white on dark green (REJECTED)": 2.24,
+    "UNPINNED dark ink on butter (REJECTED)": 1.43,
+    "UNPINNED dark ink on orange-lt (REJECTED)": 1.85,
+    "WA teal on paper": 4.00,
     "WA white glyph on the teal": 4.14,
-    "cream ring on white (REJECTED)": 1.09,
-    "hero scrim .88 — the copy band": 15.27,
-    "hero scrim .62 — the wordmark band": 5.82,
-    "hero scrim .56 — lightest band": 4.66,
-    "THENIE scrim .15 (REJECTED)": 1.40,
-    "cream-soft on the bar #55702E": 5.16,
-    "white on the bar #55702E": 5.61,
-    "cream-soft on the dark bar #2B3A18": 11.21,
-    "muted on the fine-print band #3E5321": 4.89,
-    "link tint on the fine-print band": 6.92,
-    "ink on the bar (REJECTED dark-mode footer)": 2.67,
 }
 
 def main(argv: list[str]) -> int:

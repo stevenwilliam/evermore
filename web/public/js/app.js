@@ -297,3 +297,67 @@
     });
   });
 })();
+
+/* D41 — motion.
+ *
+ * Two rules this obeys:
+ *   1. Nothing is hidden by CSS alone. .reveal is ADDED by this script, so a
+ *      visitor with JavaScript off sees every element at full opacity instead
+ *      of a blank page — the standard failure of scroll-animation libraries.
+ *   2. prefers-reduced-motion is honoured by not starting at all, as well as
+ *      by the duration tokens collapsing in CSS.
+ */
+(function () {
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- scroll reveal -----------------------------------------------------
+  var targets = document.querySelectorAll(
+    '.section-head, .card, .callout, .stats-strip, .table-wrap, .hero-inner > *, .underline-draw');
+
+  if (!reduced && 'IntersectionObserver' in window && targets.length) {
+    Array.prototype.forEach.call(targets, function (el) { el.classList.add('reveal'); });
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        // Stagger siblings so a grid arrives as a sequence rather than a slab.
+        var sibs = el.parentElement ? Array.prototype.indexOf.call(el.parentElement.children, el) : 0;
+        el.style.setProperty('--reveal-delay', Math.min(sibs, 6) * 70 + 'ms');
+        el.classList.add('in');
+        io.unobserve(el);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+
+    Array.prototype.forEach.call(targets, function (el) { io.observe(el); });
+  }
+
+  // ---- counters ----------------------------------------------------------
+  // Counts up to whatever the markup already says, so the real value is in
+  // the HTML and a visitor without JS reads the final number, not a zero.
+  var counters = document.querySelectorAll('.count');
+  if (!reduced && 'IntersectionObserver' in window && counters.length) {
+    var co = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        co.unobserve(el);
+        var raw = (el.textContent || '').trim();
+        var target = parseInt(raw.replace(/[^0-9]/g, ''), 10);
+        // Anything that is not a plain integer (a time like 15:00, a price) is
+        // left exactly as written.
+        if (isNaN(target) || !/^[0-9]+$/.test(raw) || target === 0) return;
+        var started = null, dur = 900;
+        var step = function (ts) {
+          if (started === null) started = ts;
+          var p = Math.min((ts - started) / dur, 1);
+          el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toString();
+          if (p < 1) window.requestAnimationFrame(step);
+          else el.textContent = raw;   // restore the exact original string
+        };
+        window.requestAnimationFrame(step);
+      });
+    }, { threshold: 0.5 });
+    Array.prototype.forEach.call(counters, function (el) { co.observe(el); });
+  }
+})();

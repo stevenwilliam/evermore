@@ -38,6 +38,7 @@ for (const [vp, w, h] of [['mobile', 360, 800], ['desktop', 1440, 900]]) {
     const cs = getComputedStyle(el);
     const r = el.getBoundingClientRect();
     const svg = el.querySelector('svg');
+    const borderWidth = cs.borderTopWidth, borderStyle = cs.borderTopStyle;
     return {
       position: cs.position,
       fill: cs.backgroundColor,
@@ -52,6 +53,7 @@ for (const [vp, w, h] of [['mobile', 360, 800], ['desktop', 1440, 900]]) {
       target: el.getAttribute('target'),
       rel: el.getAttribute('rel'),
       svgHidden: svg && svg.getAttribute('aria-hidden'),
+      borderWidth, borderStyle,
     };
   });
   if (!wa) { console.log(`[${vp}] NO WhatsApp float found`); continue; }
@@ -60,13 +62,13 @@ for (const [vp, w, h] of [['mobile', 360, 800], ['desktop', 1440, 900]]) {
   console.log(`        ${wa.w >= 44 && wa.h >= 44 ? 'PASS' : 'FAIL'} — touch target >= 44px`);
   console.log(`        ${wa.position === 'fixed' && wa.inViewport ? 'PASS' : 'FAIL'} — fixed and inside the viewport`);
   console.log(`        ${wa.fill === 'rgb(18, 140, 126)' ? 'PASS' : 'FAIL'} — fill is WhatsApp #128C7E, not recoloured`);
-  // D32: the ring is --page-bg, not a frozen hex. The old oracle asserted the
-  // retired beige #FFFAE0 and would have failed forever after the re-skin —
-  // the incident log's "a guard that silently stopped guarding" in reverse.
-  // The teal now clears 3:1 unaided (4.14 light, 4.18 dark), so the ring is
-  // decoration and what is asserted is that it matches the page ground.
-  const pageBg = await p.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  console.log(`        ${wa.shadow.includes(pageBg) ? 'PASS' : 'FAIL'} — ring matches the page ground ${pageBg} (decoration; the teal carries 3:1 itself)`);
+  // D41: the redesign replaced the page-ground ring with a 2px ink border.
+  // The affordance is unchanged in substance — the teal clears 3:1 against the
+  // paper (4.14) on its own, and the border is what separates it from any
+  // ground behind it. Asserting the BORDER rather than a frozen colour is what
+  // keeps this check alive across the next re-skin.
+  const hasBorder = parseFloat(wa.borderWidth || '0') >= 2 && wa.borderStyle === 'solid';
+  console.log(`        ${hasBorder ? 'PASS' : 'FAIL'} — 2px solid outline separates it from the ground (border ${wa.borderWidth} ${wa.borderStyle})`);
   console.log(`        ${wa.label ? 'PASS' : 'FAIL'} — accessible name: "${wa.label}"`);
   console.log(`        ${wa.rel && wa.rel.includes('noopener') ? 'PASS' : 'FAIL'} — rel=noopener on target=_blank`);
   console.log(`        ${wa.svgHidden === 'true' ? 'PASS' : 'FAIL'} — decorative svg hidden from AT`);
