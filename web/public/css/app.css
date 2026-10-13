@@ -442,7 +442,7 @@ tbody tr:hover { background: var(--warm); }
 /* 220 × 140 × 96. Faces meet edge to edge: the corner radius is 3px, not 10,
  * and only the lid is rounded more — a 10px radius on every face is what left
  * open corners where the walls should join. */
-.bot-box { position: relative; width: 220px; height: 96px; transform-style: preserve-3d; }
+.bot-box { position: relative; width: 220px; height: 48px; transform-style: preserve-3d; }
 .bot-face {
   /* Every face is centred on the box's centre FIRST, then rotated out to its
    * wall. Left at the default left:0/top:0 the 140-wide side panels sit 40px
@@ -455,8 +455,8 @@ tbody tr:hover { background: var(--warm); }
   box-shadow: inset 0 0 0 1px rgba(18,22,20,.12);
   transition: transform 700ms var(--ease), opacity 500ms var(--ease);
 }
-.bf-front, .bf-back { width: 220px; height: 96px; }
-.bf-left,  .bf-right { width: 140px; height: 96px; }
+.bf-front, .bf-back { width: 220px; height: 48px; }
+.bf-left,  .bf-right { width: 140px; height: 48px; }
 .bf-lid,   .bf-base  { width: 220px; height: 140px; }
 .bf-lid { border-radius: 8px; }
 
@@ -470,23 +470,24 @@ tbody tr:hover { background: var(--warm); }
             background-image: linear-gradient(180deg, rgba(255,255,255,.18), rgba(18,22,20,.08)); }
 .bf-right { transform: rotateY(90deg)  translateZ(110px); transform-origin: bottom center;
             background-image: linear-gradient(180deg, rgba(18,22,20,.06), rgba(18,22,20,.12)); }
-.bf-base  { transform: rotateX(90deg) translateZ(-48px); background: var(--card);
+.bf-base  { transform: rotateX(90deg) translateZ(-24px); background: var(--card);
             box-shadow: inset 0 0 0 1px rgba(18,22,20,.14), inset 0 0 24px rgba(18,22,20,.10); }
 .bf-lid   {
   /* Centre origin, NOT `center top`. The lid is placed with rotateX(90deg),
    * so a top origin rotates it about its own edge and parks it floating
    * above the box instead of resting on it. The open animation translates
    * and fades the lid, so it needs no hinge origin. */
-  transform: rotateX(-90deg) translateZ(-48px);
+  transform: rotateX(-90deg) translateZ(-24px) translateY(14px);
+  animation: lidRest 4.2s var(--ease-soft) infinite alternate;
   background-image: linear-gradient(145deg, rgba(255,255,255,.42), transparent 52%);
 }
 
 /* The lid carries the two sensor lights now that the wordmark has moved to
  * the front. */
-.bot-eyes { position: absolute; top: 30px; left: 50%; translate: -50% 0;
+.bot-eyes { position: absolute; top: 15px; left: 50%; translate: -50% 0;
             display: flex; gap: 24px; }
 .bot-eye {
-  width: 13px; height: 13px; border-radius: 50%;
+  width: 11px; height: 11px; border-radius: 50%;
   background: var(--brand); box-shadow: 0 0 0 3px var(--brand-wash);
   animation: botBlink 5.5s steps(1, end) infinite;
 }
@@ -523,12 +524,18 @@ tbody tr:hover { background: var(--warm); }
 /* (4) The lid lifts a little and hovers, bobbing, instead of flying off — so
  * (2) the wordmark on it stays readable the whole time. */
 .bot-stage.is-open .bf-lid {
-  transform: rotateX(-90deg) translateZ(-48px) translateY(-46px) rotateZ(-3deg);
+  transform: rotateX(-90deg) translateZ(-24px) translateY(70px) rotateZ(-3deg);
   animation: lidBob 2.8s var(--ease-soft) infinite alternate;
 }
+/* Ajar at rest: a shallow, slow breath. */
+@keyframes lidRest {
+  from { transform: rotateX(-90deg) translateZ(-24px) translateY(10px) rotateZ(-1deg); }
+  to   { transform: rotateX(-90deg) translateZ(-24px) translateY(20px) rotateZ(1deg); }
+}
+/* (3) Open: all the way up, as before. */
 @keyframes lidBob {
-  from { transform: rotateX(-90deg) translateZ(-48px) translateY(40px) rotateZ(-3deg); }
-  to   { transform: rotateX(-90deg) translateZ(-48px) translateY(62px) rotateZ(2deg); }
+  from { transform: rotateX(-90deg) translateZ(-24px) translateY(62px) rotateZ(-3deg); }
+  to   { transform: rotateX(-90deg) translateZ(-24px) translateY(84px) rotateZ(2deg); }
 }
 
 /* ---- the food ----------------------------------------------------------
@@ -604,3 +611,107 @@ tbody tr:hover { background: var(--warm); }
   .bot-eye { animation: none; }
   .bot-face, .bot-part, .bot-floor { transition-duration: 1ms; }
 }
+
+/* ==========================================================================
+   D49 — the eight-day menu strip, and the chrome corrections.
+   ========================================================================== */
+
+.weekstrip {
+  display: grid; gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+}
+
+.daycard {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--radius-lg); overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+              border-color var(--dur) var(--ease);
+}
+.daycard:hover { transform: translateY(var(--lift)); box-shadow: var(--shadow-3); border-color: var(--line-strong); }
+
+.daycard-head {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+/* The date must not wrap: on the today card the badge crowds it, and "13
+   Oct" breaking across two lines made that one card taller than the rest. */
+.daycard-date { white-space: nowrap; }
+.daycard-day { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.daycard-day  { font-weight: 600; font-size: var(--text-sm); }
+.daycard-date { font-size: var(--text-xs); color: var(--ink-faint); margin-left: auto; font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+
+/* TODAY. Three signals, not one: a filled header, a ring around the whole
+ * card, and a worded badge — colour is never the only signal (CLAUDE.md §7),
+ * and "today" is exactly the thing someone scanning needs to find first. */
+.daycard.is-today { border-color: var(--ctl-brand); box-shadow: 0 0 0 3px var(--brand-wash); }
+.daycard.is-today .daycard-head { background: var(--ctl-brand); border-bottom-color: var(--ctl-brand); }
+.daycard.is-today .daycard-day,
+.daycard.is-today .daycard-date { color: #FFFFFF; }
+.daycard-now {
+  flex: 0 0 auto; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  background: var(--ctl-accent); color: var(--on-brand);
+  border-radius: var(--radius-pill); padding: 2px var(--space-2);
+}
+
+.daycard-media { display: block; aspect-ratio: 4 / 3; overflow: hidden; background: var(--warm); }
+.daycard-media img { width: 100%; height: 100%; object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-soft); }
+.daycard:hover .daycard-media img { transform: scale(1.05); }
+.daycard-empty {
+  display: grid; place-items: center;
+  background:
+    repeating-linear-gradient(135deg, var(--warm) 0 10px, var(--paper) 10px 20px);
+}
+.daycard-body { padding: var(--space-4); display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.daycard-body h3 { font-size: var(--text-base); margin: 0; line-height: 1.25; }
+.daycard-body h3 a { color: inherit; text-decoration: none; }
+.daycard-body h3 a:hover { color: var(--brand); }
+.daycard-more { color: var(--brand); font-weight: 600; }
+
+/* ---- the chrome corrections ---------------------------------------------- */
+
+/* The hero opened with ~148px of nothing above the eyebrow once the sticky
+ * header arrived. The header already supplies that separation. */
+.hero-full { padding-block: var(--space-6) var(--space-8); }
+@media (min-width: 1024px) { .hero-full { padding-block: var(--space-7) var(--space-9); } }
+
+/* The header was a flat row of identical links. Three changes: a hairline
+ * under the hovered or current item so the target is unmistakable, a real
+ * divider before the account group so the two kinds of link read as two
+ * groups, and a shadow that only appears once the page has scrolled. */
+.masthead { transition: box-shadow var(--dur) var(--ease), background var(--dur) var(--ease); }
+.masthead.is-stuck { box-shadow: var(--shadow-2); }
+
+.masthead-nav a, .masthead-actions a { position: relative; }
+.masthead-nav a::after {
+  content: ""; position: absolute; left: var(--space-4); right: var(--space-4); bottom: 6px;
+  height: 2px; border-radius: 2px; background: var(--ctl-accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--dur) var(--ease);
+}
+.masthead-nav a:hover::after,
+.masthead-nav a[aria-current="page"]::after { transform: scaleX(1); }
+.masthead-nav a[aria-current="page"] { color: var(--ink); background: none; }
+.masthead-nav a:hover { background: none; color: var(--ink); }
+
+.masthead-actions { gap: var(--space-2); padding-left: var(--space-4);
+  border-left: 1px solid var(--line); margin-left: var(--space-2); }
+
+/* The language switch shows the flag of the language it switches TO, with the
+ * name beside it — a flag alone is ambiguous (several countries, one
+ * language), and a name alone is what was there and read as just another
+ * nav link. */
+.lang-switch {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
+  padding: 6px var(--space-4) 6px var(--space-3); min-height: var(--tap);
+  font-size: var(--text-sm); font-weight: var(--w-ui); color: var(--ink-soft);
+  text-decoration: none;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease),
+              border-color var(--dur-fast) var(--ease);
+}
+.lang-switch:hover { background: var(--warm); color: var(--ink); border-color: var(--ink-faint); }
+.lang-flag { font-size: 17px; line-height: 1; }
+@media (max-width: 640px) { .lang-switch span:not(.lang-flag) { display: none; } }

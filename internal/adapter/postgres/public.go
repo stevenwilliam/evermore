@@ -474,3 +474,53 @@ func (r *PublicRepo) Params(ctx context.Context) (map[string]string, error) {
 	}
 	return out, nil
 }
+
+// DayMenu is one day in the homepage strip: the date and the dishes published
+// for it. A day with nothing published is still returned, with Meals empty —
+// the strip shows eight consecutive days, and a missing day has to be visible
+// as "nothing yet" rather than silently closing the gap and renumbering the
+// week (D49).
+type DayMenu struct {
+	Date    time.Time
+	IsToday bool
+	Meals   []MealCard
+}
+
+// MenuWeek returns `days` consecutive days beginning at `from`.
+//
+// One query for the whole range rather than one per day: eight round trips to
+// render one strip is the kind of thing that is invisible on a seeded
+// database and obvious on a real one.
+func (r *PublicRepo) MenuWeek(ctx context.Context, from time.Time, days int, today time.Time) ([]DayMenu, error) {
+	if days < 1 {
+		days = 1
+	}
+	q := mealSelect + `
+   AND sm.service_date >= $1::date
+   AND sm.service_date <  ($1::date + $2::int)
+ GROUP BY sm.id, sm.name, sm.service_date, dt.slug, dt.name, sl.slot_time, sl.alias, sl.sort_order
+ ORDER BY sm.service_date, sl.sort_order, sm.name`
+	rows, err := r.db.QueryContext(ctx, q, from.Format("2006-01-02"), days)
+	if err != nil {
+		return nil, err
+	}
+	cards, err := scanMealCards(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	byDate := map[string][]MealCard{}
+	for _, c := range cards {
+		k := c.ServiceDate.Format("2006-01-02")
+		byDate[k] = append(byDate[k], c)
+	}
+
+	out := make([]DayMenu, 0, days)
+	t := today.Format("2006-01-02")
+	for i := 0; i < days; i++ {
+		d := from.AddDate(0, 0, i)
+		k := d.Format("2006-01-02")
+		out = append(out, DayMenu{Date: d, IsToday: k == t, Meals: byDate[k]})
+	}
+	return out, nil
+}

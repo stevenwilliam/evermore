@@ -414,3 +414,30 @@ right edge. Other files remain in the directory unreferenced and **unverified**.
 Three geometry corrections, all found by screenshotting: the walls folded the
 wrong way and made a tent over the food; the camera sat too level to see into a
 tray once it had sides; and the portions sat on the floor rather than in it.
+
+---
+
+## D49 — the eight-day menu strip (2026-10-13)
+
+| Item | Status |
+|---|---|
+| Today + next 7 days, one query, picture-first cards | ✅ |
+| Today marked by filled header + ring + worded badge | ✅ |
+| Empty days rendered as a hatched "not published yet" | ✅ |
+| Seed fills all eight days (Fri, Sun, published Thu lunch added) | ✅ |
+| Flag language switch, hero spacing, header hover/divider/shadow | ✅ |
+| `TestEveryLocaleIsComplete` / `TestNoOrphanKeys` | ✅ |
+
+**Caught by the new test, not by eye:** the Indonesian December was keyed
+`month.des` while the lookup asks for `month.dec`, so December would have
+rendered English on a Bahasa page. Exactly the silent class of fault
+`Missing()` was built for.
+
+**Known gap, not a bug.** Diet and slot names come from the DATABASE
+(`diet_type.name`, `slot.alias`), so they do **not** follow the language
+switch — an English page still reads "Balanced · Makan siang". Translating
+them means either per-locale columns or a catalogue keyed by slug; it is a
+schema decision and is deliberately not guessed at here.
+
+**Still untranslated:** roughly 200 strings across the app and back-office
+templates. The public surface is done.

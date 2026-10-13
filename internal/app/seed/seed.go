@@ -895,6 +895,22 @@ var week = []mealPlan{
 		[]string{"ayam-panggang-lemon", "quinoa-herba", "brokoli-kukus", "infused-water-timun"}, true},
 	{5, "18:00:00", "balanced", "Salmon teriyaki",
 		[]string{"salmon-teriyaki", "nasi-merah", "brokoli-kukus", "infused-water-timun"}, true},
+
+	// D49: Thursday keeps its DRAFT balanced lunch — the back-office dashboard
+	// demo depends on one — but gains a PUBLISHED weight-loss lunch, and
+	// Friday and Sunday are filled in. The homepage strip shows eight
+	// consecutive days, and before this three of them were empty on any given
+	// week, which reads as a broken section rather than as a quiet day.
+	{3, "11:30:00", "weight-loss", "Dori panggang & ubi kukus",
+		[]string{"dori-panggang", "ubi-kukus", "brokoli-kukus", "infused-water-timun"}, true},
+
+	{4, "11:30:00", "balanced", "Rendang jamur & brown rice",
+		[]string{"rendang-jamur", "brown-rice", "brokoli-kukus", "infused-water-timun"}, true},
+	{4, "18:00:00", "balanced", "Sop iga bening & kentang herba",
+		[]string{"sop-iga-bening", "kentang-herba", "brokoli-kukus", "infused-water-timun"}, true},
+
+	{6, "11:30:00", "balanced", "Ayam kari hijau & quinoa",
+		[]string{"ayam-kari-hijau", "quinoa-herba", "brokoli-kukus", "infused-water-timun"}, true},
 }
 
 // mondayOf returns the Monday of the week containing t, in the operating zone.

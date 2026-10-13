@@ -69,7 +69,11 @@
       {{/* The account links live in the panel below, not here: ten items in
            one row wrapped to two lines and crushed the header (D48). */}}
       <a href="/app/masuk">{{t .L "nav.signin"}}</a>
-      <a href="?lang={{if eq .L "en"}}id{{else}}en{{end}}" aria-label="{{t .L "nav.lang.aria"}}" rel="nofollow">{{t .L "nav.lang"}}</a>
+      <a class="lang-switch" href="?lang={{if eq .L "en"}}id{{else}}en{{end}}"
+         aria-label="{{t .L "nav.lang.aria"}}" rel="nofollow">
+        <span class="lang-flag" aria-hidden="true">{{t .L "nav.lang.flag"}}</span>
+        <span>{{t .L "nav.lang"}}</span>
+      </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav"
               data-nav-toggle>
         <span class="visually-hidden">{{t .L "nav.open"}}</span>

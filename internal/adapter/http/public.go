@@ -170,6 +170,16 @@ var funcs = template.FuncMap{
 	"photo":     photo,
 	"newkey":    newkey,
 	"t":         translate,
+	"weekday":   weekday,
+	"daynum":    func(t time.Time) string { return t.Format("2") },
+	"monthShort": func(l i18n.Locale, t time.Time) string { return messages.T(l, "month."+strings.ToLower(t.Format("Jan"))) },
+}
+
+// weekday names the day in the reader's language. Go's time package only
+// formats English, so the names come from the catalogue like every other
+// string rather than from a second, parallel source of copy.
+func weekday(l i18n.Locale, t time.Time) string {
+	return messages.T(l, "day."+strings.ToLower(t.Format("Mon")))
 }
 
 // translate is {{t .L "key"}}. The locale travels on pageData rather than
@@ -284,6 +294,7 @@ type pageData struct {
 	Kitchens        []postgres.Kitchen
 	KitchenNames    string
 	Meals           []postgres.MealCard
+	Week            []postgres.DayMenu
 	Meal            *postgres.MealDetail
 	Packages        []postgres.PackageCard
 	Tiers           []postgres.TierPrice
@@ -513,6 +524,12 @@ func (h *PublicHandler) Home(c *gin.Context) {
 	}
 	if len(d.Meals) > 3 {
 		d.Meals = d.Meals[:3]
+	}
+	// D49: today plus the next seven days. People eat with their eyes, so the
+	// strip leads with pictures and marks today loudly.
+	if d.Week, err = h.repo.MenuWeek(ctx, today, 8, today); err != nil {
+		Fail(c, apierror.Internal(err))
+		return
 	}
 
 	d.DietNames = joinNames(d.Diets)

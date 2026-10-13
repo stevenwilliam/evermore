@@ -69,6 +69,54 @@
     </div>
   </section>
 
+{{/* D49 — today plus the next seven days. People eat with their eyes, so the
+     picture leads and the dish name follows. Today is marked loudly: a filled
+     header, a ring, and a label, because colour alone is never the only
+     signal (CLAUDE.md §7). */}}
+<section class="section" id="week">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">{{t .L "nav.menu"}}</p>
+      <h2>{{t .L "week.title"}}</h2>
+    </div>
+
+    <div class="weekstrip">
+      {{range .Week}}
+      <article class="daycard{{if .IsToday}} is-today{{end}}">
+        <header class="daycard-head">
+          <span class="daycard-day">{{weekday $.L .Date}}</span>
+          <span class="daycard-date">{{daynum .Date}} {{monthShort $.L .Date}}</span>
+          {{if .IsToday}}<span class="daycard-now">{{t $.L "week.today"}}</span>{{end}}
+        </header>
+
+        {{if .Meals}}
+        {{$m := index .Meals 0}}
+        <a class="daycard-media" href="/menu/{{$m.ID}}">
+          <img src="{{photo $m.ID}}" alt="" loading="lazy" width="320" height="240">
+        </a>
+        <div class="daycard-body">
+          <h3><a href="/menu/{{$m.ID}}">{{$m.Name}}</a></h3>
+          <p class="meta">{{$m.DietName}} &middot; {{$m.SlotAlias}}</p>
+          {{if gt (len .Meals) 1}}
+          <p class="meta daycard-more">+{{len (slice .Meals 1)}}</p>
+          {{end}}
+        </div>
+        {{else}}
+        <div class="daycard-media daycard-empty" aria-hidden="true"></div>
+        <div class="daycard-body">
+          <p class="meta">{{t $.L "week.empty"}}</p>
+        </div>
+        {{end}}
+      </article>
+      {{end}}
+    </div>
+
+    <p style="margin-top:var(--space-5)">
+      <a class="btn btn-outline" href="/menu">{{t .L "week.view"}}</a>
+    </p>
+  </div>
+</section>
+
 {{/* The stats strip sits directly under the hero, as Thenie's does. */}}
 <section class="section tight">
   <div class="container">

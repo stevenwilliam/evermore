@@ -1,0 +1,15 @@
+const { chromium } = require('playwright')
+const OUT = process.argv[2]
+;(async () => {
+  const b = await chromium.launch()
+  const ctx = await b.newContext({ viewport:{width:1280,height:1000} })
+  const p = await ctx.newPage()
+  await p.goto('http://127.0.0.1:8082/', {waitUntil:'domcontentloaded', timeout:20000})
+  await p.waitForTimeout(1600)
+  await p.screenshot({ path: OUT+'/top.png' })
+  await p.evaluate(() => document.getElementById('week').scrollIntoView())
+  await p.waitForTimeout(1400)
+  await p.screenshot({ path: OUT+'/week.png' })
+  console.log('ok')
+  await b.close()
+})()

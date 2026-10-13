@@ -35,6 +35,7 @@ var messages = i18n.Bundle{
 			"nav.signin":      "Sign in",
 			"nav.lang":        "Bahasa Indonesia",
 			"nav.lang.aria":   "Switch language to Bahasa Indonesia",
+			"nav.lang.flag":   "\U0001F1EE\U0001F1E9",
 
 			// --- footer
 			"footer.explore":   "Explore",
@@ -89,6 +90,18 @@ var messages = i18n.Bundle{
 			"err.404.title":   "Page not found",
 			"err.404.body":    "The page you're looking for doesn't exist or has moved.",
 			"err.ref":         "Reference code",
+
+			// --- the eight-day strip
+			"week.title":      "What's cooking this week",
+			"week.sub":        "Today and the next seven days. Order before %s the day before.",
+			"week.today":      "Today",
+			"week.empty":      "Menu not published yet",
+			"week.view":       "See the full menu",
+			"day.mon": "Monday", "day.tue": "Tuesday", "day.wed": "Wednesday",
+			"day.thu": "Thursday", "day.fri": "Friday", "day.sat": "Saturday", "day.sun": "Sunday",
+			"month.jan": "Jan", "month.feb": "Feb", "month.mar": "Mar", "month.apr": "Apr",
+			"month.may": "May", "month.jun": "Jun", "month.jul": "Jul", "month.aug": "Aug",
+			"month.sep": "Sep", "month.oct": "Oct", "month.nov": "Nov", "month.dec": "Dec",
 		},
 		"id": {
 			"skip":            "Lewati ke konten utama",
@@ -106,6 +119,7 @@ var messages = i18n.Bundle{
 			"nav.signin":      "Masuk",
 			"nav.lang":        "English",
 			"nav.lang.aria":   "Ganti bahasa ke English",
+			"nav.lang.flag":   "\U0001F1EC\U0001F1E7",
 
 			"footer.explore":   "Jelajahi",
 			"footer.contact":   "Hubungi",
@@ -154,6 +168,17 @@ var messages = i18n.Bundle{
 			"err.404.title":   "Halaman tidak ditemukan",
 			"err.404.body":    "Halaman yang kamu cari tidak ada atau sudah dipindahkan.",
 			"err.ref":         "Kode rujukan",
+
+			"week.title":      "Menu minggu ini",
+			"week.sub":        "Hari ini dan tujuh hari ke depan. Pesan sebelum %s sehari sebelumnya.",
+			"week.today":      "Hari ini",
+			"week.empty":      "Menu belum terbit",
+			"week.view":       "Lihat menu lengkap",
+			"day.mon": "Senin", "day.tue": "Selasa", "day.wed": "Rabu",
+			"day.thu": "Kamis", "day.fri": "Jumat", "day.sat": "Sabtu", "day.sun": "Minggu",
+			"month.jan": "Jan", "month.feb": "Feb", "month.mar": "Mar", "month.apr": "Apr",
+			"month.may": "Mei", "month.jun": "Jun", "month.jul": "Jul", "month.aug": "Agu",
+			"month.sep": "Sep", "month.oct": "Okt", "month.nov": "Nov", "month.dec": "Des",
 		},
 	},
 }

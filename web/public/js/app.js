@@ -465,3 +465,13 @@
 
   apply();
 })();
+
+/* D49 — the header earns its shadow only once the page has moved, so a page
+ * at rest stays flat and the separation means something. */
+(function () {
+  var head = document.querySelector('.masthead');
+  if (!head) return;
+  var sync = function () { head.classList.toggle('is-stuck', window.scrollY > 4); };
+  window.addEventListener('scroll', sync, { passive: true });
+  sync();
+})();
