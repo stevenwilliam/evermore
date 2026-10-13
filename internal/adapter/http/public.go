@@ -22,6 +22,7 @@ import (
 	"github.com/stevenwilliam/evermore/internal/domain/money"
 	"github.com/stevenwilliam/evermore/internal/platform/apierror"
 	"github.com/stevenwilliam/evermore/internal/platform/config"
+	"github.com/stevenwilliam/evermore/internal/platform/i18n"
 	"github.com/stevenwilliam/evermore/internal/platform/sanitize"
 )
 
@@ -168,7 +169,14 @@ var funcs = template.FuncMap{
 	"signed":    signed,
 	"photo":     photo,
 	"newkey":    newkey,
+	"t":         translate,
 }
+
+// translate is {{t .L "key"}}. The locale travels on pageData rather than
+// being bound into the FuncMap, because a template set is parsed once and
+// shared across every request — a closure captured at parse time would pin
+// the whole site to whichever language happened to load first.
+func translate(l i18n.Locale, key string) string { return messages.T(l, key) }
 
 // newkey mints an idempotency key for a form.
 //
@@ -260,6 +268,8 @@ type pageData struct {
 	JSONLD       template.JS
 	Alternates   []alternate
 	Nav          string
+	// L is the negotiated locale. Every template reads it as {{t .L "key"}}.
+	L i18n.Locale
 	// Public marks the marketing surface, which wears the Thenie chrome: a
 	// full-bleed photo hero and the floating bottom nav, with no masthead
 	// (D34). The signed-in and back-office screens keep the masthead, which
@@ -353,8 +363,36 @@ func (h *renderer) base(c *gin.Context, params map[string]string, nav, title, de
 		site = h.cfg.AppName
 	}
 	canonical := strings.TrimRight(h.cfg.BaseURL, "/") + c.Request.URL.Path
+
+	// D47: the locale for this request. ?lang= beats the cookie beats
+	// Accept-Language beats the default, so a choice the visitor made outranks
+	// what their browser happens to prefer.
+	loc := messages.Set.Negotiate(c.Request)
+	if q := i18n.Base(c.Query("lang")); q != "" && messages.Set.Has(q) {
+		// Remember an explicit switch, so it survives the next navigation.
+		http.SetCookie(c.Writer, &http.Cookie{
+			Name: i18n.Cookie, Value: string(q), Path: "/",
+			MaxAge: 365 * 24 * 3600, HttpOnly: false,
+			Secure: h.cfg.IsProduction(), SameSite: http.SameSiteLaxMode,
+		})
+	}
+
+	// hreflang alternates. Distinct URLs are what makes them meaningful to a
+	// crawler, so each locale gets its own ?lang= form.
+	alts := make([]alternate, 0, len(messages.Set.Supported))
+	for _, l := range messages.Set.Supported {
+		alts = append(alts, alternate{Lang: string(l), URL: canonical + "?lang=" + string(l)})
+	}
+
+	ogLocale := "en_US"
+	if loc == "id" {
+		ogLocale = "id_ID"
+	}
+
 	return pageData{
-		Lang:         "id",
+		L:            loc,
+		Alternates:   alts,
+		Lang:         string(loc),
 		Theme:        "",
 		Title:        title,
 		Description:  desc,
@@ -362,7 +400,7 @@ func (h *renderer) base(c *gin.Context, params map[string]string, nav, title, de
 		BaseURL:      strings.TrimRight(h.cfg.BaseURL, "/"),
 		SiteName:     site,
 		OGType:       "website",
-		OGLocale:     "id_ID",
+		OGLocale:     ogLocale,
 		Nav:          nav,
 		Year:         time.Now().In(h.cfg.Location).Year(),
 		Params:       tplParams,

@@ -44,80 +44,51 @@
 
 {{if .JSONLD}}<script type="application/ld+json">{{.JSONLD}}</script>{{end}}
 </head>
-<body{{if .Public}} class="has-float-nav"{{end}}>
-<a class="skip-link" href="#main">Lewati ke konten utama</a>
+<body>
+<a class="skip-link" href="#main">{{t .L "skip"}}</a>
 
-{{if .Public}}
-{{/* D34 — the Thenie chrome. No masthead: a sticky mark top-left once the
-     hero scrolls past, and a floating pill bottom-centre carrying the menu
-     and the order CTA. This is Thenie's signature and the reason the public
-     pages read as that design rather than as a conventional site. */}}
-<div class="sticky-logo" data-sticky-logo aria-hidden="true">
-  <img src="/images/evermore-wordmark-deep.png" alt="" width="120" height="24">
-</div>
-
-<ul class="navlinks" id="float-nav-links" hidden>
-  <li><a href="/menu"{{if eq .Nav "menu"}} aria-current="page"{{end}}>Menu minggu ini</a></li>
-  <li><a href="/cara-kerja"{{if eq .Nav "how"}} aria-current="page"{{end}}>Cara kerja</a></li>
-  <li><a href="/paket"{{if eq .Nav "packages"}} aria-current="page"{{end}}>Paket</a></li>
-  <li><a href="/untuk-kantor"{{if eq .Nav "corporate"}} aria-current="page"{{end}}>Untuk kantor</a></li>
-  <li><a href="/wilayah-antar"{{if eq .Nav "coverage"}} aria-current="page"{{end}}>Wilayah antar</a></li>
-  <li><a href="/app/alamat">Alamat saya</a></li>
-  <li><a href="/app/alergi">Alergi saya</a></li>
-  <li><a href="/app/pesanan">Pesanan saya</a></li>
-  <li><a href="/app/masuk">Masuk</a></li>
-</ul>
-
-<nav class="float-nav" aria-label="Navigasi utama">
-  <button class="navToggle" type="button" aria-expanded="false" aria-controls="float-nav-links"
-          data-float-nav-toggle>
-    <span class="visually-hidden">Buka menu navigasi</span>
-    <span aria-hidden="true"></span>
-  </button>
-  <a class="nav-cta" href="/menu">Pesan Online</a>
-</nav>
-{{else}}
+{{/* D48 — one sticky header on every page. The floating pill is gone: a
+     conventional sticky header carries the nav, the account links and the
+     language switcher, and it is the same component signed-out and signed-in
+     so there is only one chrome to keep correct. */}}
 <header class="masthead">
   <div class="container masthead-inner">
     <a class="masthead-brand" href="/">
-      <img src="/images/evermore-wordmark-light.png" alt="Evermore" width="150" height="30">
+      <img src="/images/evermore-wordmark-deep.png" alt="Evermore" width="150" height="30">
     </a>
 
-    <nav class="masthead-nav" aria-label="Navigasi utama">
-      <a href="/menu"{{if eq .Nav "menu"}} aria-current="page"{{end}}>Menu minggu ini</a>
-      <a href="/cara-kerja"{{if eq .Nav "how"}} aria-current="page"{{end}}>Cara kerja</a>
-      <a href="/paket"{{if eq .Nav "packages"}} aria-current="page"{{end}}>Paket</a>
-      <a href="/untuk-kantor"{{if eq .Nav "corporate"}} aria-current="page"{{end}}>Untuk kantor</a>
-      <a href="/wilayah-antar"{{if eq .Nav "coverage"}} aria-current="page"{{end}}>Wilayah antar</a>
+    <nav class="masthead-nav" aria-label="{{t .L "nav.aria"}}">
+      <a href="/menu"{{if eq .Nav "menu"}} aria-current="page"{{end}}>{{t .L "nav.menu"}}</a>
+      <a href="/cara-kerja"{{if eq .Nav "how"}} aria-current="page"{{end}}>{{t .L "nav.how"}}</a>
+      <a href="/paket"{{if eq .Nav "packages"}} aria-current="page"{{end}}>{{t .L "nav.packages"}}</a>
+      <a href="/untuk-kantor"{{if eq .Nav "corporate"}} aria-current="page"{{end}}>{{t .L "nav.corporate"}}</a>
+      <a href="/wilayah-antar"{{if eq .Nav "coverage"}} aria-current="page"{{end}}>{{t .L "nav.coverage"}}</a>
     </nav>
 
     <div class="masthead-actions">
-      {{/* D40: the account menu. A customer needs a route to their addresses
-           and allergy profile from every signed-in page. */}}
-      <a href="/app/alamat">Alamat</a>
-      <a href="/app/alergi">Alergi</a>
-      <a href="/app/pesanan">Pesanan</a>
-      <a href="/app/masuk">Masuk</a>
+      {{/* The account links live in the panel below, not here: ten items in
+           one row wrapped to two lines and crushed the header (D48). */}}
+      <a href="/app/masuk">{{t .L "nav.signin"}}</a>
+      <a href="?lang={{if eq .L "en"}}id{{else}}en{{end}}" aria-label="{{t .L "nav.lang.aria"}}" rel="nofollow">{{t .L "nav.lang"}}</a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav"
               data-nav-toggle>
-        <span class="visually-hidden">Buka menu navigasi</span>
+        <span class="visually-hidden">{{t .L "nav.open"}}</span>
         <span aria-hidden="true">&#9776;</span>
       </button>
     </div>
   </div>
-  <nav class="mobile-nav" id="mobile-nav" aria-label="Navigasi utama seluler" hidden>
-    <a href="/menu">Menu minggu ini</a>
-    <a href="/cara-kerja">Cara kerja</a>
-    <a href="/paket">Paket</a>
-    <a href="/untuk-kantor">Untuk kantor</a>
-    <a href="/wilayah-antar">Wilayah antar</a>
-    <a href="/app/alamat">Alamat saya</a>
-    <a href="/app/alergi">Alergi saya</a>
-    <a href="/app/pesanan">Pesanan saya</a>
-    <a href="/app/masuk">Masuk</a>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="{{t .L "nav.aria"}}" hidden>
+    <a href="/menu">{{t .L "nav.menu"}}</a>
+    <a href="/cara-kerja">{{t .L "nav.how"}}</a>
+    <a href="/paket">{{t .L "nav.packages"}}</a>
+    <a href="/untuk-kantor">{{t .L "nav.corporate"}}</a>
+    <a href="/wilayah-antar">{{t .L "nav.coverage"}}</a>
+    <a href="/app/alamat">{{t .L "nav.addresses"}}</a>
+    <a href="/app/alergi">{{t .L "nav.allergies"}}</a>
+    <a href="/app/pesanan">{{t .L "nav.orders"}}</a>
+    <a href="/app/masuk">{{t .L "nav.signin"}}</a>
   </nav>
 </header>
-{{end}}
 
 {{/* D32: the page ground is WHITE, as Thenie's is, so <main> carries no
      ground class. .ground-deep is still defined and is applied per-section to
@@ -136,8 +107,8 @@
     <div>
       <p>Jelajahi</p>
       <p><a href="/menu">Menu</a></p>
-      <p><a href="/paket">Paket</a></p>
-      <p><a href="/wilayah-antar">Wilayah antar</a></p>
+      <p><a href="/paket">{{t .L "nav.packages"}}</a></p>
+      <p><a href="/wilayah-antar">{{t .L "nav.coverage"}}</a></p>
     </div>
     <div>
       <p>Hubungi</p>

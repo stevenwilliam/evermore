@@ -75,7 +75,7 @@ func Load(envFile string) (*Config, error) {
 		Bind:          str("APP_BIND", "127.0.0.1"),
 		BaseURL:       str("APP_BASE_URL", "http://127.0.0.1:8082"),
 		Timezone:      str("APP_TIMEZONE", "Asia/Jakarta"),
-		DefaultLocale: str("APP_DEFAULT_LOCALE", "id-ID"),
+		DefaultLocale: str("APP_DEFAULT_LOCALE", "en"),
 		LogLevel:      str("LOG_LEVEL", "info"),
 
 		DatabaseURL:     str("DATABASE_URL", ""),
@@ -124,7 +124,7 @@ func Load(envFile string) (*Config, error) {
 		return nil, err
 	}
 
-	c.Locales = csv(str("APP_LOCALES", "id-ID,en"))
+	c.Locales = csv(str("APP_LOCALES", "en,id"))
 	c.CORSAllowedOrigins = csv(str("CORS_ALLOWED_ORIGINS", ""))
 
 	if c.Location, err = time.LoadLocation(c.Timezone); err != nil {

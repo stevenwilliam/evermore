@@ -406,7 +406,12 @@
     } else {
       stage.classList.remove('is-scattered');
     }
-    if (hint) hint.textContent = open ? 'untuk menutup' : 'untuk membuka';
+    // Both strings come from data- attributes, so the catalogue owns them and
+    // this file carries no copy. The earlier literals here were why an English
+    // page still said "untuk menutup".
+    if (hint) hint.textContent = open
+      ? (hint.dataset.open || '')
+      : (hint.dataset.closed || '');
   }
 
   stage.addEventListener('pointerdown', function (e) {

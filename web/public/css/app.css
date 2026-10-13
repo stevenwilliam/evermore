@@ -113,6 +113,7 @@ main { flex: 1 0 auto; }
 .nav-toggle:hover { background: var(--warm); }
 @media (min-width: 960px) { .nav-toggle { display: none; } }
 
+.mobile-nav[hidden] { display: none; }
 .mobile-nav { display: grid; border-top: 1px solid var(--line); background: var(--card); }
 .mobile-nav a { padding: var(--space-4) var(--space-5); min-height: var(--tap);
   border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink);
@@ -175,7 +176,6 @@ main { flex: 1 0 auto; }
 /* The float nav and the WhatsApp button are fixed over the bottom of the
  * viewport, so on a phone the hero needs room underneath or the bot opens
  * behind them. */
-@media (max-width: 1023px) { body.has-float-nav .hero-full { padding-bottom: 124px; } }
 @media (min-width: 1024px) { .hero-full { padding-block: var(--space-9) var(--space-8); } }
 /* One large, very soft wash drifting behind the type. A single quiet shape,
  * not two bright blobs — restraint is the whole brief. */
@@ -363,7 +363,6 @@ tbody tr:hover { background: var(--warm); }
   transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur) var(--ease); }
 .wa-float:hover { transform: translateY(-3px) scale(1.04); }
 .wa-float-glyph { display: block; }
-body.has-float-nav .wa-float { bottom: calc(var(--space-5) + 76px); }
 @media print { .wa-float, .float-nav, .navlinks, .sticky-logo { display: none !important; } }
 
 /* --------------------------------------------------------------- motion */
@@ -397,15 +396,15 @@ body.has-float-nav .wa-float { bottom: calc(var(--space-5) + 76px); }
    ========================================================================== */
 
 .bot-stage {
-  --spread: .62; --box-scale: .64; --food: .72;
+  --spread: .66; --box-scale: .64; --food: 1.05;
   width: 100%; height: 340px;
   display: grid; place-items: center; position: relative;
   background: none; border: 0; padding: 0; margin: 0;
   font: inherit; color: inherit; cursor: pointer;
   perspective: 1100px; perspective-origin: 50% 46%;
 }
-@media (min-width: 640px)  { .bot-stage { --spread: .82; --box-scale: .86; --food: .9; height: 390px; } }
-@media (min-width: 1024px) { .bot-stage { --spread: 1;   --box-scale: 1;   --food: 1;  height: 430px; } }
+@media (min-width: 640px)  { .bot-stage { --spread: .88; --box-scale: .86; --food: 1.3; height: 390px; } }
+@media (min-width: 1024px) { .bot-stage { --spread: 1.08; --box-scale: 1;  --food: 1.55; height: 450px; } }
 
 .bot-floor {
   position: absolute; bottom: 46px; left: 50%;
@@ -478,14 +477,14 @@ body.has-float-nav .wa-float { bottom: calc(var(--space-5) + 76px); }
    * so a top origin rotates it about its own edge and parks it floating
    * above the box instead of resting on it. The open animation translates
    * and fades the lid, so it needs no hinge origin. */
-  transform: rotateX(90deg) translateZ(48px);
+  transform: rotateX(-90deg) translateZ(-48px);
   background-image: linear-gradient(145deg, rgba(255,255,255,.42), transparent 52%);
 }
 
 /* The lid carries the two sensor lights now that the wordmark has moved to
  * the front. */
-.bot-eyes { position: absolute; top: 50%; left: 50%; translate: -50% -50%;
-            display: flex; gap: 26px; }
+.bot-eyes { position: absolute; top: 30px; left: 50%; translate: -50% 0;
+            display: flex; gap: 24px; }
 .bot-eye {
   width: 13px; height: 13px; border-radius: 50%;
   background: var(--brand); box-shadow: 0 0 0 3px var(--brand-wash);
@@ -503,6 +502,10 @@ body.has-float-nav .wa-float { bottom: calc(var(--space-5) + 76px); }
   position: absolute; inset: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 3px; user-select: none;
+  /* rotateX(-90deg) turns the lid face upward but flips its content top to
+   * bottom. That is a FLIP, so it takes scaleY(-1); a 180deg rotation maps a
+   * flip onto another flip and leaves the wordmark just as unreadable. */
+  transform: scaleY(-1);
 }
 .bot-mark b {
   font-family: var(--font-display); font-weight: var(--w-display);
@@ -513,12 +516,20 @@ body.has-float-nav .wa-float { bottom: calc(var(--space-5) + 76px); }
   letter-spacing: .34em; text-transform: uppercase; color: var(--ink-faint);
 }
 
-.bot-stage.is-open .bf-lid   { transform: rotateX(90deg) translateZ(48px) translateY(-200px) rotateZ(-24deg); opacity: 0; }
-.bot-stage.is-open .bf-front { transform: translateZ(70px) rotateX(-30deg); }
-.bot-stage.is-open .bf-back  { transform: rotateY(180deg) translateZ(70px) rotateX(-30deg); }
-.bot-stage.is-open .bf-left  { transform: rotateY(-90deg) translateZ(110px) rotateX(-28deg); }
-.bot-stage.is-open .bf-right { transform: rotateY(90deg) translateZ(110px) rotateX(-28deg); }
-.bot-stage.is-open .bot-mark { opacity: 0; transition: opacity 240ms var(--ease); }
+/* The walls do NOT move and do NOT fade. The box stays a sealed, solid
+ * container; opening is the LID lifting ajar, which is both calmer and what a
+ * real tiffin does. Nothing here touches .bf-front/back/left/right. */
+
+/* (4) The lid lifts a little and hovers, bobbing, instead of flying off — so
+ * (2) the wordmark on it stays readable the whole time. */
+.bot-stage.is-open .bf-lid {
+  transform: rotateX(-90deg) translateZ(-48px) translateY(-46px) rotateZ(-3deg);
+  animation: lidBob 2.8s var(--ease-soft) infinite alternate;
+}
+@keyframes lidBob {
+  from { transform: rotateX(-90deg) translateZ(-48px) translateY(40px) rotateZ(-3deg); }
+  to   { transform: rotateX(-90deg) translateZ(-48px) translateY(62px) rotateZ(2deg); }
+}
 
 /* ---- the food ----------------------------------------------------------
  * Real photography, not drawn shapes. The menu stills are square, so they mask
@@ -552,13 +563,16 @@ body.has-float-nav .wa-float { bottom: calc(var(--space-5) + 76px); }
   transition: transform 760ms var(--ease), opacity 360ms var(--ease);
   transition-delay: var(--d);
 }
+/* The walls stay up and opaque now, so there is nothing to see "inside" the
+ * box — the middle pose has no audience. The portions wait at the centre
+ * while the lid lifts, then come out through the gap. */
 .bot-stage.is-open .bot-part {
-  opacity: 1;
-  transform: translate3d(calc(var(--ix) * 1px), calc(var(--iy) * 1px), -14px)
-             rotateX(90deg) rotate(var(--irot, 0deg)) scale(.78);
-  transition-delay: calc(var(--d) / 3);
+  opacity: 0;
+  transform: translate3d(0, -20px, 0) scale(.5);
+  transition-delay: 0ms;
 }
 .bot-stage.is-scattered .bot-part {
+  opacity: 1;
   transform: translate3d(calc(var(--xr) * var(--spread) * 1px),
                          calc(var(--yr) * var(--spread) * 1px),
                          calc(var(--zr) * 1px))

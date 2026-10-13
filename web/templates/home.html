@@ -5,15 +5,12 @@
 <section class="hero-full">
   <div class="container hero-grid">
     <div class="hero-inner">
-      <span class="eyebrow hero-eyebrow">Diantar di Jakarta &middot; sejak 2024</span>
-      <h1>Makan sehat,<br><span class="underline-draw">rasa</span> <span class="script">restoran.</span></h1>
-      <p class="lede">
-        Menu baru tiap minggu, disusun ahli gizi, dimasak pagi hari, dan diantar
-        ke meja kerja atau rumah pada jam yang kamu pilih.
-      </p>
+      <span class="eyebrow hero-eyebrow">{{t .L "home.eyebrow"}}</span>
+      <h1>{{t .L "home.title.a"}}<br><span class="script">{{t .L "home.title.b"}}</span></h1>
+      <p class="lede">{{t .L "home.lede"}}</p>
       <p style="display:flex;gap:var(--space-3);flex-wrap:wrap;margin-top:var(--space-6)">
-        <a class="btn btn-primary" href="/menu">Lihat menu minggu ini</a>
-        <a class="btn btn-secondary" href="/wilayah-antar">Cek wilayah antar</a>
+        <a class="btn btn-primary" href="/menu">{{t .L "home.cta.menu"}}</a>
+        <a class="btn btn-secondary" href="/wilayah-antar">{{t .L "home.cta.area"}}</a>
       </p>
     </div>
 
@@ -24,7 +21,7 @@
     <div>
       <button class="bot-stage" id="bot-stage" type="button" aria-pressed="false"
               aria-describedby="bot-hint"
-              aria-label="Kotak catering Evermore. Putar dengan menyeret, ketuk untuk membuka.">
+              aria-label="{{t .L "box.aria"}}">
         <span class="bot-floor" aria-hidden="true"></span>
         <span class="bot-rig" aria-hidden="true">
           <span class="bot-spin" id="bot-spin">
@@ -53,10 +50,10 @@
               </span>
 
               <span class="bot-face bf-front">
-                <span class="bot-mark"><b>evermore</b><small>catering</small></span>
+                <span class="bot-eyes"><span class="bot-eye"></span><span class="bot-eye"></span></span>
               </span>
               <span class="bot-face bf-lid">
-                <span class="bot-eyes"><span class="bot-eye"></span><span class="bot-eye"></span></span>
+                <span class="bot-mark"><b>evermore</b><small>{{t .L "box.label"}}</small></span>
               </span>
             </span>
           </span>
@@ -64,10 +61,10 @@
       </button>
 
       <p class="bot-hint" id="bot-hint">
-        <span class="bot-key">Seret</span>
-        <span>untuk memutar</span>
-        <span class="bot-key">Klik</span>
-        <span id="bot-hint-text">untuk membuka</span>
+        <span class="bot-key">{{t .L "box.drag"}}</span>
+        <span>{{t .L "box.drag.hint"}}</span>
+        <span class="bot-key">{{t .L "box.click"}}</span>
+        <span id="bot-hint-text" data-open="{{t .L "box.close"}}" data-closed="{{t .L "box.open"}}">{{t .L "box.open"}}</span>
       </p>
     </div>
   </section>
@@ -76,10 +73,10 @@
 <section class="section tight">
   <div class="container">
     <div class="stats-strip">
-      <div class="stat-item"><b><span class="count">{{len .Diets}}</span></b><span>Tipe diet</span></div>
-      <div class="stat-item"><b><span class="count">{{len .Kitchens}}</span></b><span>Dapur</span></div>
-      <div class="stat-item"><b><span class="count">7</span> <span style="font-size:var(--text-lg)">hari</span></b><span>Antar seminggu</span></div>
-      <div class="stat-item"><b><span class="count">{{.CutOff}}</span></b><span>Cut-off H-1</span></div>
+      <div class="stat-item"><b><span class="count">{{len .Diets}}</span></b><span>{{t .L "home.stat.diets"}}</span></div>
+      <div class="stat-item"><b><span class="count">{{len .Kitchens}}</span></b><span>{{t .L "home.stat.kitchens"}}</span></div>
+      <div class="stat-item"><b><span class="count">7</span> <span style="font-size:var(--text-lg)">{{t .L "home.stat.days.unit"}}</span></b><span>{{t .L "home.stat.days"}}</span></div>
+      <div class="stat-item"><b><span class="count">{{.CutOff}}</span></b><span>{{t .L "home.stat.cutoff"}}</span></div>
     </div>
   </div>
 </section>
@@ -88,10 +85,10 @@
   <div class="container">
     <div class="section-head">
       <div>
-        <h2>Menu {{.TodayLabel}}</h2>
-        <p>Terbit tiap Jumat untuk minggu berikutnya</p>
+        <h2>{{t .L "home.menu.title"}} {{.TodayLabel}}</h2>
+        <p>{{t .L "home.menu.sub"}}</p>
       </div>
-      <a class="btn btn-outline" href="/menu">Lihat semua</a>
+      <a class="btn btn-outline" href="/menu">{{t .L "home.menu.all"}}</a>
     </div>
 
     <div class="filterbar">
