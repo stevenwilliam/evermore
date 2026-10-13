@@ -390,6 +390,11 @@
 
     function setOpen(next) {
       open = next;
+      // Only one box open at a time: two trays scattering at once is twice
+      // the motion and half the focus.
+      if (open) {
+        document.dispatchEvent(new CustomEvent('bot:open', { detail: stage }));
+      }
       window.clearTimeout(scatterTimer);
       stage.classList.toggle('is-open', open);
       stage.setAttribute('aria-pressed', open ? 'true' : 'false');
@@ -451,6 +456,10 @@
       else return;
       e.preventDefault();
       apply();
+    });
+
+    document.addEventListener('bot:open', function (e) {
+      if (e.detail !== stage && open) setOpen(false);
     });
 
     apply();

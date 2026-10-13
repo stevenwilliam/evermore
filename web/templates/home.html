@@ -23,6 +23,9 @@
               aria-describedby="bot-hint"
               aria-label="{{t .L "box.aria"}}">
         <span class="bot-floor" aria-hidden="true"></span>
+        <span class="bot-hair" aria-hidden="true">
+          <span class="blade blade-1"></span><span class="blade blade-2"></span><span class="blade blade-3"></span>
+        </span>
         <span class="bot-rig" aria-hidden="true">
           <span class="bot-spin" id="bot-spin-a">
             <span class="bot-box">
@@ -49,14 +52,12 @@
                   <span class="food"><img src="/images/food/testimonial.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:22% 50%"></span></span>
               </span>
 
-              <span class="bot-hair" aria-hidden="true">
-                <span class="blade blade-1"></span><span class="blade blade-2"></span><span class="blade blade-3"></span>
-              </span>
               <span class="bot-face bf-front">
                 <span class="bot-eyes"><span class="bot-eye"></span><span class="bot-eye"></span></span>
               </span>
               <span class="bot-face bf-lid">
                 <span class="bot-mark"><b>evermore</b><small>{{t .L "box.label"}}</small></span>
+                {{if eq $.L $.L}}{{end}}
               </span>
             </span>
           </span>
@@ -181,7 +182,7 @@
     <div class="section-head">
       <div>
         <p class="eyebrow">Lebih hemat</p>
-        <h2>Bayar sekali, pakai 90 hari</h2>
+        <h2>{{t .L "pkg.title"}} <span class="sig" aria-hidden="true"><span>ste</span><span>ven</span></span></h2>
       </div>
     </div>
     <div class="card-grid">

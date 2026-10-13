@@ -26,6 +26,10 @@ h1, h2, h3, h4 {
 }
 h1 { font-size: var(--text-3xl); }
 @media (min-width: 768px) { h1 { font-size: var(--text-4xl); } }
+/* The hero headline is deliberately smaller than a page h1: the two boxes
+ * beside it are the thing to look at. */
+.hero-inner h1 { font-size: clamp(32px, 4.4vw, 54px); }
+.hero-inner .lede { font-size: var(--text-base); max-width: 44ch; }
 h2 { font-size: var(--text-2xl); }
 h3 { font-size: var(--text-lg); font-weight: var(--w-sub); letter-spacing: -0.015em; }
 p { margin: 0 0 var(--space-4); max-width: 70ch; }
@@ -84,7 +88,7 @@ main { flex: 1 0 auto; }
 
 .card-grid { display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(272px, 1fr)); }
 .hero-grid { display: grid; gap: var(--space-7); }
-@media (min-width: 1024px) { .hero-grid { grid-template-columns: 1.08fr .92fr; align-items: center; } }
+@media (min-width: 1024px) { .hero-grid { grid-template-columns: .82fr 1.18fr; align-items: center; } }
 
 /* The eyebrow is a quiet tracked label now, not a sticker. Elegance is the
  * accent held back: a 2px rule, not a filled pill. */
@@ -817,14 +821,15 @@ tbody tr:hover { background: var(--warm); }
 
 .bot-pair {
   display: flex; align-items: center; justify-content: center;
-  gap: var(--space-5); flex-wrap: wrap;
+  gap: 0; flex-wrap: nowrap;
 }
+@media (min-width: 1024px) { .bot-pair { margin-inline: -8%; } }
 .bot-pair .bot-stage {
-  --box-scale: .44; --spread: .54; --food: .58;
-  flex: 1 1 190px; height: 280px; min-width: 0;
+  --box-scale: .62; --spread: .52; --food: .62;
+  flex: 1 1 0; height: 300px; min-width: 0;
 }
-@media (min-width: 640px)  { .bot-pair .bot-stage { --box-scale: .52; --spread: .68; --food: .72; height: 330px; } }
-@media (min-width: 1024px) { .bot-pair .bot-stage { --box-scale: .58; --spread: .78; --food: .82; height: 380px; } }
+@media (min-width: 640px)  { .bot-pair .bot-stage { --box-scale: .82; --spread: .7;  --food: .9;  height: 370px; } }
+@media (min-width: 1024px) { .bot-pair .bot-stage { --box-scale: 1;    --spread: .92; --food: 1.3; height: 430px; } }
 
 /* Each light has its OWN duration and delay, so the four never land on the
  * same frame. One shared animation reads as a machine; four clocks read as
@@ -836,10 +841,30 @@ tbody tr:hover { background: var(--warm); }
 #bot-b .bot-eye:last-child   { animation-duration: 7.4s; animation-delay: 3.1s; }
 
 /* ---- Box A: three blades, grass green, each with its own stripe motif ---- */
-.bot-hair { position: absolute; left: 50%; top: 0; translate: -50% 0;
-  transform-style: preserve-3d; pointer-events: none; }
+/* The tuft sits ON TOP of the lid, drawn in 2D over the stage rather than
+ * inside the 3D box. Three attempts at parenting it to the lid failed for the
+ * same reason each time: .bf-lid has no preserve-3d, so its children flatten
+ * into the lid's own plane and the blades disappeared edge-on. A flat overlay
+ * is both visible and far easier to reason about. */
+.bot-hair {
+  position: absolute; left: 50%; z-index: 3;
+  translate: -50% 0; pointer-events: none;
+  width: 60px; height: 58px;
+  transition: bottom var(--dur) var(--ease);
+}
+/* Positioned against the lid, which sits a little above the box centre. */
+.bot-pair .bot-stage .bot-hair { bottom: calc(50% + 52px * var(--box-scale)); }
+.bot-stage.is-open .bot-hair   { bottom: calc(50% + 78px * var(--box-scale)); }
+
+/* The three blades meet in one base, so they read as a single tuft. */
+.bot-hair::after {
+  content: ""; position: absolute; left: 50%; bottom: 0; translate: -50% 0;
+  width: 28px; height: 10px; border-radius: 50% 50% 42% 42%;
+  background: linear-gradient(180deg, #6FA846, #46702F);
+}
 .blade {
-  position: absolute; bottom: 0; width: 13px; transform-origin: bottom center;
+  position: absolute; bottom: 4px; left: 50%; margin-left: -6px;
+  width: 12px; transform-origin: bottom center;
   border-radius: 60% 60% 24% 24% / 86% 86% 14% 14%;
   background-image:
     repeating-linear-gradient(74deg, rgba(255,255,255,.34) 0 2px, transparent 2px 6px),
@@ -847,9 +872,10 @@ tbody tr:hover { background: var(--warm); }
   box-shadow: inset -2px 0 3px rgba(0,0,0,.18);
   animation: sway 3.6s var(--ease-soft) infinite alternate;
 }
-.blade-1 { height: 46px; left: -20px; rotate: -16deg; animation-delay: -.2s; }
-.blade-2 { height: 62px; left: -4px;  rotate: 2deg;   animation-delay: -1.4s; }
-.blade-3 { height: 40px; left: 13px;  rotate: 17deg;  animation-delay: -2.6s; }
+.blade-1 { height: 36px; rotate: -26deg; animation-delay: -.2s; }
+.blade-2 { height: 52px; rotate: 0deg;   animation-delay: -1.4s; }
+.blade-3 { height: 32px; rotate: 26deg;  animation-delay: -2.6s; }
+
 @keyframes sway {
   from { transform: rotate(-5deg) scaleY(.98); }
   to   { transform: rotate(5deg)  scaleY(1.03); }
@@ -881,6 +907,23 @@ tbody tr:hover { background: var(--warm); }
 }
 
 @media (prefers-reduced-motion: reduce) { .blade { animation: none; } }
+
+/* ---- the signature (D54) --------------------------------------------------
+ * Two syllables that lift in turn. Decorative, so it is aria-hidden and the
+ * heading it sits beside still reads correctly to a screen reader. */
+.sig { display: inline-flex; gap: 1px; vertical-align: baseline; }
+.sig span {
+  display: inline-block; color: var(--brand);
+  font-family: var(--font-display); font-style: italic; font-weight: var(--w-display);
+  animation: sigWave 2.6s var(--ease-soft) infinite;
+}
+.sig span:last-child { animation-delay: .32s; }
+@keyframes sigWave {
+  0%, 62%, 100% { transform: translateY(0) rotate(0deg); }
+  18%           { transform: translateY(-26%) rotate(-5deg); }
+  38%           { transform: translateY(0) rotate(3deg); }
+}
+@media (prefers-reduced-motion: reduce) { .sig span { animation: none; } }
 
 /* ---- testimonials (D53) -------------------------------------------------- */
 .testi-grid { display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
