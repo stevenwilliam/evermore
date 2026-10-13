@@ -34,21 +34,6 @@
               <span class="bot-divider bd-1"></span>
               <span class="bot-divider bd-2"></span>
 
-              <span class="bot-parts">
-                <span class="bot-part" style="--ix:-56;--iy:-30;--irot:-6deg;--xr:-110;--yr:-105;--zr:60;--rot:-10deg;--d:220ms;--w:96px">
-                  <span class="food"><img src="/images/food/page-hero-1.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
-                <span class="bot-part" style="--ix:36;--iy:-32;--irot:8deg;--xr:-65;--yr:-160;--zr:95;--rot:11deg;--d:290ms;--w:88px">
-                  <span class="food"><img src="/images/food/box-ayam.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
-                <span class="bot-part" style="--ix:-60;--iy:34;--irot:5deg;--xr:-15;--yr:-188;--zr:130;--rot:7deg;--d:360ms;--w:84px">
-                  <span class="food"><img src="/images/food/page-hero-2.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
-                <span class="bot-part" style="--ix:18;--iy:36;--irot:-9deg;--xr:40;--yr:-182;--zr:115;--rot:-12deg;--d:430ms;--w:80px">
-                  <span class="food"><img src="/images/food/box-daging.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
-                <span class="bot-part" style="--ix:74;--iy:10;--irot:3deg;--xr:90;--yr:-148;--zr:80;--rot:5deg;--d:500ms;--w:70px">
-                  <span class="food"><img src="/images/food/hero-bg.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
-                <span class="bot-part" style="--ix:-8;--iy:-2;--irot:-4deg;--xr:135;--yr:-100;--zr:45;--rot:-7deg;--d:570ms;--w:76px">
-                  <span class="food"><img src="/images/food/testimonial.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:22% 50%"></span></span>
-              </span>
-
               <span class="bot-face bf-front">
                 <span class="bot-eyes"><span class="bot-eye"></span><span class="bot-eye"></span></span>
               </span>
@@ -58,6 +43,23 @@
                   <span class="tuft"><span class="blade blade-1"></span><span class="blade blade-2"></span><span class="blade blade-3"></span></span>
                   <span class="tuft tuft-x"><span class="blade blade-1"></span><span class="blade blade-2"></span><span class="blade blade-3"></span></span>
                 </span>
+              </span>
+              {{/* The portions are declared AFTER the lid: where the 3D depth sort is
+                   ambiguous the browser falls back to document order, and declared first
+                   the lid painted over portions that sit in front of it (D62). */}}
+              <span class="bot-parts">
+                <span class="bot-part" style="--ix:-56;--iy:-30;--irot:-6deg;--xr:-130;--yr:-92;--zr:70;--rot:-10deg;--d:220ms;--w:96px">
+                  <span class="food"><img src="/images/food/page-hero-1.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
+                <span class="bot-part" style="--ix:36;--iy:-32;--irot:8deg;--xr:122;--yr:-116;--zr:40;--rot:11deg;--d:290ms;--w:88px">
+                  <span class="food"><img src="/images/food/box-ayam.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
+                <span class="bot-part" style="--ix:-60;--iy:34;--irot:5deg;--xr:-148;--yr:54;--zr:-30;--rot:7deg;--d:360ms;--w:84px">
+                  <span class="food"><img src="/images/food/page-hero-2.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
+                <span class="bot-part" style="--ix:18;--iy:36;--irot:-9deg;--xr:130;--yr:60;--zr:90;--rot:-12deg;--d:430ms;--w:80px">
+                  <span class="food"><img src="/images/food/box-daging.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
+                <span class="bot-part" style="--ix:74;--iy:10;--irot:3deg;--xr:-32;--yr:118;--zr:120;--rot:5deg;--d:500ms;--w:70px">
+                  <span class="food"><img src="/images/food/hero-bg.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:50% 50%"></span></span>
+                <span class="bot-part" style="--ix:-8;--iy:-2;--irot:-4deg;--xr:42;--yr:-142;--zr:-60;--rot:-7deg;--d:570ms;--w:76px">
+                  <span class="food"><img src="/images/food/testimonial.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:22% 50%"></span></span>
               </span>
             </span>
           </span>
@@ -79,26 +81,28 @@
               <span class="bot-divider bd-1"></span>
               <span class="bot-divider bd-2"></span>
 
-              <span class="bot-parts">
-                <span class="bot-part" style="--ix:-56;--iy:-30;--irot:-6deg;--xr:-110;--yr:-105;--zr:60;--rot:-10deg;--d:220ms;--w:96px">
-                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:8% 50%"></span></span>
-                <span class="bot-part" style="--ix:36;--iy:-32;--irot:8deg;--xr:-65;--yr:-160;--zr:95;--rot:11deg;--d:290ms;--w:88px">
-                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:26% 50%"></span></span>
-                <span class="bot-part" style="--ix:-60;--iy:34;--irot:5deg;--xr:-15;--yr:-188;--zr:130;--rot:7deg;--d:360ms;--w:84px">
-                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:44% 50%"></span></span>
-                <span class="bot-part" style="--ix:18;--iy:36;--irot:-9deg;--xr:40;--yr:-182;--zr:115;--rot:-12deg;--d:430ms;--w:80px">
-                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:60% 50%"></span></span>
-                <span class="bot-part" style="--ix:74;--iy:10;--irot:3deg;--xr:90;--yr:-148;--zr:80;--rot:5deg;--d:500ms;--w:70px">
-                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:78% 50%"></span></span>
-                <span class="bot-part" style="--ix:-8;--iy:-2;--irot:-4deg;--xr:135;--yr:-100;--zr:45;--rot:-7deg;--d:570ms;--w:76px">
-                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:94% 50%"></span></span>
-              </span>
-
               <span class="bot-face bf-front">
                 <span class="bot-eyes"><span class="bot-eye"></span><span class="bot-eye"></span></span>
               </span>
               <span class="bot-face bf-lid">
                 <span class="bot-mark"><b>evermore</b><small>{{t .L "box.label"}}</small></span>
+              </span>
+              {{/* The portions are declared AFTER the lid: where the 3D depth sort is
+                   ambiguous the browser falls back to document order, and declared first
+                   the lid painted over portions that sit in front of it (D62). */}}
+              <span class="bot-parts">
+                <span class="bot-part" style="--ix:-56;--iy:-30;--irot:-6deg;--xr:-130;--yr:-92;--zr:70;--rot:-10deg;--d:220ms;--w:96px">
+                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:8% 50%"></span></span>
+                <span class="bot-part" style="--ix:36;--iy:-32;--irot:8deg;--xr:122;--yr:-116;--zr:40;--rot:11deg;--d:290ms;--w:88px">
+                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:26% 50%"></span></span>
+                <span class="bot-part" style="--ix:-60;--iy:34;--irot:5deg;--xr:-148;--yr:54;--zr:-30;--rot:7deg;--d:360ms;--w:84px">
+                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:44% 50%"></span></span>
+                <span class="bot-part" style="--ix:18;--iy:36;--irot:-9deg;--xr:130;--yr:60;--zr:90;--rot:-12deg;--d:430ms;--w:80px">
+                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:60% 50%"></span></span>
+                <span class="bot-part" style="--ix:74;--iy:10;--irot:3deg;--xr:-32;--yr:118;--zr:120;--rot:5deg;--d:500ms;--w:70px">
+                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:78% 50%"></span></span>
+                <span class="bot-part" style="--ix:-8;--iy:-2;--irot:-4deg;--xr:42;--yr:-142;--zr:-60;--rot:-7deg;--d:570ms;--w:76px">
+                  <span class="food"><img src="/images/food/buffet.jpg" alt="" loading="lazy" width="200" height="200" style="object-position:94% 50%"></span></span>
               </span>
             </span>
           </span>
