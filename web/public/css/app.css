@@ -209,7 +209,19 @@ main { flex: 1 0 auto; }
 .card-body h3 a { color: inherit; text-decoration: none; display: inline-flex; align-items: center; min-height: var(--tap); }
 .card-body h3 a:hover { color: var(--brand); }
 .card-foot { margin-top: auto; padding-top: var(--space-4); display: flex;
-  align-items: center; justify-content: space-between; gap: var(--space-3); }
+  align-items: center; justify-content: space-between; gap: var(--space-3);
+  /* If the amount and the button cannot share a line, the BUTTON drops to the
+   * next one. Without this the price is just another shrinkable flex item and
+   * breaks at its own space — "Rp" on one line, "1.420.000" on the next (D61). */
+  flex-wrap: wrap; }
+.card-foot .price { flex: 0 0 auto; white-space: nowrap; }
+.card-foot .btn   { white-space: nowrap; }
+
+/* The pricing cards stack theirs, always. Left to wrap on its own only the
+ * two long amounts pushed their button to a second line and the three cards
+ * stopped matching — and a row of cards has to read as one object. */
+.sig-pkg .card-foot { flex-direction: column; align-items: stretch; gap: var(--space-4); }
+.sig-pkg .card-foot .btn { text-align: center; }
 
 .card-media {
   aspect-ratio: 4 / 3; display: grid; place-items: center; overflow: hidden;
