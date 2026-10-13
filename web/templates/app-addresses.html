@@ -1,9 +1,9 @@
 {{define "content"}}
 <section class="section">
   <div class="container container-narrow">
-    <p class="eyebrow">Akun saya</p>
-    <h1>Alamat pengantaran</h1>
-    <p>Simpan satu alamat atau lebih. Alamat utama dipilih otomatis saat checkout.</p>
+    <p class="eyebrow">{{t .L "acct.eyebrow"}}</p>
+    <h1>{{t .L "addr.title"}}</h1>
+    <p>{{t .L "addr.sub"}}</p>
 
     {{if .Notice}}<div class="callout" role="status"><p style="margin:0">{{.Notice}}</p></div>{{end}}
     {{if .Message}}<div class="callout callout-warn" role="alert"><p style="margin:0">{{.Message}}</p></div>{{end}}
@@ -16,22 +16,22 @@
           <div class="section-head" style="margin-bottom:var(--space-3)">
             <h2 style="font-size:var(--text-lg);margin:0">
               {{.Label}}
-              {{if .IsDefault}}<span class="pill pill-ok">Utama</span>{{end}}
+              {{if .IsDefault}}<span class="pill pill-ok">{{t $.L "addr.default"}}</span>{{end}}
             </h2>
           </div>
           <p class="meta" style="margin:0">{{.Recipient}} &middot; {{.Phone}}</p>
           <p style="margin:var(--space-2) 0 0">{{.Line}}</p>
-          {{if .Note}}<p class="meta" style="margin:var(--space-2) 0 0">Catatan kurir: {{.Note}}</p>{{end}}
+          {{if .Note}}<p class="meta" style="margin:var(--space-2) 0 0">{{t $.L "addr.note"}} {{.Note}}</p>{{end}}
 
           <div class="card-foot" style="gap:var(--space-2);flex-wrap:wrap">
             {{if not .IsDefault}}
             <form method="post" action="/app/alamat/{{.ID}}/utama" style="margin:0">
-              <button class="btn btn-outline btn-sm" type="submit">Jadikan utama</button>
+              <button class="btn btn-outline btn-sm" type="submit">{{t $.L "addr.makedefault"}}</button>
             </form>
             {{end}}
             <form method="post" action="/app/alamat/{{.ID}}/hapus" style="margin:0"
                   data-confirm="Hapus alamat {{.Label}}?">
-              <button class="btn btn-outline btn-sm" type="submit">Hapus</button>
+              <button class="btn btn-outline btn-sm" type="submit">{{t $.L "addr.delete"}}</button>
             </form>
           </div>
         </div>
@@ -40,11 +40,11 @@
     </div>
     {{else}}
     <div class="callout callout-warn" style="margin-top:var(--space-6)">
-      <p style="margin:0">Belum ada alamat tersimpan. Tambahkan satu di bawah supaya bisa checkout.</p>
+      <p style="margin:0">{{t .L "addr.none"}}</p>
     </div>
     {{end}}
 
-    <h2 style="margin-top:var(--space-8)">Tambah alamat</h2>
+    <h2 style="margin-top:var(--space-8)">{{t .L "addr.add"}}</h2>
     {{template "address-fields" .}}
   </div>
 </section>
@@ -53,24 +53,24 @@
 {{define "address-fields"}}
 <form method="post" action="/app/alamat" class="stack" data-address-form>
   <div class="field">
-    <label for="label">Label</label>
-    <input id="label" name="label" required maxlength="40" placeholder="Rumah, Kantor">
+    <label for="label">{{t .L "addr.label"}}</label>
+    <input id="label" name="label" required maxlength="40" placeholder="{{t .L "addr.label.ph"}}">
   </div>
   <div class="field">
-    <label for="recipient_name">Nama penerima</label>
+    <label for="recipient_name">{{t .L "addr.recipient"}}</label>
     <input id="recipient_name" name="recipient_name" required maxlength="120" autocomplete="name">
   </div>
   <div class="field">
-    <label for="recipient_phone">Telepon penerima</label>
+    <label for="recipient_phone">{{t .L "addr.phone"}}</label>
     <input id="recipient_phone" name="recipient_phone" required maxlength="24"
-           inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx">
+           inputmode="tel" autocomplete="tel" placeholder="{{t .L "addr.phone.ph"}}">
   </div>
 
   <div class="field">
-    <label for="addr-search">Cari alamat di peta</label>
-    <input id="addr-search" type="text" placeholder="Ketik nama jalan atau gedung"
+    <label for="addr-search">{{t .L "addr.search"}}</label>
+    <input id="addr-search" type="text" placeholder="{{t .L "addr.search.ph"}}"
            data-places-input autocomplete="off">
-    <p class="btn-reason" data-map-hint>Pilih dari daftar, lalu geser pin ke titik yang tepat.</p>
+    <p class="btn-reason" data-map-hint>{{t .L "addr.pin.hint"}}</p>
   </div>
 
   {{/* The map is the source of truth for routing; the text below it is what
@@ -83,11 +83,11 @@
        server, so this is a different INPUT method, not a weaker rule. */}}
   <div data-manual-latlng hidden>
     <div class="callout callout-warn"><p style="margin:0">
-      Peta tidak bisa dimuat. Masukkan koordinat manual, atau hubungi kami lewat WhatsApp.
+      {{t .L "addr.map.fail"}}
     </p></div>
-    <div class="field"><label for="lat-manual">Lintang (latitude)</label>
+    <div class="field"><label for="lat-manual">{{t .L "addr.lat"}}</label>
       <input id="lat-manual" type="text" inputmode="decimal" data-lat-manual placeholder="-6.2088"></div>
-    <div class="field"><label for="lng-manual">Bujur (longitude)</label>
+    <div class="field"><label for="lng-manual">{{t .L "addr.lng"}}</label>
       <input id="lng-manual" type="text" inputmode="decimal" data-lng-manual placeholder="106.8456"></div>
   </div>
 
@@ -97,25 +97,25 @@
   <input type="hidden" name="formatted_address" data-formatted>
 
   <div class="field">
-    <label for="address_line">Alamat lengkap</label>
+    <label for="address_line">{{t .L "addr.line"}}</label>
     <textarea id="address_line" name="address_line" required maxlength="240" rows="2"></textarea>
   </div>
-  <div class="field"><label for="district">Kecamatan</label>
+  <div class="field"><label for="district">{{t .L "addr.district"}}</label>
     <input id="district" name="district" required maxlength="80"></div>
-  <div class="field"><label for="city">Kota</label>
+  <div class="field"><label for="city">{{t .L "addr.city"}}</label>
     <input id="city" name="city" required maxlength="80"></div>
-  <div class="field"><label for="province">Provinsi</label>
+  <div class="field"><label for="province">{{t .L "addr.province"}}</label>
     <input id="province" name="province" required maxlength="80"></div>
-  <div class="field"><label for="postal_code">Kode pos</label>
+  <div class="field"><label for="postal_code">{{t .L "addr.postal"}}</label>
     <input id="postal_code" name="postal_code" maxlength="10" inputmode="numeric"></div>
-  <div class="field"><label for="driver_note">Catatan untuk kurir</label>
-    <input id="driver_note" name="driver_note" maxlength="240" placeholder="Pagar abu-abu, bel sekali"></div>
+  <div class="field"><label for="driver_note">{{t .L "addr.driver"}}</label>
+    <input id="driver_note" name="driver_note" maxlength="240" placeholder="{{t .L "addr.driver.ph"}}"></div>
 
   <label style="display:flex;gap:var(--space-2);align-items:center">
-    <input type="checkbox" name="is_default" value="1"> Jadikan alamat utama
+    <input type="checkbox" name="is_default" value="1"> {{t .L "addr.setdefault"}}
   </label>
 
-  <p><button class="btn btn-primary" type="submit">Simpan alamat</button></p>
+  <p><button class="btn btn-primary" type="submit">{{t .L "addr.save"}}</button></p>
 </form>
 
 {{if .MapsKey}}

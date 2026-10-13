@@ -52,6 +52,12 @@ a:hover { color: var(--brand-hi); }
 main { flex: 1 0 auto; }
 
 .section { padding-block: var(--space-8); }
+/* The hero already supplies the space above whatever follows it. */
+.hero-full + .section { padding-top: var(--space-5); }
+/* Two stacked sections were each paying a full 96px, so every seam between
+ * them opened ~192px of empty page. The second one halves its top. */
+.section + .section { padding-top: var(--space-6); }
+.section.tight { padding-block: var(--space-5); }
 .section.tight { padding-block: var(--space-6); }
 .band-raised { background: var(--warm); }
 
@@ -172,11 +178,10 @@ main { flex: 1 0 auto; }
 
 /* ----------------------------------------------------------------- hero */
 
-.hero-full { position: relative; overflow: hidden; padding-block: var(--space-7) var(--space-8); }
+.hero-full { position: relative; overflow: hidden; }
 /* The float nav and the WhatsApp button are fixed over the bottom of the
  * viewport, so on a phone the hero needs room underneath or the bot opens
  * behind them. */
-@media (min-width: 1024px) { .hero-full { padding-block: var(--space-9) var(--space-8); } }
 /* One large, very soft wash drifting behind the type. A single quiet shape,
  * not two bright blobs — restraint is the whole brief. */
 .hero-full::before {
@@ -403,8 +408,8 @@ tbody tr:hover { background: var(--warm); }
   font: inherit; color: inherit; cursor: pointer;
   perspective: 1100px; perspective-origin: 50% 46%;
 }
-@media (min-width: 640px)  { .bot-stage { --spread: .88; --box-scale: .86; --food: 1.3; height: 390px; } }
-@media (min-width: 1024px) { .bot-stage { --spread: 1.08; --box-scale: 1;  --food: 1.55; height: 450px; } }
+@media (min-width: 640px)  { .bot-stage { --spread: .88; --box-scale: .86; --food: 1.3; height: 320px; } }
+@media (min-width: 1024px) { .bot-stage { --spread: 1.08; --box-scale: 1;  --food: 1.55; height: 360px; } }
 
 .bot-floor {
   position: absolute; bottom: 46px; left: 50%;
@@ -478,7 +483,7 @@ tbody tr:hover { background: var(--warm); }
    * above the box instead of resting on it. The open animation translates
    * and fades the lid, so it needs no hinge origin. */
   transform: rotateX(-90deg) translateZ(-24px) translateY(14px);
-  animation: lidRest 4.2s var(--ease-soft) infinite alternate;
+  animation: lidRest 3.2s var(--ease-soft) infinite alternate;
   background-image: linear-gradient(145deg, rgba(255,255,255,.42), transparent 52%);
 }
 
@@ -529,8 +534,8 @@ tbody tr:hover { background: var(--warm); }
 }
 /* Ajar at rest: a shallow, slow breath. */
 @keyframes lidRest {
-  from { transform: rotateX(-90deg) translateZ(-24px) translateY(10px) rotateZ(-1deg); }
-  to   { transform: rotateX(-90deg) translateZ(-24px) translateY(20px) rotateZ(1deg); }
+  from { transform: rotateX(-90deg) translateZ(-24px) translateY(6px)  rotateZ(-1.5deg); }
+  to   { transform: rotateX(-90deg) translateZ(-24px) translateY(30px) rotateZ(1.5deg); }
 }
 /* (3) Open: all the way up, as before. */
 @keyframes lidBob {
@@ -618,8 +623,31 @@ tbody tr:hover { background: var(--warm); }
 
 .weekstrip {
   display: grid; gap: var(--space-4);
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-auto-flow: column; grid-auto-columns: minmax(208px, 1fr);
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  padding-bottom: var(--space-4);
+  /* Room for the card shadow and the focus ring, which a plain overflow
+   * container would otherwise clip. */
+  padding-inline: 2px;
 }
+.weekstrip > .daycard { scroll-snap-align: start; }
+
+/* A real scrollbar, styled rather than hidden: hiding it leaves no signal
+ * that there is more to the right. */
+.weekstrip { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+.weekstrip::-webkit-scrollbar { height: 10px; }
+.weekstrip::-webkit-scrollbar-track {
+  background: var(--warm); border-radius: var(--radius-pill);
+}
+.weekstrip::-webkit-scrollbar-thumb {
+  background: var(--line-strong); border-radius: var(--radius-pill);
+  border: 2px solid var(--warm);
+}
+.weekstrip::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+
+/* On a wide screen seven cards fit, so the scroller simply never scrolls. */
+@media (min-width: 1180px) { .weekstrip { grid-auto-columns: 1fr; overflow-x: visible; } }
 
 .daycard {
   background: var(--card); border: 1px solid var(--line);
@@ -631,16 +659,19 @@ tbody tr:hover { background: var(--warm); }
 .daycard:hover { transform: translateY(var(--lift)); box-shadow: var(--shadow-3); border-color: var(--line-strong); }
 
 .daycard-head {
-  display: flex; align-items: center; gap: var(--space-2);
+  /* Two rows, not one. Squeezed onto a single line the day name truncated to
+   * "Wedn…" and the today card lost its day name altogether — the one card
+   * that most needs to say which day it is. */
+  display: grid; grid-template-columns: 1fr auto; gap: 2px var(--space-2);
+  align-items: center;
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--line);
 }
-/* The date must not wrap: on the today card the badge crowds it, and "13
-   Oct" breaking across two lines made that one card taller than the rest. */
+.daycard-day  { grid-column: 1 / -1; white-space: nowrap; }
 .daycard-date { white-space: nowrap; }
-.daycard-day { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.daycard-now  { justify-self: end; }
 .daycard-day  { font-weight: 600; font-size: var(--text-sm); }
-.daycard-date { font-size: var(--text-xs); color: var(--ink-faint); margin-left: auto; font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+.daycard-date { font-size: var(--text-xs); color: var(--ink-faint); font-variant-numeric: tabular-nums; }
 
 /* TODAY. Three signals, not one: a filled header, a ring around the whole
  * card, and a worded badge — colour is never the only signal (CLAUDE.md §7),
@@ -650,7 +681,7 @@ tbody tr:hover { background: var(--warm); }
 .daycard.is-today .daycard-day,
 .daycard.is-today .daycard-date { color: #FFFFFF; }
 .daycard-now {
-  flex: 0 0 auto; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
   background: var(--ctl-accent); color: var(--on-brand);
   border-radius: var(--radius-pill); padding: 2px var(--space-2);
 }
@@ -674,8 +705,8 @@ tbody tr:hover { background: var(--warm); }
 
 /* The hero opened with ~148px of nothing above the eyebrow once the sticky
  * header arrived. The header already supplies that separation. */
-.hero-full { padding-block: var(--space-6) var(--space-8); }
-@media (min-width: 1024px) { .hero-full { padding-block: var(--space-7) var(--space-9); } }
+.hero-full { padding-block: var(--space-4) var(--space-5); }
+@media (min-width: 1024px) { .hero-full { padding-block: var(--space-5) var(--space-6); } }
 
 /* The header was a flat row of identical links. Three changes: a hairline
  * under the hovered or current item so the target is unmistakable, a real

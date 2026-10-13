@@ -1,24 +1,24 @@
 {{define "content"}}
 <section class="section">
   <div class="container">
-    <h1>Pesanan saya</h1>
+    <h1>{{t .L "ord.title"}}</h1>
     <form class="filterbar" method="get" action="/app/pesanan" role="search" data-live-search>
       <div class="searchbox">
-        <label class="visually-hidden" for="q">Cari nomor pesanan</label>
-        <input type="search" id="q" name="q" value="{{.Search}}" placeholder="Cari nomor pesanan…" autocomplete="off">
+        <label class="visually-hidden" for="q">{{t .L "ord.search"}}</label>
+        <input type="search" id="q" name="q" value="{{.Search}}" placeholder="{{t .L "ord.search.ph"}}" autocomplete="off">
       </div>
-      <noscript><button class="btn btn-solid" type="submit">Cari</button></noscript>
+      <noscript><button class="btn btn-solid" type="submit">{{t .L "ord.search.btn"}}</button></noscript>
     </form>
 
     <div data-results>
     {{if .Orders}}
-      <p class="meta" data-result-count>{{len .Orders}} pesanan</p>
+      <p class="meta" data-result-count>{{len .Orders}} {{t .L "ord.count"}}</p>
       <div class="table-wrap">
         <table>
-          <caption class="visually-hidden">Riwayat pesanan</caption>
+          <caption class="visually-hidden">{{t .L "ord.history"}}</caption>
           <thead>
-            <tr><th scope="col">Nomor</th><th scope="col">Status</th>
-                <th scope="col" class="num">Porsi</th><th scope="col" class="num">Total</th>
+            <tr><th scope="col">{{t .L "ord.number"}}</th><th scope="col">{{t .L "ord.status"}}</th>
+                <th scope="col" class="num">{{t .L "ord.portions"}}</th><th scope="col" class="num">{{t .L "ord.total"}}</th>
                 <th scope="col"></th></tr>
           </thead>
           <tbody>
@@ -34,7 +34,7 @@
               <td class="num">{{.Meals}}</td>
               <td class="num">{{rupiah .TotalIDR}}</td>
               <td>{{if or (eq .Status "AWAITING_PAYMENT") (eq .Status "PAYMENT_SUBMITTED")}}
-                <a class="btn btn-outline" href="/app/pembayaran/{{.ID}}">Bayar</a>{{end}}</td>
+                <a class="btn btn-outline" href="/app/pembayaran/{{.ID}}">{{t $.L "ord.pay"}}</a>{{end}}</td>
             </tr>
           {{end}}
           </tbody>
@@ -42,7 +42,7 @@
       </div>
     {{else}}
       <div class="callout callout-info">
-        <p style="margin:0">{{if .Search}}Tidak ada pesanan yang cocok.{{else}}Belum ada pesanan. <a href="/menu">Lihat menu</a>.{{end}}</p>
+        <p style="margin:0">{{if .Search}}{{t .L "ord.nomatch"}}{{else}}{{t .L "ord.none"}} <a href="/menu">{{t .L "ord.seemenu"}}</a>.{{end}}</p>
       </div>
     {{end}}
     </div>

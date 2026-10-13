@@ -3,17 +3,17 @@
   <div class="container">
     <div class="section-head">
       <div>
-        <p class="eyebrow" style="color:var(--ink-muted)">Back office</p>
-        <h1>Verifikasi pembayaran</h1>
-        <p>Setiap keputusan tercatat di audit log dengan aktor dan alasan.</p>
+        <p class="eyebrow" style="color:var(--ink-muted)">{{t .L "bo.title"}}</p>
+        <h1>{{t .L "bo.pay.title"}}</h1>
+        <p>{{t .L "bo.pay.sub"}}</p>
       </div>
-      <p><span class="pill pill-warn">{{len .PayQueue}} menunggu</span></p>
+      <p><span class="pill pill-warn">{{len .PayQueue}} {{t .L "bo.pay.waiting"}}</span></p>
     </div>
 
-    <nav class="filterbar" aria-label="Navigasi back office">
-      <a class="chip" href="/bo">Dasbor</a>
-      <a class="chip" href="/bo/menu">Jadwal menu</a>
-      <a class="chip is-active" href="/bo/pembayaran">Pembayaran</a>
+    <nav class="filterbar" aria-label="{{t .L "bo.nav"}}">
+      <a class="chip" href="/bo">{{t .L "bo.dashboard"}}</a>
+      <a class="chip" href="/bo/menu">{{t .L "bo.menu"}}</a>
+      <a class="chip is-active" href="/bo/pembayaran">{{t .L "bo.payments"}}</a>
     </nav>
 
     {{if .Flash}}
@@ -24,45 +24,45 @@
 
     <form class="filterbar" method="get" action="/bo/pembayaran" role="search">
       <div class="searchbox">
-        <label class="visually-hidden" for="q">Cari nomor pesanan atau nama pelanggan</label>
+        <label class="visually-hidden" for="q">{{t .L "bo.pay.search"}}</label>
         <input type="search" id="q" name="q" value="{{.Search}}"
-               placeholder="Cari nomor pesanan atau nama…" autocomplete="off">
+               placeholder="{{t .L "bo.pay.search.ph"}}" autocomplete="off">
       </div>
-      <button class="btn btn-outline" type="submit">Cari</button>
+      <button class="btn btn-outline" type="submit">{{t .L "ord.search.btn"}}</button>
     </form>
 
     {{if .PayQueue}}
     <div class="table-wrap">
       <table>
-        <caption class="visually-hidden">Antrean verifikasi pembayaran</caption>
+        <caption class="visually-hidden">{{t .L "bo.pay.queue"}}</caption>
         <thead>
           <tr>
-            <th scope="col">Pesanan</th><th scope="col">Pelanggan</th>
-            <th scope="col" class="num">Nominal</th><th scope="col">Menunggu</th>
-            <th scope="col">Kecocokan</th><th scope="col">Tindakan</th>
+            <th scope="col">{{t .L "bo.pay.order"}}</th><th scope="col">{{t .L "bo.pay.customer"}}</th>
+            <th scope="col" class="num">{{t .L "bo.pay.amount"}}</th><th scope="col">{{t .L "bo.pay.waited"}}</th>
+            <th scope="col">{{t .L "bo.pay.match"}}</th><th scope="col">{{t .L "bo.pay.action"}}</th>
           </tr>
         </thead>
         <tbody>
         {{range .PayQueue}}
           <tr>
-            <td>{{.OrderNumber}}<br><span class="meta">sufiks {{printf "%03d" .Suffix}}</span></td>
-            <td>{{.CustomerName}}<br><span class="meta">{{.CustomerType}}{{if .SenderName}} · pengirim {{.SenderName}}{{end}}</span></td>
-            <td class="num">{{rupiah .ExpectedIDR}}{{if .DeclaredIDR}}<br><span class="meta">dilaporkan {{rupiah .DeclaredIDR}}</span>{{end}}</td>
+            <td>{{.OrderNumber}}<br><span class="meta">{{t $.L "bo.pay.suffix"}} {{printf "%03d" .Suffix}}</span></td>
+            <td>{{.CustomerName}}<br><span class="meta">{{.CustomerType}}{{if .SenderName}} · {{t $.L "bo.pay.sender"}} {{.SenderName}}{{end}}</span></td>
+            <td class="num">{{rupiah .ExpectedIDR}}{{if .DeclaredIDR}}<br><span class="meta">{{t $.L "bo.pay.reported"}} {{rupiah .DeclaredIDR}}</span>{{end}}</td>
             <td>{{duration .WaitingFor}}</td>
             <td>{{if eq .Match "Cocok"}}<span class="pill pill-ok">{{.Match}}</span>{{else}}<span class="pill pill-warn">{{.Match}}</span>{{end}}</td>
             <td>
               <form method="post" action="/bo/pembayaran/verifikasi" style="display:inline">
                 <input type="hidden" name="payment_id" value="{{.PaymentID}}">
-                <button class="btn btn-solid" type="submit">Verifikasi</button>
+                <button class="btn btn-solid" type="submit">{{t $.L "bo.pay.verify"}}</button>
               </form>
               <details style="display:inline-block;margin-left:var(--space-2)">
-                <summary class="chip" style="display:inline-flex">Tolak</summary>
+                <summary class="chip" style="display:inline-flex">{{t $.L "bo.pay.reject"}}</summary>
                 <form method="post" action="/bo/pembayaran/tolak" class="card" style="margin-top:var(--space-2);padding:var(--space-3)">
                   <input type="hidden" name="payment_id" value="{{.PaymentID}}">
-                  <label class="visually-hidden" for="reason-{{.PaymentID}}">Alasan penolakan</label>
+                  <label class="visually-hidden" for="reason-{{.PaymentID}}">{{t $.L "bo.pay.reason"}}</label>
                   <input class="searchbox" style="width:100%" type="text" id="reason-{{.PaymentID}}"
-                         name="reason" placeholder="Alasan penolakan (wajib)" required maxlength="240">
-                  <button class="btn btn-outline" style="margin-top:var(--space-2)" type="submit">Kirim penolakan</button>
+                         name="reason" placeholder="{{t $.L "bo.pay.reason.ph"}}" required maxlength="240">
+                  <button class="btn btn-outline" style="margin-top:var(--space-2)" type="submit">{{t $.L "bo.pay.send"}}</button>
                 </form>
               </details>
             </td>
@@ -73,7 +73,7 @@
     </div>
     {{else}}
       <div class="callout">
-        <p style="margin:0"><span class="pill pill-ok">Kosong</span> Tidak ada pembayaran yang menunggu verifikasi.</p>
+        <p style="margin:0"><span class="pill pill-ok">{{t .L "bo.pay.empty"}}</span> {{t .L "bo.pay.none"}}</p>
       </div>
     {{end}}
   </div>

@@ -3,21 +3,21 @@
   <div class="container">
     <div class="section-head">
       <div>
-        <p class="eyebrow" style="color:var(--ink-muted)">Back office</p>
-        <h1>Jadwal menu</h1>
-        <p>Kalender global lintas dapur. Menu DRAFT tidak bisa dipesan pelanggan.</p>
+        <p class="eyebrow" style="color:var(--ink-muted)">{{t .L "bo.title"}}</p>
+        <h1>{{t .L "bo.menu"}}</h1>
+        <p>{{t .L "bo.menu.sub"}}</p>
       </div>
       <p>
-        <a class="chip" href="/bo/menu?minggu={{.PrevWeek}}">&lsaquo; Minggu lalu</a>
+        <a class="chip" href="/bo/menu?minggu={{.PrevWeek}}">&lsaquo; {{t .L "bo.lastweek"}}</a>
         <span class="pill pill-quiet">{{.WeekLabel}}</span>
-        <a class="chip" href="/bo/menu?minggu={{.NextWeek}}">Minggu depan &rsaquo;</a>
+        <a class="chip" href="/bo/menu?minggu={{.NextWeek}}">{{t .L "bo.nextweek"}} &rsaquo;</a>
       </p>
     </div>
 
-    <nav class="filterbar" aria-label="Navigasi back office">
-      <a class="chip" href="/bo">Dasbor</a>
-      <a class="chip is-active" href="/bo/menu">Jadwal menu</a>
-      <a class="chip" href="/bo/pembayaran">Pembayaran</a>
+    <nav class="filterbar" aria-label="{{t .L "bo.nav"}}">
+      <a class="chip" href="/bo">{{t .L "bo.dashboard"}}</a>
+      <a class="chip is-active" href="/bo/menu">{{t .L "bo.menu"}}</a>
+      <a class="chip" href="/bo/pembayaran">{{t .L "bo.payments"}}</a>
     </nav>
 
     {{if .Flash}}
@@ -34,18 +34,18 @@
             {{range .Meals}}
             <div style="border-top:1px solid var(--border-subtle);padding-top:var(--space-2);margin-top:var(--space-2)">
               <p style="margin:0">
-                {{if eq .Status "PUBLISHED"}}<span class="pill pill-ok">Terbit</span>
-                {{else}}<span class="pill pill-warn">Draf</span>{{end}}
+                {{if eq .Status "PUBLISHED"}}<span class="pill pill-ok">{{t $.L "bo.published"}}</span>
+                {{else}}<span class="pill pill-warn">{{t $.L "bo.draft"}}</span>{{end}}
               </p>
               <p style="margin:var(--space-2) 0 0"><strong>{{.Name}}</strong></p>
               <p class="meta" style="margin:0">
-                {{.DietName}} &middot; {{.Components}} komponen
-                {{if .Complete}}&middot; {{.Kcal}} kkal{{else}}&middot; gizi belum lengkap{{end}}
+                {{.DietName}} &middot; {{.Components}} {{t $.L "bo.components"}}
+                {{if .Complete}}&middot; {{.Kcal}} {{t $.L "bo.kcal"}}{{else}}&middot; {{t $.L "bo.panel.incomplete"}}{{end}}
               </p>
               {{if .Quota}}
               <p class="meta" style="margin:0">
-                {{if .Full}}<span class="pill pill-warn">{{.Used}} / {{.Quota}} penuh</span>
-                {{else}}{{.Used}} / {{.Quota}} terisi{{end}}
+                {{if .Full}}<span class="pill pill-warn">{{.Used}} / {{.Quota}} {{t $.L "bo.full"}}</span>
+                {{else}}{{.Used}} / {{.Quota}} {{t $.L "bo.filled"}}{{end}}
               </p>
               {{end}}
               {{if eq .Status "DRAFT"}}
@@ -53,17 +53,17 @@
                 <form method="post" action="/bo/menu/terbitkan" style="margin-top:var(--space-2)">
                   <input type="hidden" name="meal_id" value="{{.ID}}">
                   <input type="hidden" name="minggu" value="{{$.ThisWeek}}">
-                  <button class="btn btn-solid" type="submit">Terbitkan</button>
+                  <button class="btn btn-solid" type="submit">{{t $.L "bo.publish"}}</button>
                 </form>
                 {{else}}
-                <p><button class="btn btn-outline" type="button" disabled aria-disabled="true">Terbitkan</button></p>
-                <p class="btn-reason">Tidak bisa terbit: gizi salah satu komponen belum diisi.</p>
+                <p><button class="btn btn-outline" type="button" disabled aria-disabled="true">{{t $.L "bo.publish"}}</button></p>
+                <p class="btn-reason">{{t $.L "bo.publish.blocked"}}</p>
                 {{end}}
               {{end}}
             </div>
             {{end}}
           {{else}}
-            <p class="meta">Tidak ada menu.</p>
+            <p class="meta">{{t $.L "bo.nomenu"}}</p>
           {{end}}
         </div>
       </article>

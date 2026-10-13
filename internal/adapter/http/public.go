@@ -527,7 +527,7 @@ func (h *PublicHandler) Home(c *gin.Context) {
 	}
 	// D49: today plus the next seven days. People eat with their eyes, so the
 	// strip leads with pictures and marks today loudly.
-	if d.Week, err = h.repo.MenuWeek(ctx, today, 8, today); err != nil {
+	if d.Week, err = h.repo.MenuWeek(ctx, today, 7, today); err != nil {
 		Fail(c, apierror.Internal(err))
 		return
 	}

@@ -1,66 +1,66 @@
 {{define "content"}}
 <section class="section">
   <div class="container container-narrow">
-    <h1>Daftar</h1>
+    <h1>{{t .L "auth.register"}}</h1>
     <form class="stack" data-auth-form data-address-form
           data-endpoint="/api/v1/auth/register" data-next="/app/masuk">
       <p>
-        <label for="full_name">Nama lengkap</label><br>
+        <label for="full_name">{{t .L "auth.fullname"}}</label><br>
         <input class="searchbox" style="width:100%" type="text" id="full_name" name="full_name"
                autocomplete="name" maxlength="120" required>
       </p>
       <p>
-        <label for="email">Email</label><br>
+        <label for="email">{{t .L "auth.email"}}</label><br>
         <input class="searchbox" style="width:100%" type="email" id="email" name="email"
                autocomplete="email" required>
       </p>
       <p>
-        <label for="phone">Nomor WhatsApp</label><br>
+        <label for="phone">{{t .L "auth.whatsapp"}}</label><br>
         <input class="searchbox" style="width:100%" type="tel" id="phone" name="phone"
                autocomplete="tel" placeholder="0812 3456 7890" required>
-        <span class="meta">Boleh ditulis 0812…, +62812… atau 62812…</span>
+        <span class="meta">{{t .L "auth.phone.hint"}}</span>
       </p>
       <p>
-        <label for="password">Kata sandi</label><br>
+        <label for="password">{{t .L "auth.password"}}</label><br>
         <input class="searchbox" style="width:100%" type="password" id="password" name="password"
                autocomplete="new-password" minlength="12" required>
-        <span class="meta">Minimal 12 karakter.</span>
+        <span class="meta">{{t .L "auth.password.hint"}}</span>
       </p>
-      <h2 style="margin-top:var(--space-7)">Alamat pengantaran</h2>
-      <p class="meta">Alamat pertama kamu. Bisa ditambah atau diubah kapan saja di menu Alamat.</p>
+      <h2 style="margin-top:var(--space-7)">{{t .L "addr.title"}}</h2>
+      <p class="meta">{{t .L "auth.addr.sub"}}</p>
 
       <p>
-        <label for="label">Label</label><br>
+        <label for="label">{{t .L "addr.label"}}</label><br>
         <input class="searchbox" style="width:100%" id="label" name="label" maxlength="40"
-               placeholder="Rumah, Kantor" required>
+               placeholder="{{t .L "addr.label.ph"}}" required>
       </p>
       <p>
-        <label for="recipient_name">Nama penerima</label><br>
+        <label for="recipient_name">{{t .L "addr.recipient"}}</label><br>
         <input class="searchbox" style="width:100%" id="recipient_name" name="recipient_name"
                maxlength="120" required>
       </p>
       <p>
-        <label for="recipient_phone">Telepon penerima</label><br>
+        <label for="recipient_phone">{{t .L "addr.phone"}}</label><br>
         <input class="searchbox" style="width:100%" id="recipient_phone" name="recipient_phone"
                type="tel" maxlength="24" required>
       </p>
       <p>
-        <label for="addr-search">Cari alamat di peta</label><br>
+        <label for="addr-search">{{t .L "addr.search"}}</label><br>
         <input class="searchbox" style="width:100%" id="addr-search" type="text"
-               data-places-input autocomplete="off" placeholder="Ketik nama jalan atau gedung">
-        <span class="meta" data-map-hint>Pilih dari daftar, lalu geser pin ke titik yang tepat.</span>
+               data-places-input autocomplete="off" placeholder="{{t .L "addr.search.ph"}}">
+        <span class="meta" data-map-hint>{{t .L "addr.pin.hint"}}</span>
       </p>
 
       <div data-map style="height:260px;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-strong)"></div>
 
       <div data-manual-latlng hidden>
         <div class="callout callout-warn"><p style="margin:0">
-          Peta tidak bisa dimuat. Masukkan koordinat manual.
+          {{t .L "addr.map.fail.short"}}
         </p></div>
-        <p><label for="lat-manual">Lintang</label><br>
+        <p><label for="lat-manual">{{t .L "addr.lat"}}</label><br>
           <input class="searchbox" style="width:100%" id="lat-manual" inputmode="decimal"
                  data-lat-manual placeholder="-6.2088"></p>
-        <p><label for="lng-manual">Bujur</label><br>
+        <p><label for="lng-manual">{{t .L "addr.lng"}}</label><br>
           <input class="searchbox" style="width:100%" id="lng-manual" inputmode="decimal"
                  data-lng-manual placeholder="106.8456"></p>
       </div>
@@ -71,25 +71,25 @@
       <input type="hidden" name="formatted_address" data-formatted>
 
       <p>
-        <label for="address_line">Alamat lengkap</label><br>
+        <label for="address_line">{{t .L "addr.line"}}</label><br>
         <textarea class="searchbox" style="width:100%" id="address_line" name="address_line"
                   rows="2" maxlength="240" required></textarea>
       </p>
-      <p><label for="district">Kecamatan</label><br>
+      <p><label for="district">{{t .L "addr.district"}}</label><br>
         <input class="searchbox" style="width:100%" id="district" name="district" maxlength="80" required></p>
-      <p><label for="city">Kota</label><br>
+      <p><label for="city">{{t .L "addr.city"}}</label><br>
         <input class="searchbox" style="width:100%" id="city" name="city" maxlength="80" required></p>
-      <p><label for="province">Provinsi</label><br>
+      <p><label for="province">{{t .L "addr.province"}}</label><br>
         <input class="searchbox" style="width:100%" id="province" name="province" maxlength="80" required></p>
-      <p><label for="postal_code">Kode pos</label><br>
+      <p><label for="postal_code">{{t .L "addr.postal"}}</label><br>
         <input class="searchbox" style="width:100%" id="postal_code" name="postal_code" maxlength="10" inputmode="numeric"></p>
-      <p><label for="driver_note">Catatan untuk kurir</label><br>
+      <p><label for="driver_note">{{t .L "addr.driver"}}</label><br>
         <input class="searchbox" style="width:100%" id="driver_note" name="driver_note" maxlength="240"
-               placeholder="Pagar abu-abu, bel sekali"></p>
+               placeholder="{{t .L "addr.driver.ph"}}"></p>
 
-      <h2 style="margin-top:var(--space-7)">Alergi</h2>
+      <h2 style="margin-top:var(--space-7)">{{t .L "alg.title.short"}}</h2>
       <fieldset style="border:0;padding:0;margin:0">
-        <legend class="meta">Pilih semua yang sesuai. Boleh dikosongkan.</legend>
+        <legend class="meta">{{t .L "alg.legend.opt"}}</legend>
         <div class="stack" style="margin-top:var(--space-3)">
           {{range .Allergens}}
           <label style="display:flex;gap:var(--space-3);align-items:center;min-height:var(--tap)">
@@ -101,8 +101,8 @@
       </fieldset>
 
       <p role="alert" aria-live="polite" data-auth-error class="callout callout-warn" hidden></p>
-      <p><button class="btn btn-solid" type="submit">Daftar</button></p>
-      <p class="meta">Sudah punya akun? <a href="/app/masuk">Masuk</a></p>
+      <p><button class="btn btn-solid" type="submit">{{t .L "auth.register"}}</button></p>
+      <p class="meta">{{t .L "auth.haveaccount"}} <a href="/app/masuk">{{t .L "auth.signin"}}</a></p>
     </form>
   </div>
 </section>

@@ -3,38 +3,38 @@
   <div class="container">
     <div class="section-head">
       <div>
-        <p class="eyebrow" style="color:var(--ink-muted)">Back office</p>
+        <p class="eyebrow" style="color:var(--ink-muted)">{{t .L "bo.title"}}</p>
         <h1>{{.Dash.DateLabel}}</h1>
-        <p>Angka untuk tanggal layanan hari ini, zona Asia/Jakarta</p>
+        <p>{{t .L "bo.today"}}</p>
       </div>
-      {{if .Dash.CutOffIn}}<p><span class="pill pill-warn">Cut-off besok &middot; {{.Dash.CutOffIn}}</span></p>{{end}}
+      {{if .Dash.CutOffIn}}<p><span class="pill pill-warn">{{t .L "bo.cutoff"}} &middot; {{.Dash.CutOffIn}}</span></p>{{end}}
     </div>
 
-    <nav class="filterbar" aria-label="Navigasi back office">
-      <a class="chip is-active" href="/bo">Dasbor</a>
-      <a class="chip" href="/bo/menu">Jadwal menu</a>
-      <a class="chip" href="/bo/pembayaran">Pembayaran{{if .Dash.AwaitingVerify}} · {{.Dash.AwaitingVerify}}{{end}}</a>
+    <nav class="filterbar" aria-label="{{t .L "bo.nav"}}">
+      <a class="chip is-active" href="/bo">{{t .L "bo.dashboard"}}</a>
+      <a class="chip" href="/bo/menu">{{t .L "bo.menu"}}</a>
+      <a class="chip" href="/bo/pembayaran">{{t .L "bo.payments"}}{{if .Dash.AwaitingVerify}} · {{.Dash.AwaitingVerify}}{{end}}</a>
     </nav>
 
     <div class="card-grid" style="margin-bottom:var(--space-7)">
       <article class="card"><div class="card-body">
-        <p class="meta">Meal hari ini</p><p class="price">{{.Dash.MealsToday}}</p></div></article>
+        <p class="meta">{{t .L "bo.meals"}}</p><p class="price">{{.Dash.MealsToday}}</p></div></article>
       <article class="card"><div class="card-body">
-        <p class="meta">Pengantaran</p><p class="price">{{.Dash.Deliveries}}<small>{{.Dash.Delivered}} terkirim · {{.Dash.OnTheRoad}} di jalan</small></p></div></article>
+        <p class="meta">{{t .L "bo.deliveries"}}</p><p class="price">{{.Dash.Deliveries}}<small>{{.Dash.Delivered}} {{t .L "bo.delivered"}} · {{.Dash.OnTheRoad}} {{t .L "bo.enroute"}}</small></p></div></article>
       <article class="card"><div class="card-body">
-        <p class="meta">Perlu verifikasi</p><p class="price">{{.Dash.AwaitingVerify}}{{if .Dash.AwaitingVerify}}<small>tertua {{.Dash.OldestWaitMin}} menit</small>{{end}}</p></div></article>
+        <p class="meta">{{t .L "bo.needverify"}}</p><p class="price">{{.Dash.AwaitingVerify}}{{if .Dash.AwaitingVerify}}<small>{{t .L "bo.oldest"}} {{.Dash.OldestWaitMin}} {{t .L "bo.minutes"}}</small>{{end}}</p></div></article>
       <article class="card"><div class="card-body">
-        <p class="meta">Omzet terverifikasi</p><p class="price">{{rupiah .Dash.RevenueIDR}}<small>termasuk PPN</small></p></div></article>
+        <p class="meta">{{t .L "bo.revenue"}}</p><p class="price">{{rupiah .Dash.RevenueIDR}}<small>{{t .L "bo.vatincl"}}</small></p></div></article>
       <article class="card"><div class="card-body">
-        <p class="meta">Di luar jangkauan</p><p class="price">{{.Dash.OutOfRange}}<small>percobaan checkout</small></p></div></article>
+        <p class="meta">{{t .L "bo.outofrange"}}</p><p class="price">{{.Dash.OutOfRange}}<small>{{t .L "bo.attempts"}}</small></p></div></article>
     </div>
 
-    <h2>Kapasitas per dapur &amp; slot <span class="meta" style="font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--w-body)">terpakai / kuota</span></h2>
+    <h2>{{t .L "bo.capacity"}} <span class="meta" style="font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--w-body)">{{t .L "bo.used"}}</span></h2>
     <div class="table-wrap">
       <table>
-        <caption class="visually-hidden">Kapasitas dapur per slot hari ini</caption>
+        <caption class="visually-hidden">{{t .L "bo.capacity.aria"}}</caption>
         <thead>
-          <tr><th scope="col">Dapur</th>
+          <tr><th scope="col">{{t .L "bo.kitchen"}}</th>
           {{range (index .Dash.Capacity 0).Cells}}<th scope="col" class="num">{{.SlotLabel}}</th>{{end}}</tr>
         </thead>
         <tbody>
@@ -43,7 +43,7 @@
             <th scope="row">{{.Name}}<br><span class="meta">{{.Code}}</span></th>
             {{range .Cells}}
               <td class="num">
-                {{if .Closed}}<span class="pill pill-quiet">tutup</span>
+                {{if .Closed}}<span class="pill pill-quiet">{{t $.L "bo.closed"}}</span>
                 {{else if .Full}}<span class="pill pill-warn">{{.Used}} / {{.Quota}}</span>
                 {{else}}{{.Used}} / {{.Quota}}{{end}}
               </td>
@@ -55,7 +55,7 @@
     </div>
 
     {{if .Dash.Actions}}
-    <h2 style="margin-top:var(--space-7)">Perlu tindakan</h2>
+    <h2 style="margin-top:var(--space-7)">{{t .L "bo.needsaction"}}</h2>
     <div class="stack">
       {{range .Dash.Actions}}
       <div class="callout {{if eq .Kind "warn"}}callout-warn{{else}}callout-info{{end}}">
@@ -69,7 +69,7 @@
     </div>
     {{else}}
     <div class="callout" style="margin-top:var(--space-6)">
-      <p style="margin:0"><span class="pill pill-ok">Bersih</span> Tidak ada yang menunggu keputusan.</p>
+      <p style="margin:0"><span class="pill pill-ok">{{t .L "bo.clear"}}</span> {{t .L "bo.nothing"}}</p>
     </div>
     {{end}}
   </div>

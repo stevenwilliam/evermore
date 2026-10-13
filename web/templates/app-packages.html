@@ -1,7 +1,7 @@
 {{define "content"}}
 <section class="section">
   <div class="container">
-    <h1>Paket &amp; kredit</h1>
+    <h1>{{t .L "cr.title"}}</h1>
 
     {{if .CustomerPackages}}
     <div class="card-grid">
@@ -10,31 +10,30 @@
         <div class="card-body">
           <p><span class="pill {{if eq .Status "ACTIVE"}}pill-ok{{else}}pill-quiet{{end}}">{{.StatusLabel}}</span></p>
           <h2 style="font-size:var(--text-xl)">{{.Name}}</h2>
-          <p class="price">{{.Balance}}<small>dari {{.Credits}} porsi</small></p>
+          <p class="price">{{.Balance}}<small>{{t $.L "cr.of"}} {{.Credits}} {{t $.L "cart.portions"}}</small></p>
           {{if .ExpiresAt}}
-          <p class="meta">Berlaku sampai {{isodate .ExpiresAt}} &middot; {{.DaysLeft}} hari lagi</p>
+          <p class="meta">{{t $.L "cr.validuntil"}} {{isodate .ExpiresAt}} &middot; {{.DaysLeft}} {{t $.L "cr.daysleft"}}</p>
           {{end}}
         </div>
       </article>
       {{end}}
     </div>
     {{else}}
-      <div class="callout callout-info"><p style="margin:0">Belum ada paket aktif.</p></div>
+      <div class="callout callout-info"><p style="margin:0">{{t .L "cr.none"}}</p></div>
     {{end}}
 
     <div class="callout callout-warn" style="margin-top:var(--space-5)">
-      <p style="margin:0">Kredit hangus setelah masa berlaku dan tidak bisa diuangkan.
-      Pengembalian karena dapur batal selalu masuk sebagai kredit, bukan tunai.</p>
+      <p style="margin:0">{{t .L "cr.expirynote"}}</p>
     </div>
 
     {{if .Ledger}}
-    <h2 style="margin-top:var(--space-7)">Riwayat kredit</h2>
+    <h2 style="margin-top:var(--space-7)">{{t .L "cr.history"}}</h2>
     <div class="table-wrap">
       <table>
-        <caption class="visually-hidden">Riwayat pergerakan kredit</caption>
+        <caption class="visually-hidden">{{t .L "cr.history.aria"}}</caption>
         <thead>
-          <tr><th scope="col">Tanggal</th><th scope="col">Keterangan</th>
-              <th scope="col">Rujukan</th><th scope="col" class="num">Kredit</th></tr>
+          <tr><th scope="col">{{t .L "cr.date"}}</th><th scope="col">{{t .L "cr.desc"}}</th>
+              <th scope="col">{{t .L "cr.ref"}}</th><th scope="col" class="num">{{t .L "cr.credit"}}</th></tr>
         </thead>
         <tbody>
         {{range .Ledger}}
@@ -50,14 +49,14 @@
     </div>
     {{end}}
 
-    <h2 style="margin-top:var(--space-7)">Butuh lebih banyak?</h2>
+    <h2 style="margin-top:var(--space-7)">{{t .L "cr.more"}}</h2>
     <div class="card-grid">
       {{range .Packages}}
       <article class="card">
         <div class="card-body">
-          {{if .IsFeatured}}<p><span class="pill pill-warn">Paling laris</span></p>{{end}}
-          <h3>{{.MealCredits}} porsi</h3>
-          <p class="meta">{{rupiah .PerMealIDR}} per porsi &middot; berlaku {{.ValidityDays}} hari</p>
+          {{if .IsFeatured}}<p><span class="pill pill-warn">{{t $.L "cr.popular"}}</span></p>{{end}}
+          <h3>{{.MealCredits}} {{t $.L "pkg.portions"}}</h3>
+          <p class="meta">{{rupiah .PerMealIDR}} {{t $.L "pkg.per"}} &middot; {{printf (t $.L "pkg.valid") (printf "%d" .ValidityDays)}}</p>
           <div class="card-foot"><span class="price">{{rupiah .PriceIDR}}</span></div>
         </div>
       </article>
