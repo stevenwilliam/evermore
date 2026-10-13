@@ -140,8 +140,9 @@ fails; it is kept as a REJECTED row so it cannot drift back.
 
 ### 2.6 Surfaces over the signature ribbon (D60)
 
-The cards in a ribboned section are translucent, so the signature reads through
-them. The ribbon's hairline strokes run along the same path as its wide ones
+The cards in a ribboned section are translucent — the week strip's day cards
+including their headers — so the signature reads through them. Today's day-card
+header is the one exception: it is a pinned brand fill (D42) and stays solid. The ribbon's hairline strokes run along the same path as its wide ones
 and therefore stack: the darkest pixel it can put under a card is `#77968A`,
 which through a 50% card leaves `#BBCBC5`. That is the worst background any
 text on these cards can sit on, and it is what the "worst ribbon pixel" rows
@@ -153,9 +154,11 @@ and still reads as muted (8.59) on the ordinary one.
 
 | Pairing | Ratio | Verdict |
 |---|---|---|
-| ink on the quiet day-card head | **16.09** | AAA |
-| ink-soft on the quiet day-card head | **5.98** | AA |
-| ink-faint on the quiet day-card head | **4.80** | AA |
+| ink on the quiet day-card head, worst ribbon pixel | **10.03** | AAA |
+| ink-on-glass on the quiet day-card head, worst ribbon pixel | **4.85** | AA |
+| ink-faint on the quiet day-card head, worst pixel (REJECTED) | **3.00** | FAIL |
+| brand on the day-card body, worst ribbon pixel | **5.27** | AA |
+| brand-lt on the dark day-card body, lightest ribbon pixel | **4.80** | AA |
 | ink on glass over paper | **17.77** | AAA |
 | ink-on-glass over paper | **8.59** | AAA |
 | ink-on-glass on tinted glass over paper | **8.03** | AAA |

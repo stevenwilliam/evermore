@@ -1010,10 +1010,19 @@ tbody tr:hover { background: var(--warm); }
 /* The packages cards take a tinted glass rather than plain white. */
 .sig-pkg .card { background: var(--glass-tint); }
 
-/* The resting day-card header: a soft grey so the today card is the only one
- * that reads as filled, without the rest looking switched off. */
+/* The day cards are glass too, header included, so the signature runs behind
+ * the whole strip instead of stopping at each card. The resting header keeps
+ * its soft grey, just at half strength; today's stays a SOLID brand fill —
+ * it is a pinned control (D42) and its white text is measured against that
+ * exact colour. */
+.daycard { background: var(--glass); }
 .daycard-head { background: var(--card-quiet); }
 .daycard.is-today .daycard-head { background: var(--ctl-brand); }
+/* Same reason as the cards: --ink-faint drops to 3.23 in the body and 2.99 in
+ * the header where the ribbon's core stroke shows through. */
+.daycard .meta,
+.daycard-date { color: var(--ink-on-glass); }
+.daycard.is-today .daycard-date { color: #FFFFFF; }
 
 /* ---- testimonials (D53) -------------------------------------------------- */
 .testi-grid { display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }

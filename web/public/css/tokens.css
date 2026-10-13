@@ -36,7 +36,7 @@
   --ink-on-glass: #454C48;
   --glass:      rgba(255, 255, 255, .50);
   --glass-tint: rgba(234, 241, 236, .50);
-  --card-quiet: #F0F1ED;   /* the resting day-card header: soft, not disabled */
+  --card-quiet: rgba(240, 241, 237, .50);  /* resting day-card header: soft, not disabled, and still glass */
 
   /* ---- Brand ---- */
   --brand:     #13543E;  /* 8.42 as text; white on it 8.88 */
@@ -138,7 +138,7 @@
     --ink-on-glass: #C3C9C5;
     --glass:      rgba(24, 28, 25, .50);
     --glass-tint: rgba(30, 36, 32, .50);
-    --card-quiet: #202622;
+    --card-quiet: rgba(32, 38, 34, .50);
     --brand:     #5FD1A4;  /*  9.92 */
     --brand-hi:  #8FE3C1;
     --brand-wash:#173026;
@@ -165,7 +165,7 @@
   --ink-on-glass: #C3C9C5;
   --glass:      rgba(24, 28, 25, .50);
   --glass-tint: rgba(30, 36, 32, .50);
-  --card-quiet: #202622;
+  --card-quiet: rgba(32, 38, 34, .50);
   --brand:     #5FD1A4;
   --brand-hi:  #8FE3C1;
   --brand-wash:#173026;
