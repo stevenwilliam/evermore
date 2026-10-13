@@ -54,7 +54,7 @@
 <header class="masthead">
   <div class="container masthead-inner">
     <a class="masthead-brand" href="/">
-      <img src="/images/evermore-wordmark-deep.png" alt="Evermore" width="150" height="30">
+      <img src="/images/evermore-wordmark-light.png" alt="Evermore" width="150" height="30">
     </a>
 
     <nav class="masthead-nav" aria-label="{{t .L "nav.aria"}}">
@@ -71,7 +71,22 @@
       <a href="/app/masuk">{{t .L "nav.signin"}}</a>
       <a class="lang-switch" href="?lang={{if eq .L "en"}}id{{else}}en{{end}}"
          aria-label="{{t .L "nav.lang.aria"}}" rel="nofollow">
-        <span class="lang-flag" aria-hidden="true">{{t .L "nav.lang.flag"}}</span>
+        {{if eq .L "en"}}
+        {{/* Indonesia: two equal horizontal bands. */}}
+        <svg class="lang-flag" viewBox="0 0 21 15" aria-hidden="true" focusable="false">
+          <rect width="21" height="7.5" fill="#CE1126"/>
+          <rect y="7.5" width="21" height="7.5" fill="#FFFFFF"/>
+        </svg>
+        {{else}}
+        {{/* United Kingdom: diagonal saltires under an upright cross. */}}
+        <svg class="lang-flag" viewBox="0 0 21 15" aria-hidden="true" focusable="false">
+          <rect width="21" height="15" fill="#012169"/>
+          <path d="M0 0 21 15M21 0 0 15" stroke="#FFFFFF" stroke-width="3"/>
+          <path d="M0 0 21 15M21 0 0 15" stroke="#C8102E" stroke-width="1.6"/>
+          <path d="M10.5 0v15M0 7.5h21" stroke="#FFFFFF" stroke-width="5"/>
+          <path d="M10.5 0v15M0 7.5h21" stroke="#C8102E" stroke-width="3"/>
+        </svg>
+        {{end}}
         <span>{{t .L "nav.lang"}}</span>
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav"
@@ -118,6 +133,18 @@
       <p>Hubungi</p>
       <p><a href="tel:{{.Params.company_phone}}">{{.Params.company_phone}}</a></p>
       <p><a href="mailto:{{.Params.company_email}}">{{.Params.company_email}}</a></p>
+
+      {{/* D51 — social links. Each is a sys_parameter, so a channel is added,
+           changed or removed from the back office without a deploy, and an
+           empty value renders nothing rather than a dead link. The labels are
+           words, not brand marks: the official logos are licensed assets and
+           belong in web/public/images once Evermore has them. */}}
+      <div class="social">
+        {{if .Params.social_instagram}}<a href="{{.Params.social_instagram}}" rel="noopener me" target="_blank" aria-label="Instagram"><span>IG</span></a>{{end}}
+        {{if .Params.social_tiktok}}<a href="{{.Params.social_tiktok}}" rel="noopener me" target="_blank" aria-label="TikTok"><span>TT</span></a>{{end}}
+        {{if .Params.social_facebook}}<a href="{{.Params.social_facebook}}" rel="noopener me" target="_blank" aria-label="Facebook"><span>FB</span></a>{{end}}
+        {{if .Params.social_linkedin}}<a href="{{.Params.social_linkedin}}" rel="noopener me" target="_blank" aria-label="LinkedIn"><span>IN</span></a>{{end}}
+      </div>
     </div>
   </div>
   <div class="footer-fineprint">

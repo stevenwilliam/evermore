@@ -110,14 +110,14 @@
       </article>
       {{end}}
     </div>
-
-    <p style="margin-top:var(--space-5)">
-      <a class="btn btn-outline" href="/menu">{{t .L "week.view"}}</a>
-    </p>
   </div>
+
+  {{/* A hairline between the strip and the figures below it. The two are
+       different kinds of thing, so they get a rule rather than more space —
+       which is also what closed the gap that the space was creating. */}}
+  <div class="container"><hr class="rule"></div>
 </section>
 
-{{/* The stats strip sits directly under the hero, as Thenie's does. */}}
 <section class="section tight">
   <div class="container">
     <div class="stats-strip">

@@ -16,6 +16,7 @@ import (
 	"github.com/stevenwilliam/evermore/internal/domain/money"
 	"github.com/stevenwilliam/evermore/internal/domain/order"
 	"github.com/stevenwilliam/evermore/internal/platform/apierror"
+	"github.com/stevenwilliam/evermore/internal/platform/i18n"
 	"github.com/stevenwilliam/evermore/internal/platform/sanitize"
 )
 
@@ -103,7 +104,7 @@ func (h *AppHandler) Dashboard(c *gin.Context) {
 	d.NoIndex = true
 	d.Principal = PrincipalOf(c)
 
-	dash, err := h.dashboard(ctx, params)
+	dash, err := h.dashboard(ctx, d.L, params)
 	if err != nil {
 		Fail(c, apierror.Internal(err))
 		return
@@ -112,10 +113,10 @@ func (h *AppHandler) Dashboard(c *gin.Context) {
 	h.render(c, "bo-dashboard", http.StatusOK, d)
 }
 
-func (h *AppHandler) dashboard(ctx context.Context, params map[string]string) (*DashboardView, error) {
+func (h *AppHandler) dashboard(ctx context.Context, l i18n.Locale, params map[string]string) (*DashboardView, error) {
 	today := h.today()
 	dv := &DashboardView{
-		DateLabel: h.longDate(today),
+		DateLabel: h.longDate(l, today),
 		CutOffIn:  h.cutOffCountdown(params),
 	}
 	date := today.Format("2006-01-02")

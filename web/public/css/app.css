@@ -52,6 +52,18 @@ a:hover { color: var(--brand-hi); }
 main { flex: 1 0 auto; }
 
 .section { padding-block: var(--space-8); }
+/* A section divider: one hairline, full container width. */
+.rule {
+  border: 0; height: 1px; background: var(--line);
+  margin: var(--space-6) 0 0;
+}
+
+/* The week strip ends on a rule, so it needs no trailing padding of its own
+ * and neither does the section after it — that pair was the "biggggg white
+ * space" left once the button went. */
+#week { padding-bottom: 0; }
+#week + .section { padding-top: var(--space-6); }
+
 /* The hero already supplies the space above whatever follows it. */
 .hero-full + .section { padding-top: var(--space-5); }
 /* Two stacked sections were each paying a full 96px, so every seam between
@@ -89,10 +101,20 @@ main { flex: 1 0 auto; }
 
 /* ------------------------------------------------------------ masthead */
 
+/* The header is the primary green, so every ink on it comes from the measured
+ * set below and not from the page tokens, which are for a light ground:
+ *   white           8.88   current / hover
+ *   #BFD3C9         5.66   idle links
+ *   accent          7.12   the hover rule
+ * (10 §2.2). */
 .masthead {
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
-  -webkit-backdrop-filter: saturate(1.6) blur(14px); backdrop-filter: saturate(1.6) blur(14px);
-  border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 200;
+  --head-ink:      #FFFFFF;
+  --head-ink-soft: #BFD3C9;
+  --head-line:     rgba(255, 255, 255, .20);
+  background: var(--ctl-brand);
+  border-bottom: 1px solid var(--head-line);
+  position: sticky; top: 0; z-index: 200;
+  color: var(--head-ink);
 }
 .masthead-inner { display: flex; align-items: center; gap: var(--space-4); min-height: 72px; padding-block: var(--space-3); }
 .masthead-brand { display: flex; align-items: center; gap: var(--space-3); margin-right: auto; min-height: var(--tap); }
@@ -100,27 +122,27 @@ main { flex: 1 0 auto; }
 .masthead-nav { display: none; gap: var(--space-1); }
 @media (min-width: 960px) { .masthead-nav { display: flex; } }
 .masthead-nav a, .masthead-actions a {
-  color: var(--ink-soft); text-decoration: none; font-weight: var(--w-ui);
+  color: var(--head-ink-soft); text-decoration: none; font-weight: var(--w-ui);
   font-size: var(--text-sm); padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-pill); display: inline-flex; align-items: center; min-height: var(--tap);
   transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.masthead-nav a:hover, .masthead-actions a:hover { color: var(--ink); background: var(--warm); }
-.masthead-nav a[aria-current="page"] { color: var(--ink); background: var(--warm); }
+.masthead-nav a:hover, .masthead-actions a:hover { color: var(--head-ink); background: none; }
+.masthead-nav a[aria-current="page"] { color: var(--head-ink); background: none; }
 .masthead-actions { display: flex; align-items: center; gap: var(--space-1); }
 
 .nav-toggle {
   display: inline-flex; align-items: center; justify-content: center;
-  width: var(--tap); height: var(--tap); border: 1px solid var(--line-strong);
-  background: var(--card); border-radius: var(--radius-pill); cursor: pointer;
-  color: var(--ink); font-size: var(--text-lg);
+  width: var(--tap); height: var(--tap); border: 1px solid rgba(255,255,255,.34);
+  background: transparent; border-radius: var(--radius-pill); cursor: pointer;
+  color: var(--head-ink); font-size: var(--text-lg);
   transition: background var(--dur-fast) var(--ease);
 }
-.nav-toggle:hover { background: var(--warm); }
+.nav-toggle:hover { background: rgba(255,255,255,.12); }
 @media (min-width: 960px) { .nav-toggle { display: none; } }
 
 .mobile-nav[hidden] { display: none; }
-.mobile-nav { display: grid; border-top: 1px solid var(--line); background: var(--card); }
+.mobile-nav { display: grid; border-top: 1px solid var(--head-line); background: var(--card); }
 .mobile-nav a { padding: var(--space-4) var(--space-5); min-height: var(--tap);
   border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink);
   font-weight: var(--w-ui); display: flex; align-items: center; }
@@ -298,17 +320,36 @@ tbody tr:hover { background: var(--warm); }
 
 /* -------------------------------------------------------------- footer */
 
-.footer { background: var(--ink); color: var(--paper); margin-top: var(--space-9);
-  padding-block: var(--space-8) var(--space-5); flex-shrink: 0; }
+/* Compact: it was carrying 148px of margin and 96px of top padding, which
+ * made the footer the tallest block on a short page. */
+.footer { background: var(--ink); color: var(--paper); margin-top: var(--space-6);
+  padding-block: var(--space-6) var(--space-4); flex-shrink: 0; font-size: var(--text-sm); }
+.footer p { margin: 0 0 var(--space-2); }
 .footer a { color: var(--paper); text-decoration: none; }
 .footer a:hover { color: var(--accent); text-decoration: underline; }
 .footer :focus-visible { outline-color: var(--accent); }
-.footer-grid { display: grid; gap: var(--space-6); }
+.footer-grid { display: grid; gap: var(--space-5); }
 @media (min-width: 720px) { .footer-grid { grid-template-columns: 1.6fr 1fr 1fr; } }
-.footer h2, .footer h3 { color: var(--paper); font-size: var(--text-lg); }
-.footer img { width: 150px; }
-.footer-fineprint { margin-top: var(--space-7); padding-top: var(--space-5);
-  border-top: 1px solid rgba(242,243,239,.14); font-size: var(--text-sm); color: #A9ADA9; }
+.footer h2, .footer h3 { color: var(--paper); font-size: var(--text-base); margin-bottom: var(--space-3); }
+.footer img { width: 124px; }
+/* The WhatsApp float is fixed bottom-right and the compacted footer brought
+ * the fine print up into it — verify-ui caught it covering "Kebijakan
+ * privasi". The right padding keeps the links clear of the button. */
+.footer-fineprint { margin-top: var(--space-5); padding-top: var(--space-4);
+  border-top: 1px solid rgba(242,243,239,.14); font-size: var(--text-xs); color: #A9ADA9;
+  padding-right: 84px; }
+@media (min-width: 720px) { .footer-fineprint { padding-right: 96px; } }
+
+/* ---- social links ---- */
+.social { display: flex; gap: var(--space-2); margin-top: var(--space-4); }
+.social a {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid rgba(242,243,239,.28); color: var(--paper);
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.social a:hover { background: rgba(242,243,239,.14); border-color: var(--accent); color: var(--accent); }
+.social a span { font-size: 12px; font-weight: 700; letter-spacing: .04em; }
 .footer-fineprint a { color: var(--accent); }
 
 /* ------------------------------------------------ floating nav + float */
@@ -650,13 +691,14 @@ tbody tr:hover { background: var(--warm); }
 @media (min-width: 1180px) { .weekstrip { grid-auto-columns: 1fr; overflow-x: visible; } }
 
 .daycard {
+  position: relative;
   background: var(--card); border: 1px solid var(--line);
   border-radius: var(--radius-lg); overflow: hidden;
   display: flex; flex-direction: column;
   transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
               border-color var(--dur) var(--ease);
 }
-.daycard:hover { transform: translateY(var(--lift)); box-shadow: var(--shadow-3); border-color: var(--line-strong); }
+.daycard:hover { transform: translateY(var(--lift)) scale(1.04); box-shadow: var(--shadow-3); border-color: var(--ctl-brand); z-index: 2; }
 
 .daycard-head {
   /* Two rows, not one. Squeezed onto a single line the day name truncated to
@@ -689,7 +731,7 @@ tbody tr:hover { background: var(--warm); }
 .daycard-media { display: block; aspect-ratio: 4 / 3; overflow: hidden; background: var(--warm); }
 .daycard-media img { width: 100%; height: 100%; object-fit: cover;
   transition: transform var(--dur-slow) var(--ease-soft); }
-.daycard:hover .daycard-media img { transform: scale(1.05); }
+.daycard:hover .daycard-media img { transform: scale(1.12); }
 .daycard-empty {
   display: grid; place-items: center;
   background:
@@ -713,22 +755,22 @@ tbody tr:hover { background: var(--warm); }
  * divider before the account group so the two kinds of link read as two
  * groups, and a shadow that only appears once the page has scrolled. */
 .masthead { transition: box-shadow var(--dur) var(--ease), background var(--dur) var(--ease); }
-.masthead.is-stuck { box-shadow: var(--shadow-2); }
+.masthead.is-stuck { box-shadow: 0 10px 30px rgba(18,22,20,.28); }
 
 .masthead-nav a, .masthead-actions a { position: relative; }
 .masthead-nav a::after {
   content: ""; position: absolute; left: var(--space-4); right: var(--space-4); bottom: 6px;
-  height: 2px; border-radius: 2px; background: var(--ctl-accent);
+  height: 2px; border-radius: 2px; background: var(--accent);
   transform: scaleX(0); transform-origin: left;
   transition: transform var(--dur) var(--ease);
 }
 .masthead-nav a:hover::after,
 .masthead-nav a[aria-current="page"]::after { transform: scaleX(1); }
 .masthead-nav a[aria-current="page"] { color: var(--ink); background: none; }
-.masthead-nav a:hover { background: none; color: var(--ink); }
+.masthead-nav a:hover { background: none; color: var(--head-ink); }
 
 .masthead-actions { gap: var(--space-2); padding-left: var(--space-4);
-  border-left: 1px solid var(--line); margin-left: var(--space-2); }
+  border-left: 1px solid var(--head-line); margin-left: var(--space-2); }
 
 /* The language switch shows the flag of the language it switches TO, with the
  * name beside it — a flag alone is ambiguous (several countries, one
@@ -736,13 +778,15 @@ tbody tr:hover { background: var(--warm); }
  * nav link. */
 .lang-switch {
   display: inline-flex; align-items: center; gap: var(--space-2);
-  border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
-  padding: 6px var(--space-4) 6px var(--space-3); min-height: var(--tap);
-  font-size: var(--text-sm); font-weight: var(--w-ui); color: var(--ink-soft);
+  border: 1px solid rgba(255, 255, 255, .34); border-radius: var(--radius-pill);
+  padding: 5px var(--space-4) 5px var(--space-3); min-height: var(--tap);
+  font-size: var(--text-sm); font-weight: var(--w-ui); color: var(--head-ink);
   text-decoration: none;
-  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease),
-              border-color var(--dur-fast) var(--ease);
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
 }
-.lang-switch:hover { background: var(--warm); color: var(--ink); border-color: var(--ink-faint); }
-.lang-flag { font-size: 17px; line-height: 1; }
+.lang-switch:hover { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .6); }
+/* A drawn flag, not an emoji: emoji flags do not render at all on Windows,
+   which shows the two letters instead. */
+.lang-flag { display: block; width: 21px; height: 15px; border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.18); flex: 0 0 auto; }
 @media (max-width: 640px) { .lang-switch span:not(.lang-flag) { display: none; } }

@@ -445,9 +445,16 @@ func (h *renderer) today() time.Time {
 	return time.Date(n.Year(), n.Month(), n.Day(), 0, 0, 0, 0, h.cfg.Location)
 }
 
-func (h *renderer) longDate(t time.Time) string {
+// longDate writes the date in the reader's language.
+//
+// It took no locale and used hardcoded Indonesian tables, so an English page
+// read "Menu for Selasa, 13 Oktober 2026" — the one string on the homepage
+// that the language switch did not reach.
+func (h *renderer) longDate(l i18n.Locale, t time.Time) string {
 	t = t.In(h.cfg.Location)
-	return fmt.Sprintf("%s, %d %s %d", weekdayID[t.Weekday()], t.Day(), monthID[t.Month()], t.Year())
+	day := messages.T(l, "day."+strings.ToLower(t.Format("Mon")))
+	mon := messages.T(l, "monthlong."+strings.ToLower(t.Format("Jan")))
+	return fmt.Sprintf("%s, %d %s %d", day, t.Day(), mon, t.Year())
 }
 
 // cutOffCountdown renders how long is left before the cut-off for tomorrow's
@@ -534,7 +541,7 @@ func (h *PublicHandler) Home(c *gin.Context) {
 
 	d.DietNames = joinNames(d.Diets)
 	d.KitchenNames = joinKitchens(d.Kitchens)
-	d.TodayLabel = h.longDate(today)
+	d.TodayLabel = h.longDate(d.L, today)
 	d.JSONLD = h.orgJSONLD(params)
 	h.render(c, "home", http.StatusOK, d)
 }
@@ -678,15 +685,16 @@ func (h *PublicHandler) Meal(c *gin.Context) {
 	}
 	meal.PriceIDR = price
 
+	loc := messages.Set.Negotiate(c.Request)
 	desc := fmt.Sprintf("%s — %d kkal, %s g protein per porsi. %s, diantar %s pukul %s.",
 		meal.Name, meal.Panel.CaloriesKcal, gram(meal.Panel.ProteinMG),
-		meal.DietName, h.longDate(meal.ServiceDate), meal.SlotTime)
+		meal.DietName, h.longDate(loc, meal.ServiceDate), meal.SlotTime)
 
 	d := h.base(c, params, "menu", meal.Name+" — "+params["seo.site_name"], desc)
 	d.Public = true
 	d.OGType = "product"
 	d.Meal = meal
-	d.DateLabel = h.longDate(meal.ServiceDate)
+	d.DateLabel = h.longDate(d.L, meal.ServiceDate)
 	d.JSONLD = h.mealJSONLD(meal, params)
 	h.render(c, "meal", http.StatusOK, d)
 }

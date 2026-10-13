@@ -35,7 +35,6 @@ var messages = i18n.Bundle{
 			"nav.signin":    "Sign in",
 			"nav.lang":      "Bahasa Indonesia",
 			"nav.lang.aria": "Switch language to Bahasa Indonesia",
-			"nav.lang.flag": "\U0001F1EE\U0001F1E9",
 
 			// --- footer
 			"footer.explore": "Explore",
@@ -90,6 +89,18 @@ var messages = i18n.Bundle{
 			"err.404.title": "Page not found",
 			"err.404.body":  "The page you're looking for doesn't exist or has moved.",
 			"err.ref":       "Reference code",
+			"monthlong.jan": "January",
+			"monthlong.feb": "February",
+			"monthlong.mar": "March",
+			"monthlong.apr": "April",
+			"monthlong.may": "May",
+			"monthlong.jun": "June",
+			"monthlong.jul": "July",
+			"monthlong.aug": "August",
+			"monthlong.sep": "September",
+			"monthlong.oct": "October",
+			"monthlong.nov": "November",
+			"monthlong.dec": "December",
 
 			// --- app and back office (D50)
 			"acct.eyebrow":        "My account",
@@ -317,7 +328,6 @@ var messages = i18n.Bundle{
 			"nav.signin":    "Masuk",
 			"nav.lang":      "English",
 			"nav.lang.aria": "Ganti bahasa ke English",
-			"nav.lang.flag": "\U0001F1EC\U0001F1E7",
 
 			"footer.explore": "Jelajahi",
 			"footer.contact": "Hubungi",
@@ -366,6 +376,18 @@ var messages = i18n.Bundle{
 			"err.404.title": "Halaman tidak ditemukan",
 			"err.404.body":  "Halaman yang kamu cari tidak ada atau sudah dipindahkan.",
 			"err.ref":       "Kode rujukan",
+			"monthlong.jan": "Januari",
+			"monthlong.feb": "Februari",
+			"monthlong.mar": "Maret",
+			"monthlong.apr": "April",
+			"monthlong.may": "Mei",
+			"monthlong.jun": "Juni",
+			"monthlong.jul": "Juli",
+			"monthlong.aug": "Agustus",
+			"monthlong.sep": "September",
+			"monthlong.oct": "Oktober",
+			"monthlong.nov": "November",
+			"monthlong.dec": "Desember",
 
 			"acct.eyebrow":        "Akun saya",
 			"addr.title":          "Alamat pengantaran",

@@ -173,6 +173,14 @@ func (s *seeder) sysParameters() error {
 		{"company.address", "Jl. Tebet Raya No. 88, Jakarta Selatan 12820", "string", "company", "Alamat perusahaan"},
 		{"company.npwp", "00.000.000.0-000.000", "string", "company", "NPWP"},
 
+		// D51: social links. Every one is a sys_parameter, so marketing can
+		// change or remove a channel without a deploy — an empty value hides
+		// the link rather than rendering a dead one. These are PLACEHOLDERS.
+		{"social.instagram", "https://instagram.com/evermore.id", "string", "social", "Tautan Instagram (kosongkan untuk menyembunyikan)"},
+		{"social.tiktok", "https://tiktok.com/@evermore.id", "string", "social", "Tautan TikTok (kosongkan untuk menyembunyikan)"},
+		{"social.facebook", "https://facebook.com/evermore.id", "string", "social", "Tautan Facebook (kosongkan untuk menyembunyikan)"},
+		{"social.linkedin", "", "string", "social", "Tautan LinkedIn (kosongkan untuk menyembunyikan)"},
+
 		{"tax.rate_bps", "1100", "int", "tax", "Tarif PPN dalam basis poin (1100 = 11%)"},
 		{"tax.inclusive", "true", "bool", "tax", "Harga sudah termasuk pajak"},
 
