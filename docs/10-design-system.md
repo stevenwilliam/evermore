@@ -1,47 +1,38 @@
-# Design System — Evermore · ORCHARD
+# Design System — Evermore · ATELIER
 
-**A complete redesign, 2026-10-13 (D41).** Steven: *"forget all the design
-guideline, only preserve the font type, redo all design 100%, make a new design
-that very fresh color, young soft enthusiast, humanize, not seems created by AI,
-with moving animation."*
+**2026-10-13 (D43).** Steven, on the Orchard redesign shipped hours earlier:
+*"the design is too retro and old / make me modern design / young color /
+elegan / humanize / not seems created by AI."*
 
-Everything before this is retired — the deep-green Nourish palette (pre-D32)
-and the Thenie coral/olive palette (D32–D39). **The typefaces are the only
-thing carried over**, because they were the one thing asked to survive.
+He was right. Orchard answered "not AI" with a **risograph** language — 2px ink
+outlines, solid offset shadows, rotated cards, paper grain. That is a 1990s
+zine idiom, and reading as retro is exactly what it does. Atelier is the
+opposite register.
 
-A full backup was taken before any file was touched:
-
-```
-/home/dev/backups/evermore-20261013-1019.bundle        31/31 commits, verified by restore
-/home/dev/backups/evermore-20261013-1019-full.tar.gz   1570 entries, .git and .env included
-```
-
-Every ratio below is computed by `scripts/contrast.py`. Run it to re-earn these
-numbers rather than trusting the table.
-
----
-
-## 1. The idea, and why it looks like this
-
-"Not seems created by AI" is a design constraint, so it is worth stating what
-it rules **out**. Generated pages converge on a narrow set of moves: soft
-purple-blue gradients, one radius on everything, perfectly even grids, blurred
-drop shadows, full symmetry. This design goes the other way on each of them.
-
-| Generic | Orchard |
+| Orchard (retro) | Atelier (modern) |
 |---|---|
-| gradient ground | **warm paper `#FDFBF6`** with a real grain texture |
-| blurred drop shadow | **solid offset shadow**, `4px 4px 0` in ink |
-| hairline borders | **2px ink outlines** |
-| one radius everywhere | **five different radii**, plus an asymmetric blob |
-| perfectly aligned grid | cards rotated **−0.5°, +0.35°, −0.2°** by `nth-child` |
-| pure `#FFFFFF` | paper, with white reserved for cards *on* it |
-| static | drifting blobs, scroll reveal, counters, press-into-shadow buttons |
+| 2px ink outlines on everything | **hairlines**, and only where a boundary is needed |
+| solid `4px 4px 0` offset shadow | **soft layered elevation** |
+| cards rotated by `nth-child` | square to the grid; depth does the work |
+| paper grain overlay | clean surfaces |
+| filled, tilted sticker eyebrow | a tracked label with a short accent rule |
+| bouncy overshoot easing | a long, even glide, y-axis only |
+| accent everywhere | **one accent, used sparingly** |
 
-The reference is **risograph printing and sticker books**: flat spot colours,
-visible registration offsets, things placed slightly askew by hand. The
-rotations are fractions of a degree on purpose — a large tilt reads as a bug,
-a small one reads as a decision.
+**The typefaces still do not change.** Erode + Inter. They have now survived
+four palettes and are the only constant in the project.
+
+## 1. "Not created by AI", in a modern idiom
+
+The riso trick is no longer available, so the humanising work moves elsewhere:
+
+- **Editorial asymmetry.** Section heads sit in a 54ch measure on the left while
+  content runs wider beneath. Generated layouts centre everything.
+- **Restraint.** The citrus accent appears on roughly one element per screen.
+  Over-decoration is the tell; confidence is knowing what to leave out.
+- **Real space.** The spacing scale tops out at 148px. Generated pages crowd.
+- **What is avoided:** violet gradients, glassmorphism panels, a symmetrical row
+  of three identical feature cards, and an icon beside every heading.
 
 ---
 
@@ -49,259 +40,171 @@ a small one reads as a decision.
 
 | Token | Value | Role |
 |---|---|---|
-| `--paper` | `#FDFBF6` | page ground — warm, deliberately not white |
-| `--paper-2` | `#F6F1E6` | alternating band |
-| `--card` | `#FFFFFF` | cards, brighter than the paper they sit on |
-| `--ink` | `#2A2521` | a soft black-brown, never `#000` |
-| `--ink-soft` | `#5C544A` | body and meta |
-| `--ink-faint` | `#766D62` | placeholders — **the floor** |
-| `--green` | `#2F7D5C` | primary: links, the filled button |
-| `--green-hi` | `#246349` | hover |
-| `--green-lt` | `#5FBF95` | dark-scheme text |
-| `--green-wash` | `#DCEFE5` | tinted panels, callouts |
-| `--orange` | `#F2784B` | the accent — **a fill, never ink on paper** |
-| `--orange-deep` | `#C8471D` | the orange that carries white text |
-| `--blue` | `#4C6FBF` | informational |
-| `--butter` | `#F6C65B` | the eyebrow sticker, warn pills |
-| `--focus` | `#1F4FD8` | focus ring |
+| `--paper` | `#F9F9F6` | page ground, a whisper warm |
+| `--card` | `#FFFFFF` | raised surfaces |
+| `--warm` | `#EDEAE2` | the quiet band |
+| `--ink` | `#121614` | near-black with a green cast |
+| `--ink-soft` | `#555D58` | body |
+| `--ink-faint` | `#656B67` | meta — **the floor** |
+| `--brand` | `#13543E` | deep forest; links and the filled control |
+| `--accent` | `#D8F26B` | citrus — the young note, **a fill only** |
+| `--info` | `#2F6690` | informational |
 
-### 2.1 Ink on the three light grounds
-
-There are three, and `--ink-faint` is measured against the **worst** of them
-(the band) rather than the most flattering:
+### 2.1 Ink
 
 | Pairing | Ratio | Verdict |
 |---|---|---|
-| ink on paper | **14.66** | AAA |
-| ink-soft on paper | **7.20** | AAA |
-| ink-faint on paper | **4.91** | AA |
-| ink on the band | **13.46** | AAA |
-| ink-soft on the band | **6.61** | AA |
-| ink-faint on the band | **4.51** | AA |
-| ink on a card | **15.16** | AAA |
-| ink-soft on a card | **7.44** | AAA |
-| ink-faint on a card (placeholder) | **5.08** | AA |
+| ink on paper | **17.30** | AAA |
+| ink-soft on paper | **6.44** | AA |
+| ink-faint on paper | **5.17** | AA |
+| ink on a card | **18.25** | AAA |
+| ink-faint on a card | **5.45** | AA |
+| ink on the warm band | **15.18** | AAA |
+| ink-soft on the warm band | **5.65** | AA |
+| ink-faint on the warm band | **4.53** | AA |
 
-`--ink-faint` was first set to `#857B6E`, which measures **4.02 / 3.69 / 4.15**
-— under the body floor on all three. It is `#766D62` precisely so the
-placeholder text in a search box is legal on every ground it can land on.
+`--ink-faint` is measured against the **worst** of the three surfaces, the warm
+band, not the most flattering.
 
-### 2.2 Green — the primary
+### 2.2 Brand and accent
 
 | Pairing | Ratio | Verdict |
 |---|---|---|
-| green as text on paper | **4.82** | AA |
-| green as text on a card | **4.99** | AA |
-| white on the green button | **4.99** | AA |
-| white on green hover | **7.10** | AAA |
-| ink on the green wash | **12.65** | AAA |
-| ink-soft on the green wash | **6.21** | AA |
+| brand as text on paper | **8.42** | AAA |
+| brand as text on a card | **8.88** | AAA |
+| ink on the brand wash | **15.70** | AAA |
+| ink-soft on the brand wash | **5.84** | AA |
+| accent as text on paper (REJECTED) | **1.18** | FAIL |
+| on-brand on the accent fill | **14.63** | AAA |
+| ink on the accent wash | **16.95** | AAA |
+| info as text on paper | **5.81** | AA |
+| ink on the info wash | **15.40** | AAA |
 
-### 2.3 Orange and butter — fills, not inks
+The citrus is **never ink** — 1.18 on paper. It is a fill that carries
+`--on-brand`, and that is also why it works as the one bright note: a colour
+used in a single role cannot be overused.
 
-| Pairing | Ratio | Verdict |
-|---|---|---|
-| orange as text on paper (REJECTED) | **2.68** | FAIL |
-| ink on the orange fill | **5.46** | AA |
-| orange-deep as text on paper | **4.64** | AA |
-| white on orange-deep | **4.80** | AA |
-| ink on the orange wash | **12.66** | AAA |
-| ink on the butter sticker | **9.49** | AAA |
-| butter as text on paper (REJECTED) | **1.54** | FAIL |
-| ink on the butter wash | **13.61** | AAA |
+### 2.3 Controls are pinned in both schemes
 
-Both rejected rows are kept in `contrast.py` by name, so using either as a text
-colour is caught rather than argued about. `--orange-deep` is the cut that
-carries white.
+The D42 rule is carried forward unchanged, because it is the fix for a bug that
+recurred three times:
 
-### 2.4 Blue, lines and focus
+> **Any element whose background is a fixed brand colour takes `--on-brand`,
+> and `--on-brand` is never redefined in a dark block.**
 
 | Pairing | Ratio | Verdict |
 |---|---|---|
-| blue as text on paper | **4.69** | AA |
-| ink on the blue wash | **12.26** | AAA |
-| the ink rule on paper | **14.66** | PASS 1.4.11 |
-| rule-soft on paper (decorative) | **1.48** | FAIL 1.4.11 |
-| focus ring on paper | **6.41** | PASS 1.4.11 |
-| focus ring on a card | **6.63** | PASS 1.4.11 |
-| focus ring on the band | **5.88** | PASS 1.4.11 |
+| white on the brand control | **8.88** | AAA |
+| white on the brand hover | **12.35** | AAA |
+| on-brand on the accent control | **14.63** | AAA |
+| UNPINNED white on brand-lt (REJECTED) | **1.88** | FAIL |
 
-`--rule-soft` is **decorative only** at 1.48 — table row separators and the
-footer hairline. Every control edge is the full ink rule at 2px.
+### 2.4 Lines and focus
 
-### 2.5 The footer
-
-Ink-grounded in both schemes, so it reads the same way day or night.
+Two line tokens, and the distinction is load-bearing:
 
 | Pairing | Ratio | Verdict |
 |---|---|---|
-| paper on the ink footer | **14.66** | AAA |
-| fineprint #CFC7B9 on the footer | **9.04** | AAA |
-| butter link on the footer | **9.49** | AAA |
+| line on paper (decorative) | **1.23** | FAIL 1.4.11 |
+| line-strong on paper (control edge) | **3.43** | PASS 1.4.11 |
+| line-strong on a card | **3.62** | PASS 1.4.11 |
+| line-strong on the warm band | **3.01** | PASS 1.4.11 |
+| REJECTED #9BA09C as a control edge | **2.52** | FAIL 1.4.11 |
+| focus ring on paper | **5.52** | PASS 1.4.11 |
+| focus ring on a card | **5.82** | PASS 1.4.11 |
+| dark control edge on the ground | **3.27** | PASS 1.4.11 |
+| dark control edge on the card | **3.01** | PASS 1.4.11 |
 
-### 2.6 Dark scheme
+`--line` at **1.23** is decorative only — table rules, the footer hairline.
+Every **control** edge is `--line-strong`, which clears 1.4.11's 3:1 on all
+three surfaces. The first draft used `#9BA09C`, which measures **2.52** and
+fails; it is kept as a REJECTED row so it cannot drift back.
 
-The paper becomes board and the ink becomes chalk. The brand colours **lighten**
-rather than invert, because the mid green fails outright on the dark ground.
-Button fills keep their light-scheme values so a control stays recognisable.
-
-| Pairing | Ratio | Verdict |
-|---|---|---|
-| ink on the dark ground | **15.54** | AAA |
-| ink-soft on the dark ground | **8.95** | AAA |
-| ink-faint on the dark ground | **5.67** | AA |
-| ink on the dark card | **13.99** | AAA |
-| green-lt on the dark ground | **7.75** | AAA |
-| green on the dark ground (REJECTED) | **3.48** | FAIL |
-| orange-lt on the dark ground | **8.40** | AAA |
-| blue-lt on the dark ground | **7.44** | AAA |
-| butter on the dark ground | **10.87** | AAA |
-| focus-lt on the dark ground | **8.74** | PASS 1.4.11 |
-
-### 2.7 The WhatsApp float
+### 2.5 Footer and dark scheme
 
 | Pairing | Ratio | Verdict |
 |---|---|---|
-| WA teal on paper | **4.00** | PASS 1.4.11 |
+| paper on the ink footer | **17.30** | AAA |
+| fineprint #A9ADA9 on the footer | **8.03** | AAA |
+| accent link on the footer | **14.63** | AAA |
+| ink on the dark ground | **16.77** | AAA |
+| ink-soft on the dark ground | **9.55** | AAA |
+| ink-faint on the dark ground | **6.16** | AA |
+| ink on the dark card | **15.46** | AAA |
+| ink-faint on the dark card | **5.68** | AA |
+| brand-lt on the dark ground | **9.92** | AAA |
+| brand on the dark ground (REJECTED) | **2.11** | FAIL |
+| accent on the dark ground | **14.99** | AAA |
+| info-lt on the dark ground | **8.95** | AAA |
+| focus-lt on the dark ground | **10.15** | PASS 1.4.11 |
+
+### 2.6 The WhatsApp float
+
+| Pairing | Ratio | Verdict |
+|---|---|---|
+| WA teal on paper | **3.92** | PASS 1.4.11 |
 | WA white glyph on the teal | **4.14** | PASS 1.4.11 |
-
-WhatsApp's own green is never recoloured; the 2px ink ring is what separates it
-from any ground.
 
 ---
 
-## 3. Typography — the one thing carried over
-
-Two faces, both **self-hosted** — never a font CDN, which leaks every visitor's
-IP and page to a third party.
-
-| Role | Family |
-|---|---|
-| Display | **Erode** — headings, prices, stat figures |
-| Body / UI | **Inter** — everything else |
-
-Erode ships four discrete cuts, so a display weight must land on 600 or 700
-exactly; asking for 650 makes the browser synthesise a fake bold.
+## 3. Typography — the constant
 
 | Role | Face | Size | Weight |
 |---|---|---|---|
-| `h1` | Erode | 48px → 72px ≥768px | 700 |
-| `h2` | Erode | 34px | 700 |
-| `h3` | Erode | 25px | 600 |
-| `.price`, `.stat-item b` | Erode | 25–34px | 700 |
-| `.lede` | Inter | 20px | 450 |
-| body | Inter | 17px | 450 |
-| `.eyebrow` | Inter | 13px | 700, `0.12em`, uppercase |
+| `h1` | Erode | 54px → 84px ≥768px | 700 |
+| `h2` | Erode | 38px | 700 |
+| `h3` | Erode | 21px | 600 |
+| `.price`, `.stat-item b` | Erode | 27–38px | 700 |
+| `.lede` | Inter | 21px | 420 |
+| body | Inter | 17px | 420 |
+| `.eyebrow` | Inter | 13px | 600, `0.16em`, uppercase |
 
-Every figure that lands in a column — `.num`, `.price`, `.count`, `.eq`,
-table cells — is set in **tabular numerals**, so digits do not shift width as
-a counter animates or a total updates.
+Display tracking is **−0.03em**. Tight display letter-spacing against an open
+body is the clearest typographic signal of a current design; Orchard's −0.022em
+was looser and read older. Body weight drops to 420 for a lighter, airier
+colour on the page.
+
+All figures are **tabular**, so digits do not shift width as a counter animates.
 
 ---
 
-## 4. Components
+## 4. Surfaces and depth
 
-### 4.1 Radii — deliberately uneven
+Three elevation steps, each a **layered** shadow — one tight contact shadow
+plus one wide ambient. A single blurred shadow is the flat, generated look.
 
-| Token | Value | Used by |
-|---|---|---|
-| `--radius-xs` | 6px | focus ring |
-| `--radius-sm` | 10px | inputs, callouts, tables |
-| `--radius-md` | 18px | cards, the nav panel |
-| `--radius-lg` | 26px | the hero frame |
-| `--radius-pill` | 999px | buttons, chips, pills |
-| `--radius-blob` | `62% 38% 55% 45% / 45% 55% 45% 55%` | the drifting hero shapes |
+| Token | Use |
+|---|---|
+| `--shadow-1` | resting cards, inputs, the masthead |
+| `--shadow-2` | raised panels |
+| `--shadow-3` | hover, the hero frame, floating chrome |
 
-### 4.2 Buttons
+Radii are soft and consistent — 8 / 14 / 22 / 32 / pill — the modern register.
+Orchard deliberately used five *uneven* radii; that was part of why it read
+hand-made and retro.
 
-Pill, 2px ink outline, solid offset shadow. **Pressing moves the button into
-its own shadow** (`translate(4px,4px)`, shadow removed) — the one interaction
-that reads as physical rather than rendered.
-
-| Variant | Fill | Ink | Ratio |
-|---|---|---|---|
-| `.btn-primary` / `.btn-solid` | `--green` | white | **4.99** → hover **7.10** |
-| `.btn-secondary` | `--butter` | ink | **9.49** → hover orange **5.46** |
-| `.btn-outline` | transparent | ink | **14.66** |
-
-### 4.3 The eyebrow is a sticker
-
-Filled butter, 2px outline, small offset shadow, rotated −1.4°. The hero's is
-orange and rotated the other way, so the two never look stamped from one die.
-
-### 4.4 Cards
-
-White on paper, 2px outline, `4px 4px 0` shadow, and a per-position rotation
-from `nth-child`. On hover a card straightens to 0° and lifts — the motion
-resolves the tilt rather than adding to it.
-
-### 4.5 Controls are pinned in both schemes
-
-A control keeps its identity day and night — a green button is the same green.
-That is partly a design choice and mostly a **defect fix**.
-
-Brand fills like `--green`, `--butter` and `--orange` are redefined in the dark
-scheme, and `--ink` flips too. Put a flipping ink on a fixed fill, or fixed
-white on a flipping fill, and the pair silently stops working. Measured in dark
-before this was fixed:
-
-| Pairing | Ratio | |
-|---|---|---|
-| white on the lightened green button | **2.24** | **REJECTED** |
-| `--ink` on the butter button, eyebrow and warn pill | **1.43** | **REJECTED** |
-| `--ink` on the lightened orange hero eyebrow | **1.85** | **REJECTED** |
-
-The rule, and it is structural rather than another patch:
-
-> **Any element whose background is a fixed brand colour takes `--on-brand` as
-> its ink, and `--on-brand` is never redefined in a dark block.**
-
-| Token | Value | Ink | Ratio |
-|---|---|---|---|
-| `--ctl-green` | `#2F7D5C` | white | **4.99** |
-| `--ctl-green-hi` | `#246349` | white | **7.10** |
-| `--ctl-butter` | `#F6C65B` | `--on-brand` | **9.49** |
-| `--ctl-orange` | `#F2784B` | `--on-brand` | **5.46** |
-
-This is the **third** time a flipping token has broken a fixed fill — D34
-`.hero-art`, D39 `.footer`, and this. All three were found by looking at the
-rendered page in both schemes, never by reading the CSS. The three rejected
-rows above are kept in `contrast.py` by name so the pattern cannot return
-quietly a fourth time.
-
-### 4.6 Torn band edges
-
-`.band-raised` draws its top and bottom edge with a repeating radial mask, so
-the join between bands is a scalloped tear rather than a ruled line. It is
-geometry, not an image, so it recolours with the theme.
+The masthead and the floating nav use `backdrop-filter` with a
+`color-mix` ground, so content passes under them rather than hitting a wall.
 
 ---
 
 ## 5. Motion
 
-Motion is on by default and governed entirely by duration **tokens**, so
-`prefers-reduced-motion` collapses it in one place rather than per rule.
+Smooth and restrained. No overshoot, no scale on reveal, y-axis only.
 
 | Effect | Where |
 |---|---|
-| drifting blobs | behind the hero, 14s alternating |
-| scroll reveal | section heads, cards, callouts, tables, stat strips |
-| stagger | siblings reveal 70ms apart, capped at 6 |
+| soft drift | one large brand wash behind the hero, 26s |
+| scroll reveal | heads, cards, callouts, tables, stat strips |
+| stagger | siblings 70ms apart, capped at 6 |
 | counters | `.count` animates to the number already in the HTML |
-| press | buttons, chips and the float move into their own shadow |
-| image scale | card photos grow 4.5% on hover |
-| underline draw | `.underline-draw` paints a butter highlight on reveal |
+| hover lift | −4px with elevation 1 → 3 |
+| image scale | card photos 1.04 on hover |
+| underline | a 3px accent hairline drawing across on reveal |
 
-**Two rules this obeys.** Nothing is hidden by CSS alone — `.reveal` is added
-by JavaScript, so with JS off every element is simply visible, which is the
-usual failure of scroll-animation libraries. And the counter reads its target
-from the markup, so a visitor without JS sees the real number rather than a
-zero.
-
-Under `prefers-reduced-motion: reduce` the duration tokens drop to **1ms**
-(not 0, so `transitionend` still fires and nothing waiting on it hangs), the
-blob animation stops, the card rotations are removed, and the reveal and
-underline are forced to their finished state.
+Every duration is a **token**, so `prefers-reduced-motion` collapses all of it
+in one place. Nothing is hidden by CSS alone — `.reveal` is added by
+JavaScript, so with JS off the page is simply visible.
 
 ---
 
@@ -311,6 +214,6 @@ underline are forced to their finished state.
 /home/dev/projects/evermore/scripts/contrast.py
 ```
 
-52 pairings, including every **REJECTED** value, so a regression that restores
-one is caught by name. The script also asserts that every ratio it computes
-appears in this document.
+45 pairings, including every **REJECTED** value, so a regression that restores
+one is caught by name. The script also asserts every ratio it computes appears
+in this document.

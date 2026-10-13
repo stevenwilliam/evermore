@@ -97,161 +97,140 @@ def to_rgb(s: str, over: tuple[int, int, int] | None = None) -> tuple[int, int, 
 
 
 # --- the documented palette -------------------------------------------------
-# ORCHARD (D41, 2026-10-13). A complete redesign; nothing survives from the
-# Nourish palette (pre-D32) or the Thenie palette (D32-D39) but the typefaces.
+# ATELIER (D43, 2026-10-13). Modern and elegant; replaces Orchard, which read
+# as retro. Only the typefaces have survived every redesign.
 
-PAPER = "#FDFBF6"        # warm paper, deliberately not #FFFFFF
-PAPER2 = "#F6F1E6"       # alternating band
+PAPER = "#F9F9F6"
 CARD = "#FFFFFF"
-INK = "#2A2521"
-INK_SOFT = "#5C544A"
-INK_FAINT = "#766D62"
-GREEN = "#2F7D5C"
-GREEN_HI = "#246349"
-GREEN_LT = "#5FBF95"
-GREEN_WASH = "#DCEFE5"
-ORANGE = "#F2784B"       # a FILL that carries ink, never ink on paper
-ORANGE_DEEP = "#C8471D"  # the text/white-on cut
-ORANGE_WASH = "#FDE6DC"
-BLUE = "#4C6FBF"
-BLUE_WASH = "#E1E7F8"
-BUTTER = "#F6C65B"
-BUTTER_WASH = "#FDF2D6"
-FOCUS = "#1F4FD8"
-RULE_SOFT = "#D8D0C2"
-DARK = "#1C1A17"         # dark-scheme ground
-DARK_CARD = "#262320"
+WARM = "#EDEAE2"
+INK = "#121614"
+INK_SOFT = "#555D58"
+INK_FAINT = "#656B67"
+BRAND = "#13543E"
+BRAND_HI = "#0D3C2C"
+BRAND_LT = "#5FD1A4"
+BRAND_WASH = "#E7F0EB"
+ACCENT = "#D8F26B"
+ACCENT_WASH = "#F3FADA"
+INFO = "#2F6690"
+INFO_WASH = "#E4EDF4"
+LINE = "#E2E2DC"
+LINE_STRONG = "#828883"
+FOCUS = "#1F5FD0"
+DARK = "#101311"
+DARK_CARD = "#181C19"
 WHITE = "#FFFFFF"
 
 CHECKS: list[tuple[str, str, str, dict]] = [
-    # --- ink on the three light grounds
+    # --- ink on the three light surfaces
     ("ink on paper", INK, PAPER, {}),
     ("ink-soft on paper", INK_SOFT, PAPER, {}),
     ("ink-faint on paper", INK_FAINT, PAPER, {}),
-    ("ink on the band", INK, PAPER2, {}),
-    ("ink-soft on the band", INK_SOFT, PAPER2, {}),
-    ("ink-faint on the band", INK_FAINT, PAPER2, {}),
     ("ink on a card", INK, CARD, {}),
-    ("ink-soft on a card", INK_SOFT, CARD, {}),
-    ("ink-faint on a card (placeholder)", INK_FAINT, CARD, {}),
+    ("ink-faint on a card", INK_FAINT, CARD, {}),
+    ("ink on the warm band", INK, WARM, {}),
+    ("ink-soft on the warm band", INK_SOFT, WARM, {}),
+    ("ink-faint on the warm band", INK_FAINT, WARM, {}),
 
-    # --- green: text and the primary button
-    ("green as text on paper", GREEN, PAPER, {}),
-    ("green as text on a card", GREEN, CARD, {}),
-    ("white on the green button", WHITE, GREEN, {}),
-    ("white on green hover", WHITE, GREEN_HI, {}),
-    ("ink on the green wash", INK, GREEN_WASH, {}),
-    ("ink-soft on the green wash", INK_SOFT, GREEN_WASH, {}),
+    # --- brand
+    ("brand as text on paper", BRAND, PAPER, {}),
+    ("brand as text on a card", BRAND, CARD, {}),
+    ("ink on the brand wash", INK, BRAND_WASH, {}),
+    ("ink-soft on the brand wash", INK_SOFT, BRAND_WASH, {}),
 
-    # --- orange: a fill, not an ink
-    ("orange as text on paper (REJECTED)", ORANGE, PAPER, {}),
-    ("ink on the orange fill", INK, ORANGE, {}),
-    ("orange-deep as text on paper", ORANGE_DEEP, PAPER, {}),
-    ("white on orange-deep", WHITE, ORANGE_DEEP, {}),
-    ("ink on the orange wash", INK, ORANGE_WASH, {}),
+    # --- accent: a FILL, never ink
+    ("accent as text on paper (REJECTED)", ACCENT, PAPER, {}),
+    ("on-brand on the accent fill", INK, ACCENT, {}),
+    ("ink on the accent wash", INK, ACCENT_WASH, {}),
 
-    # --- butter: the eyebrow sticker and the warn pill
-    ("ink on the butter sticker", INK, BUTTER, {}),
-    ("butter as text on paper (REJECTED)", BUTTER, PAPER, {}),
-    ("ink on the butter wash", INK, BUTTER_WASH, {}),
+    # --- info
+    ("info as text on paper", INFO, PAPER, {}),
+    ("ink on the info wash", INK, INFO_WASH, {}),
 
-    # --- blue
-    ("blue as text on paper", BLUE, PAPER, {}),
-    ("ink on the blue wash", INK, BLUE_WASH, {}),
+    # --- controls, pinned in both schemes (the D42 rule)
+    ("white on the brand control", WHITE, BRAND, {}),
+    ("white on the brand hover", WHITE, BRAND_HI, {}),
+    ("on-brand on the accent control", INK, ACCENT, {}),
+    ("UNPINNED white on brand-lt (REJECTED)", WHITE, BRAND_LT, {}),
 
     # --- lines and focus
-    ("the ink rule on paper", INK, PAPER, {"non_text": True}),
-    ("rule-soft on paper (decorative)", RULE_SOFT, PAPER, {"non_text": True}),
+    ("line on paper (decorative)", LINE, PAPER, {"non_text": True}),
+    ("line-strong on paper (control edge)", LINE_STRONG, PAPER, {"non_text": True}),
+    ("line-strong on a card", LINE_STRONG, CARD, {"non_text": True}),
     ("focus ring on paper", FOCUS, PAPER, {"non_text": True}),
     ("focus ring on a card", FOCUS, CARD, {"non_text": True}),
-    ("focus ring on the band", FOCUS, PAPER2, {"non_text": True}),
+    ("line-strong on the warm band", LINE_STRONG, WARM, {"non_text": True}),
+    ("dark control edge on the ground", "#5E6962", DARK, {"non_text": True}),
+    ("dark control edge on the card", "#5E6962", DARK_CARD, {"non_text": True}),
+    ("REJECTED #9BA09C as a control edge", "#9BA09C", PAPER, {"non_text": True}),
 
-    # --- the footer, which is ink-grounded in both schemes
+    # --- footer, ink-grounded in both schemes
     ("paper on the ink footer", PAPER, INK, {}),
-    ("fineprint #CFC7B9 on the footer", "#CFC7B9", INK, {}),
-    ("butter link on the footer", BUTTER, INK, {}),
+    ("fineprint #A9ADA9 on the footer", "#A9ADA9", INK, {}),
+    ("accent link on the footer", ACCENT, INK, {}),
 
     # --- dark scheme
-    ("ink on the dark ground", "#F6F2E9", DARK, {}),
-    ("ink-soft on the dark ground", "#C2B9AC", DARK, {}),
-    ("ink-faint on the dark ground", "#9C9284", DARK, {}),
-    ("ink on the dark card", "#F6F2E9", DARK_CARD, {}),
-    ("green-lt on the dark ground", GREEN_LT, DARK, {}),
-    ("green on the dark ground (REJECTED)", GREEN, DARK, {}),
-    ("orange-lt on the dark ground", "#FF9B6E", DARK, {}),
-    ("blue-lt on the dark ground", "#8FA8EE", DARK, {}),
-    ("butter on the dark ground", BUTTER, DARK, {}),
-    ("focus-lt on the dark ground", "#9DB6FF", DARK, {"non_text": True}),
+    ("ink on the dark ground", "#F2F3EF", DARK, {}),
+    ("ink-soft on the dark ground", "#B4BBB6", DARK, {}),
+    ("ink-faint on the dark ground", "#8E9691", DARK, {}),
+    ("ink on the dark card", "#F2F3EF", DARK_CARD, {}),
+    ("ink-faint on the dark card", "#8E9691", DARK_CARD, {}),
+    ("brand-lt on the dark ground", BRAND_LT, DARK, {}),
+    ("brand on the dark ground (REJECTED)", BRAND, DARK, {}),
+    ("accent on the dark ground", ACCENT, DARK, {}),
+    ("info-lt on the dark ground", "#8FB8DC", DARK, {}),
+    ("focus-lt on the dark ground", "#9CC0FF", DARK, {"non_text": True}),
 
-    # --- controls are PINNED in both schemes (D41).
-    # Any element whose background is a fixed brand colour takes --on-brand,
-    # which is never redefined in a dark block. The three REJECTED rows are
-    # what the dark scheme actually measured before pinning.
-    ("white on the pinned green control", WHITE, "#2F7D5C", {}),
-    ("white on the pinned green hover", WHITE, "#246349", {}),
-    ("on-brand on the pinned butter control", INK, BUTTER, {}),
-    ("on-brand on the pinned orange control", INK, ORANGE, {}),
-    ("UNPINNED white on dark green (REJECTED)", WHITE, "#5FBF95", {}),
-    ("UNPINNED dark ink on butter (REJECTED)", "#F6F2E9", BUTTER, {}),
-    ("UNPINNED dark ink on orange-lt (REJECTED)", "#F6F2E9", "#FF9B6E", {}),
-
-    # --- the WhatsApp float keeps its own colour
+    # --- the WhatsApp float
     ("WA teal on paper", "#128C7E", PAPER, {"non_text": True}),
     ("WA white glyph on the teal", WHITE, "#128C7E", {"non_text": True}),
 ]
 
 RECORDED: dict[str, float] = {
-    "ink on paper": 14.66,
-    "ink-soft on paper": 7.20,
-    "ink-faint on paper": 4.91,
-    "ink on the band": 13.46,
-    "ink-soft on the band": 6.61,
-    "ink-faint on the band": 4.51,
-    "ink on a card": 15.16,
-    "ink-soft on a card": 7.44,
-    "ink-faint on a card (placeholder)": 5.08,
-    "green as text on paper": 4.82,
-    "green as text on a card": 4.99,
-    "white on the green button": 4.99,
-    "white on green hover": 7.10,
-    "ink on the green wash": 12.65,
-    "ink-soft on the green wash": 6.21,
-    "orange as text on paper (REJECTED)": 2.68,
-    "ink on the orange fill": 5.46,
-    "orange-deep as text on paper": 4.64,
-    "white on orange-deep": 4.80,
-    "ink on the orange wash": 12.66,
-    "ink on the butter sticker": 9.49,
-    "butter as text on paper (REJECTED)": 1.54,
-    "ink on the butter wash": 13.61,
-    "blue as text on paper": 4.69,
-    "ink on the blue wash": 12.26,
-    "the ink rule on paper": 14.66,
-    "rule-soft on paper (decorative)": 1.48,
-    "focus ring on paper": 6.41,
-    "focus ring on a card": 6.63,
-    "focus ring on the band": 5.88,
-    "paper on the ink footer": 14.66,
-    "fineprint #CFC7B9 on the footer": 9.04,
-    "butter link on the footer": 9.49,
-    "ink on the dark ground": 15.54,
-    "ink-soft on the dark ground": 8.95,
-    "ink-faint on the dark ground": 5.67,
-    "ink on the dark card": 13.99,
-    "green-lt on the dark ground": 7.75,
-    "green on the dark ground (REJECTED)": 3.48,
-    "orange-lt on the dark ground": 8.40,
-    "blue-lt on the dark ground": 7.44,
-    "butter on the dark ground": 10.87,
-    "focus-lt on the dark ground": 8.74,
-    "white on the pinned green control": 4.99,
-    "white on the pinned green hover": 7.10,
-    "on-brand on the pinned butter control": 9.49,
-    "on-brand on the pinned orange control": 5.46,
-    "UNPINNED white on dark green (REJECTED)": 2.24,
-    "UNPINNED dark ink on butter (REJECTED)": 1.43,
-    "UNPINNED dark ink on orange-lt (REJECTED)": 1.85,
-    "WA teal on paper": 4.00,
+    "ink on paper": 17.30,
+    "ink-soft on paper": 6.44,
+    "ink-faint on paper": 5.17,
+    "ink on a card": 18.25,
+    "ink-faint on a card": 5.45,
+    "ink on the warm band": 15.18,
+    "ink-soft on the warm band": 5.65,
+    "ink-faint on the warm band": 4.53,
+    "brand as text on paper": 8.42,
+    "brand as text on a card": 8.88,
+    "ink on the brand wash": 15.70,
+    "ink-soft on the brand wash": 5.84,
+    "accent as text on paper (REJECTED)": 1.18,
+    "on-brand on the accent fill": 14.63,
+    "ink on the accent wash": 16.95,
+    "info as text on paper": 5.81,
+    "ink on the info wash": 15.40,
+    "white on the brand control": 8.88,
+    "white on the brand hover": 12.35,
+    "on-brand on the accent control": 14.63,
+    "UNPINNED white on brand-lt (REJECTED)": 1.88,
+    "line on paper (decorative)": 1.23,
+    "line-strong on paper (control edge)": 3.43,
+    "line-strong on a card": 3.62,
+    "focus ring on paper": 5.52,
+    "focus ring on a card": 5.82,
+    "line-strong on the warm band": 3.01,
+    "dark control edge on the ground": 3.27,
+    "dark control edge on the card": 3.01,
+    "REJECTED #9BA09C as a control edge": 2.52,
+    "paper on the ink footer": 17.30,
+    "fineprint #A9ADA9 on the footer": 8.03,
+    "accent link on the footer": 14.63,
+    "ink on the dark ground": 16.77,
+    "ink-soft on the dark ground": 9.55,
+    "ink-faint on the dark ground": 6.16,
+    "ink on the dark card": 15.46,
+    "ink-faint on the dark card": 5.68,
+    "brand-lt on the dark ground": 9.92,
+    "brand on the dark ground (REJECTED)": 2.11,
+    "accent on the dark ground": 14.99,
+    "info-lt on the dark ground": 8.95,
+    "focus-lt on the dark ground": 10.15,
+    "WA teal on paper": 3.92,
     "WA white glyph on the teal": 4.14,
 }
 

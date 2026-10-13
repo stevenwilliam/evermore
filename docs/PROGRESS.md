@@ -353,3 +353,36 @@ working one. Every claim below was checked by **looking**.
 
 Still not built: credit redemption (M10). The map picker is still unverified —
 Maps is referrer-restricted on this host.
+
+---
+
+## D43 — ATELIER (2026-10-13)
+
+Orchard shipped and was rejected the same day as "too retro and old". It was a
+fair call: a risograph treatment is a 1990s zine idiom, so it reads retro by
+construction however fresh the palette is. Atelier is the modern register.
+
+| Gate | Result |
+|---|---|
+| `go vet`, `go test ./...` | ✅ 10 packages |
+| `scripts/contrast.py` | ✅ **45/45**, sheet cross-checked |
+| `tools/shot/verify-ui.mjs` | ✅ 0 FAIL |
+| Screenshots, light + dark + 360 | ✅ `docs/screenshots/d43-atelier/` |
+
+**Caught by the checker, not by eye:** `--line-strong` is the edge on inputs,
+chips and outline buttons. The first value `#9BA09C` measures **2.52** on
+paper — under WCAG 1.4.11's 3:1 for UI components. Now `#828883`
+(3.43 / 3.62 / 3.01), with the rejected value kept by name.
+
+**Two process errors worth recording, both mine:**
+
+1. The twelve-day outage. `pkill -f 'bin/evermore serve'` matched systemd's own
+   `ExecStart`, so stopping my test instance stopped the live service; the unit
+   is `Restart=on-failure` and a kill exits cleanly, so systemd correctly left
+   it down.
+2. The replacement advice was also wrong. `pkill -f 'APP_PORT=8082'` matches
+   nothing, because `APP_PORT` is an **environment** variable and never appears
+   in the cmdline. The reliable way is to read the port from
+   `/proc/<pid>/environ` and kill by PID — and it matters, because a stale
+   process on 8082 briefly served the OLD build while I believed I was
+   screenshotting the new one.

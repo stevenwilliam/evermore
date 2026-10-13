@@ -1,93 +1,68 @@
-/* Evermore design tokens — ORCHARD (D41, 2026-10-13).
+/* Evermore design tokens — ATELIER (D43, 2026-10-13).
  *
- * A complete redesign. Steven: "forget all the design guideline, only preserve
- * the font type, redo all design 100% ... very fresh color, young soft
- * enthusiast, humanize, not seems created by AI, with moving animation."
+ * Steven, on the Orchard redesign: "the design is too retro and old / make me
+ * modern design / young color / elegan / humanize / not seems created by AI."
  *
- * Everything before this is retired: the deep-green Nourish palette (pre-D32)
- * and the Thenie coral/olive palette (D32–D39). Nothing is carried over.
+ * He was right. Orchard's riso treatment — 2px ink outlines, solid offset
+ * shadows, rotated cards, paper grain — is a 90s-zine language. Those are the
+ * exact things removed here. ATELIER is the opposite register: air, soft
+ * elevation, hairlines, a deep elegant ink and ONE vivid accent used sparingly.
  *
- * THE TYPEFACES DO NOT CHANGE. Erode + Inter, self-hosted. That was the one
- * thing asked to survive.
+ * THE TYPEFACES STILL DO NOT CHANGE. Erode + Inter, self-hosted.
  *
- * The look is RISOGRAPH / STICKER-BOOK, and that is a deliberate answer to
- * "not seems created by AI": solid offset shadows instead of soft blurs,
- * chunky ink outlines, deliberately uneven rotations, paper grain, and radii
- * that differ per component. Generated pages trend towards soft gradients,
- * uniform 16px cards and perfect symmetry; this trends the other way.
- *
- * Every ratio below is computed by scripts/contrast.py, never estimated.
+ * What "not seems created by AI" means in a MODERN idiom, since the riso trick
+ * is no longer available: editorial asymmetry rather than centred symmetry, an
+ * accent held back instead of spread everywhere, real whitespace, and no
+ * glassmorphism, no violet gradients, no even row of three identical cards.
+ * Restraint is the humanising move here — generated pages over-decorate.
  */
 
 :root {
   color-scheme: light;
 
-  /* ---- Paper ----
-   * Not #FFFFFF. A warm paper ground is the single cheapest humanising move:
-   * pure white reads as a default, this reads as a choice. */
-  --paper:        #FDFBF6;
-  --paper-2:      #F6F1E6;  /* alternating band */
-  --card:         #FFFFFF;  /* cards sit ON the paper and are brighter than it */
+  /* ---- Surfaces ---- */
+  --paper:   #F9F9F6;   /* page ground — a whisper warm, not clinical white */
+  --card:    #FFFFFF;
+  --warm:    #EDEAE2;   /* the quiet band, and tinted panels */
 
   /* ---- Ink ---- */
-  --ink:          #2A2521;  /* 14.66 on paper — a soft black-brown, never #000 */
-  --ink-soft:     #5C544A;  /*  7.20 on paper */
-  --ink-faint:    #766D62;  /*  4.91 paper / 4.51 band / 5.08 card — the floor */
+  --ink:       #121614;  /* 17.30 on paper — near-black with a green cast */
+  --ink-soft:  #555D58;  /*  6.44 */
+  --ink-faint: #656B67;  /*  5.17 paper / 5.45 card / 4.53 warm — the floor */
 
   /* ---- Brand ---- */
-  --green:        #2F7D5C;  /* 4.82 as text on paper; white on it 4.99 */
-  --green-hi:     #246349;  /* hover; white on it 7.10 */
-  --green-lt:     #5FBF95;  /* dark-scheme text, and a sticker fill */
-  --green-wash:   #DCEFE5;  /* tinted panel; ink on it 12.26 */
+  --brand:     #13543E;  /* 8.42 as text; white on it 8.88 */
+  --brand-hi:  #0D3C2C;  /* hover; white on it 12.35 */
+  --brand-lt:  #5FD1A4;  /* dark-scheme text */
+  --brand-wash:#E7F0EB;
+  --accent:    #D8F26B;  /* citrus — the young note. A FILL; ink on it 14.63 */
+  --accent-wash:#F3FADA;
+  --info:      #2F6690;  /* 5.81 */
+  --info-wash: #E4EDF4;
 
-  --orange:       #F2784B;  /* the accent. ink on it 5.46 — a FILL, see below */
-  --orange-deep:  #C8471D;  /* white on it 4.80 — the only orange for white text */
-  --orange-lt:    #FF9B6E;  /* dark-scheme text */
-  --orange-wash:  #FDE6DC;
+  /* ---- Controls: pinned in BOTH schemes (the D42 rule, kept) ----
+   * Any element whose background is a fixed brand colour takes --on-brand,
+   * and --on-brand is never redefined in a dark block. This rule exists
+   * because a flipping ink on a fixed fill has silently broken the design
+   * three times. */
+  --on-brand:     #121614;
+  --ctl-brand:    #13543E;  /* white on it 8.88 */
+  --ctl-brand-hi: #0D3C2C;  /* white on it 12.35 */
+  --ctl-accent:   #D8F26B;  /* --on-brand on it 14.63 */
 
-  --blue:         #4C6FBF;  /* 4.69 as text on paper */
-  --blue-lt:      #8FA8EE;
-  --blue-wash:    #E1E7F8;
+  /* ---- Lines and elevation ----
+   * Hairlines, not outlines. Elevation is a soft layered shadow, which is what
+   * separates a modern surface from a printed one. */
+  --line:        #E2E2DC;   /* 1.11 on paper — decorative separation only */
+  --line-strong: #828883;   /* 3.43 paper / 3.62 card / 3.01 warm — clears 1.4.11 */
+  --shadow-1: 0 1px 2px rgba(18,22,20,.04), 0 2px 8px rgba(18,22,20,.05);
+  --shadow-2: 0 2px 6px rgba(18,22,20,.05), 0 10px 26px rgba(18,22,20,.07);
+  --shadow-3: 0 6px 14px rgba(18,22,20,.06), 0 22px 50px rgba(18,22,20,.10);
 
-  --butter:       #F6C65B;  /* ink on it 9.49 — fills and highlights */
-  --butter-wash:  #FDF2D6;
+  --focus: #1F5FD0;   /* 5.00 on paper */
 
-  /* --orange and --butter are FILLS that carry ink, never ink themselves on
-   * paper: --orange as text is 2.69 and fails. --orange-deep is the text cut. */
-
-  /* ---- Lines, focus, shadow ----
-   * The shadow is SOLID and offset, not blurred. That is the whole riso look,
-   * and it is also why borders are 2px: a hairline under a solid shadow reads
-   * as a printing error rather than a style. */
-  --rule:         #2A2521;
-  --rule-soft:    #D8D0C2;  /* 1.62 on paper — decorative only, never a control edge */
-  --edge:         2px solid var(--rule);
-  --shadow-pop:   4px 4px 0 var(--rule);
-  --shadow-pop-sm: 2px 2px 0 var(--rule);
-  --shadow-pop-lg: 7px 7px 0 var(--rule);
-  --shadow-soft:  0 10px 28px rgba(42, 37, 33, 0.10);
-
-  --focus:        #1F4FD8;  /* 5.63 on paper, 3.49 on the card */
-
-  /* ---- Controls: FIXED in both schemes ----
-   * A control keeps its identity day and night — a green button is the same
-   * green — and, more importantly, pinning the fill is what stops a flipping
-   * ink token from landing on a fixed fill.
-   *
-   * That bug has now happened three times (D34 .hero-art, D39 .footer, and
-   * here), so this is the structural answer rather than another one-off: any
-   * element whose BACKGROUND is a fixed brand colour takes --on-brand as its
-   * ink, and --on-brand is never redefined in a dark block.
-   *
-   * Left unpinned, the dark scheme measured: white on the lightened green
-   * 2.24, --ink on butter 1.43, --ink on the lightened orange 1.85. */
-  --on-brand:      #2A2521;  /* the ink that never flips */
-  --ctl-green:     #2F7D5C;  /* white on it 4.99 */
-  --ctl-green-hi:  #246349;  /* white on it 7.10 */
-  --ctl-butter:    #F6C65B;  /* --on-brand on it 9.49 */
-  --ctl-orange:    #F2784B;  /* --on-brand on it 5.46 */
-
-  /* ---- Type — UNCHANGED ---- */
+  /* ---- Type — UNCHANGED faces, modernised scale ----
+   * Bigger display, tighter tracking, more air in the line height. */
   --font-display: 'Erode', Georgia, 'Times New Roman', serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
                'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB',
@@ -97,109 +72,98 @@
   --text-xs:   13px;
   --text-sm:   15px;
   --text-base: 17px;
-  --text-lg:   20px;
-  --text-xl:   25px;
-  --text-2xl:  34px;
-  --text-3xl:  48px;
-  --text-4xl:  72px;
+  --text-lg:   21px;
+  --text-xl:   27px;
+  --text-2xl:  38px;
+  --text-3xl:  54px;
+  --text-4xl:  84px;
 
   --w-display: 700;
   --w-sub:     600;
-  --w-body:    450;
+  --w-body:    420;
   --w-strong:  600;
-  --w-ui:      600;
+  --w-ui:      550;
 
-  /* ---- Space ---- */
+  --track-display: -0.03em;   /* tight — the modern display signature */
+  --track-eyebrow:  0.16em;
+
+  /* ---- Space — more of it ---- */
   --space-1: 4px;   --space-2: 8px;   --space-3: 12px;  --space-4: 16px;
-  --space-5: 24px;  --space-6: 32px;  --space-7: 48px;  --space-8: 72px;
-  --space-9: 112px;
+  --space-5: 24px;  --space-6: 40px;  --space-7: 64px;  --space-8: 96px;
+  --space-9: 148px;
 
-  /* ---- Radii — deliberately UNEVEN ----
-   * One radius everywhere is the tell of a generated layout. These differ per
-   * component on purpose, and --radius-blob is asymmetric so a shape never
-   * reads as a rounded rectangle. */
-  --radius-xs:   6px;
-  --radius-sm:   10px;
-  --radius-md:   18px;
-  --radius-lg:   26px;
+  /* ---- Radii — soft and consistent, the modern register ---- */
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   22px;
+  --radius-xl:   32px;
   --radius-pill: 999px;
-  --radius-blob: 62% 38% 55% 45% / 45% 55% 45% 55%;
 
   --tap: 44px;
-  --container: 1120px;
+  --container: 1180px;
   --container-narrow: 720px;
 
-  /* ---- Motion ----
-   * Every duration is a token so prefers-reduced-motion can zero them in ONE
-   * place rather than per rule — a per-rule override is how a stray animation
-   * survives the media query. */
-  --dur-fast:  140ms;
-  --dur:       260ms;
-  --dur-slow:  520ms;
-  --dur-drift: 14s;
-  --ease-out:  cubic-bezier(.22,.78,.3,1);
-  --ease-pop:  cubic-bezier(.34,1.56,.64,1);  /* a slight overshoot — reads playful */
-  --lift:      -3px;
+  /* ---- Motion — smooth and restrained ----
+   * No overshoot. Orchard's bouncy ease read as playful/retro; elegance is
+   * a long, even glide. Durations are tokens so reduced-motion kills them in
+   * ONE place. */
+  --dur-fast: 160ms;
+  --dur:      320ms;
+  --dur-slow: 680ms;
+  --dur-drift: 26s;
+  --ease:      cubic-bezier(.22,.61,.36,1);
+  --ease-soft: cubic-bezier(.4,0,.2,1);
+  --lift: -4px;
 }
 
-/* Dark scheme. The paper becomes board, the ink becomes chalk. The brand
- * greens and oranges LIGHTEN rather than invert, because #2F7D5C on the dark
- * ground is 3.48 and fails. Button FILLS keep their light-scheme values: white
- * on #2F7D5C is 4.99 in either scheme, so the control stays recognisable. */
+/* Dark scheme: the paper becomes a deep board. The brand lightens; the citrus
+ * accent is already light and keeps its value in both. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --paper:      #1C1A17;
-    --paper-2:    #221F1B;
-    --card:       #262320;
-    --ink:        #F6F2E9;   /* 15.54 on the ground */
-    --ink-soft:   #C2B9AC;   /*  8.95 */
-    --ink-faint:  #9C9284;   /*  5.76 */
-    --green:      #5FBF95;   /*  7.75 — #2F7D5C is 3.48 here */
-    --green-hi:   #86D4B2;
-    --green-wash: #22372E;
-    --orange:     #FF9B6E;   /*  8.40 */
-    --orange-deep:#FF9B6E;
-    --orange-wash:#3A2419;
-    --blue:       #8FA8EE;   /*  7.44 */
-    --blue-wash:  #202942;
-    --butter-wash:#362D15;
-    --rule:       #F6F2E9;
-    --rule-soft:  #3C372F;
-    --focus:      #9DB6FF;
-    --shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.55);
+    --paper: #101311;
+    --card:  #181C19;
+    --warm:  #1C211E;
+    --ink:       #F2F3EF;  /* 16.77 */
+    --ink-soft:  #B4BBB6;  /*  9.55 */
+    --ink-faint: #8E9691;  /*  6.16 */
+    --brand:     #5FD1A4;  /*  9.92 */
+    --brand-hi:  #8FE3C1;
+    --brand-wash:#173026;
+    --accent-wash:#2A3318;
+    --info:      #8FB8DC;  /*  8.95 */
+    --info-wash: #1B2733;
+    --line:        #262B28;
+    --line-strong: #5E6962;   /* 3.27 ground / 3.01 card */
+    --focus: #9CC0FF;
+    --shadow-1: 0 1px 2px rgba(0,0,0,.5);
+    --shadow-2: 0 2px 6px rgba(0,0,0,.45), 0 10px 26px rgba(0,0,0,.5);
+    --shadow-3: 0 6px 14px rgba(0,0,0,.5), 0 22px 50px rgba(0,0,0,.6);
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --paper:      #1C1A17;
-  --paper-2:    #221F1B;
-  --card:       #262320;
-  --ink:        #F6F2E9;
-  --ink-soft:   #C2B9AC;
-  --ink-faint:  #9C9284;
-  --green:      #5FBF95;
-  --green-hi:   #86D4B2;
-  --green-wash: #22372E;
-  --orange:     #FF9B6E;
-  --orange-deep:#FF9B6E;
-  --orange-wash:#3A2419;
-  --blue:       #8FA8EE;
-  --blue-wash:  #202942;
-  --butter-wash:#362D15;
-  --rule:       #F6F2E9;
-  --rule-soft:  #3C372F;
-  --focus:      #9DB6FF;
-  --shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.55);
+  --paper: #101311;
+  --card:  #181C19;
+  --warm:  #1C211E;
+  --ink:       #F2F3EF;
+  --ink-soft:  #B4BBB6;
+  --ink-faint: #8E9691;
+  --brand:     #5FD1A4;
+  --brand-hi:  #8FE3C1;
+  --brand-wash:#173026;
+  --accent-wash:#2A3318;
+  --info:      #8FB8DC;
+  --info-wash: #1B2733;
+  --line:        #262B28;
+  --line-strong: #5E6962;
+  --focus: #9CC0FF;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.5);
+  --shadow-2: 0 2px 6px rgba(0,0,0,.45), 0 10px 26px rgba(0,0,0,.5);
+  --shadow-3: 0 6px 14px rgba(0,0,0,.5), 0 22px 50px rgba(0,0,0,.6);
 }
 
-/* The single place motion is switched off. Durations become 1ms rather than 0
- * so transitionend / animationend still fire and any JS waiting on them does
- * not hang. */
 @media (prefers-reduced-motion: reduce) {
-  :root {
-    --dur-fast: 1ms; --dur: 1ms; --dur-slow: 1ms; --dur-drift: 1ms;
-    --lift: 0px;
-  }
+  :root { --dur-fast: 1ms; --dur: 1ms; --dur-slow: 1ms; --dur-drift: 1ms; --lift: 0px; }
 }
