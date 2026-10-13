@@ -361,3 +361,21 @@
     Array.prototype.forEach.call(counters, function (el) { co.observe(el); });
   }
 })();
+
+/* D44 — Bekal Bot. The box is a <button>, so Enter and Space already fire
+ * click; binding keys here as well would double-fire. With JS off the box
+ * stays closed, which is a correct resting state rather than a broken one. */
+(function () {
+  var stage = document.getElementById('bot-stage');
+  if (!stage) return;
+  var hint = document.getElementById('bot-hint-text');
+  var open = false;
+  stage.addEventListener('click', function () {
+    open = !open;
+    stage.classList.toggle('is-open', open);
+    stage.setAttribute('aria-pressed', open ? 'true' : 'false');
+    if (hint) hint.textContent = open
+      ? 'Ketuk lagi untuk menutup'
+      : 'Ketuk kotaknya untuk melihat isinya';
+  });
+})();

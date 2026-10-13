@@ -201,6 +201,7 @@ Smooth and restrained. No overshoot, no scale on reveal, y-axis only.
 | hover lift | −4px with elevation 1 → 3 |
 | image scale | card photos 1.04 on hover |
 | underline | a 3px accent hairline drawing across on reveal |
+| **Bekal Bot** | the hero box: 6s float, a 5.5s uneven blink, and on tap a 700ms hinge-open followed by six components launching 60ms apart (D44) |
 
 Every duration is a **token**, so `prefers-reduced-motion` collapses all of it
 in one place. Nothing is hidden by CSS alone — `.reveal` is added by

@@ -171,7 +171,12 @@ main { flex: 1 0 auto; }
 
 /* ----------------------------------------------------------------- hero */
 
-.hero-full { position: relative; overflow: hidden; padding-block: var(--space-9) var(--space-8); }
+.hero-full { position: relative; overflow: hidden; padding-block: var(--space-7) var(--space-8); }
+/* The float nav and the WhatsApp button are fixed over the bottom of the
+ * viewport, so on a phone the hero needs room underneath or the bot opens
+ * behind them. */
+@media (max-width: 1023px) { body.has-float-nav .hero-full { padding-bottom: 124px; } }
+@media (min-width: 1024px) { .hero-full { padding-block: var(--space-9) var(--space-8); } }
 /* One large, very soft wash drifting behind the type. A single quiet shape,
  * not two bright blobs — restraint is the whole brief. */
 .hero-full::before {
@@ -383,4 +388,143 @@ body.has-float-nav .wa-float { bottom: calc(var(--space-5) + 76px); }
   .underline-draw { background-size: 100% 3px; }
   .hero-full::before { animation: none; }
   .card:hover, .btn:hover, .wa-float:hover { transform: none; }
+}
+
+/* ==========================================================================
+   D44 — Bekal Bot: the interactive hero.
+   A lunch box that opens and scatters into its six components on tap. Six
+   CSS-3D faces, no library. Prototyped as an artifact, wired in here against
+   the real Atelier tokens and the real Erode.
+   ========================================================================== */
+
+/* The scatter distances are authored unitless and multiplied by --spread, so
+ * one set of positions serves every width. Hand-placed values tuned for a
+ * desktop column would otherwise throw chips outside a phone screen. */
+.bot-stage {
+  --spread: .52;
+  --box-scale: .62;
+  --chip: .82;
+  width: 100%; height: 320px;
+  display: grid; place-items: center; position: relative;
+  background: none; border: 0; padding: 0; margin: 0;
+  font: inherit; color: inherit; cursor: pointer;
+  perspective: 1100px; perspective-origin: 50% 46%;
+}
+@media (min-width: 640px)  { .bot-stage { --spread: .78; --box-scale: .84; --chip: .85; height: 380px; } }
+@media (min-width: 1024px) { .bot-stage { --spread: 1;   --box-scale: 1;   --chip: 1;   height: 420px; } }
+
+.bot-floor {
+  position: absolute; bottom: 48px; left: 50%;
+  width: calc(210px * var(--box-scale)); height: 26px;
+  translate: -50% 0; border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(18,22,20,.22), transparent 70%);
+  transition: width var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
+.bot-stage.is-open .bot-floor { width: calc(120px * var(--box-scale)); opacity: .5; }
+
+.bot-rig {
+  transform-style: preserve-3d;
+  scale: var(--box-scale);
+  animation: botHover 6s var(--ease-soft) infinite alternate;
+}
+@keyframes botHover {
+  from { transform: translateY(-6px) rotateX(-16deg) rotateY(-22deg); }
+  to   { transform: translateY(10px) rotateX(-13deg) rotateY(14deg); }
+}
+
+.bot-box { position: relative; width: 220px; height: 90px; transform-style: preserve-3d; }
+.bot-face {
+  position: absolute;
+  background: var(--warm);
+  border: 1px solid var(--line-strong);
+  transition: transform 700ms var(--ease), opacity 500ms var(--ease);
+  background-image: linear-gradient(180deg, rgba(255,255,255,.34), transparent 44%);
+}
+.bf-front, .bf-back { width: 220px; height: 90px; border-radius: 10px; }
+.bf-left,  .bf-right { width: 140px; height: 90px; border-radius: 10px; }
+.bf-lid,   .bf-base  { width: 220px; height: 140px; border-radius: 14px; }
+
+.bf-front { transform: translateZ(70px); transform-origin: bottom center; }
+.bf-back  { transform: rotateY(180deg) translateZ(70px); transform-origin: bottom center; }
+.bf-left  { transform: rotateY(-90deg) translateZ(110px); transform-origin: bottom center; }
+.bf-right { transform: rotateY(90deg)  translateZ(110px); transform-origin: bottom center; }
+.bf-base  { transform: rotateX(90deg)  translateZ(-45px); background: var(--card); }
+.bf-lid   { transform: rotateX(90deg)  translateZ(45px); transform-origin: center top;
+            display: grid; place-items: center; }
+
+.bot-mark {
+  font-family: var(--font-display); font-weight: var(--w-display);
+  font-size: 22px; letter-spacing: -0.02em; color: var(--brand);
+  transform: rotate(-90deg); user-select: none; line-height: 1.1;
+}
+.bot-mark small {
+  display: block; font-family: var(--font-body); font-size: 8px; font-weight: 600;
+  letter-spacing: .3em; text-transform: uppercase; color: var(--ink-faint); margin-top: 3px;
+}
+
+/* Two sensor lights. The blink cycle is long and uneven so it reads as a
+ * thing at rest, not as a loading indicator. */
+.bot-eyes { position: absolute; top: 26px; left: 50%; translate: -50% 0; display: flex; gap: 22px; }
+.bot-eye {
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--brand); box-shadow: 0 0 0 3px var(--brand-wash);
+  animation: botBlink 5.5s steps(1, end) infinite;
+}
+.bot-eye:last-child { animation-delay: .12s; }
+@keyframes botBlink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  94%, 98%      { transform: scaleY(.12); }
+}
+.bot-stage.is-open .bot-eye { background: var(--accent); box-shadow: 0 0 0 3px var(--accent-wash); }
+
+.bot-stage.is-open .bf-lid   { transform: rotateX(90deg) translateZ(45px) translateY(-190px) rotateZ(-26deg); opacity: 0; }
+.bot-stage.is-open .bf-front { transform: translateZ(70px) rotateX(96deg); opacity: .5; }
+.bot-stage.is-open .bf-back  { transform: rotateY(180deg) translateZ(70px) rotateX(96deg); opacity: .5; }
+.bot-stage.is-open .bf-left  { transform: rotateY(-90deg) translateZ(110px) rotateX(96deg); opacity: .5; }
+.bot-stage.is-open .bf-right { transform: rotateY(90deg) translateZ(110px) rotateX(96deg); opacity: .5; }
+.bot-stage.is-open .bf-base  { opacity: .62; }
+.bot-stage.is-open .bot-eyes { opacity: 0; transition: opacity 200ms var(--ease); }
+
+/* ---- the six components ---- */
+.bot-parts { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; }
+.bot-part {
+  position: absolute; top: 50%; left: 50%;
+  width: calc(var(--w) * var(--chip)); height: calc(var(--h) * var(--chip));
+  margin: calc(var(--h) * var(--chip) / -2) 0 0 calc(var(--w) * var(--chip) / -2);
+  border-radius: var(--r);
+  background: var(--c);
+  box-shadow: inset 0 -8px 16px rgba(0,0,0,.16), inset 0 6px 10px rgba(255,255,255,.26);
+  display: grid; place-items: center;
+  opacity: 0; transform: translate3d(0,0,0) scale(.3);
+  transition: transform 820ms var(--ease), opacity 420ms var(--ease);
+  transition-delay: var(--d);
+}
+.bot-part span {
+  font-family: var(--font-body); font-size: max(9px, calc(10px * var(--chip))); font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; text-align: center;
+  padding: 0 6px; color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+.bot-part.on-light span { color: rgba(18,22,20,.82); text-shadow: none; }
+
+.bot-stage.is-open .bot-part {
+  opacity: 1;
+  transform: translate3d(calc(var(--xr) * var(--spread) * 1px),
+                         calc(var(--yr) * var(--spread) * 1px),
+                         calc(var(--zr) * 1px))
+             rotate(var(--rot)) scale(1);
+}
+
+.bot-hint {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: var(--text-sm); color: var(--ink-faint); margin-top: var(--space-4);
+}
+.bot-key {
+  font-size: 12px; font-weight: 600; border: 1px solid var(--line-strong);
+  border-radius: 6px; padding: 2px 8px; color: var(--ink-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bot-rig { animation: none; transform: rotateX(-14deg) rotateY(-10deg); }
+  .bot-eye { animation: none; }
+  .bot-face, .bot-part, .bot-floor { transition-duration: 1ms; }
 }

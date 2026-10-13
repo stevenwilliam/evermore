@@ -17,12 +17,47 @@
       </p>
     </div>
 
-    <div class="hero-media">
-      <img src="/images/thenie/hero-bg.jpg" alt="Satu porsi makan siang Evermore"
-           width="800" height="405" fetchpriority="high">
+    {{/* D44 — Bekal Bot. Six CSS-3D faces plus six component chips. It is a
+         <button>, so Enter and Space open it and focus is visible; a div with
+         a click handler would have left keyboard users out. With JavaScript
+         off it simply sits closed, which is a correct resting state. */}}
+    <div>
+      <button class="bot-stage" id="bot-stage" type="button" aria-pressed="false"
+              aria-describedby="bot-hint"
+              aria-label="Buka kotak Evermore dan lihat isinya">
+        <span class="bot-floor" aria-hidden="true"></span>
+        <span class="bot-rig" aria-hidden="true">
+          <span class="bot-box">
+            <span class="bot-face bf-back"></span>
+            <span class="bot-face bf-left"></span>
+            <span class="bot-face bf-right"></span>
+            <span class="bot-face bf-base"></span>
+
+            <span class="bot-parts">
+              <span class="bot-part" style="--c:#8C4A3F;--xr:-124;--yr:-96;--zr:70;--rot:-8deg;--d:180ms;--w:84px;--h:84px;--r:22px"><span>Nasi merah</span></span>
+              <span class="bot-part on-light" style="--c:#E0B773;--xr:116;--yr:-120;--zr:40;--rot:9deg;--d:240ms;--w:92px;--h:66px;--r:30px"><span>Ayam panggang</span></span>
+              <span class="bot-part" style="--c:#4E7A3A;--xr:-142;--yr:54;--zr:-30;--rot:6deg;--d:300ms;--w:76px;--h:76px;--r:38px"><span>Sayur</span></span>
+              <span class="bot-part on-light" style="--c:#F2C14E;--xr:126;--yr:62;--zr:90;--rot:-11deg;--d:360ms;--w:74px;--h:74px;--r:50%"><span>Telur</span></span>
+              <span class="bot-part" style="--c:#C0462B;--xr:-30;--yr:116;--zr:120;--rot:4deg;--d:420ms;--w:72px;--h:72px;--r:50%"><span>Sambal</span></span>
+              <span class="bot-part on-light" style="--c:#D98A5B;--xr:36;--yr:-138;--zr:-60;--rot:-6deg;--d:480ms;--w:66px;--h:66px;--r:26px"><span>Buah</span></span>
+            </span>
+
+            <span class="bot-face bf-front">
+              <span class="bot-eyes"><span class="bot-eye"></span><span class="bot-eye"></span></span>
+            </span>
+            <span class="bot-face bf-lid">
+              <span class="bot-mark">evermore<small>bekal</small></span>
+            </span>
+          </span>
+        </span>
+      </button>
+
+      <p class="bot-hint" id="bot-hint">
+        <span class="bot-key">Klik</span>
+        <span id="bot-hint-text">Ketuk kotaknya untuk melihat isinya</span>
+      </p>
     </div>
-  </div>
-</section>
+  </section>
 
 {{/* The stats strip sits directly under the hero, as Thenie's does. */}}
 <section class="section tight">

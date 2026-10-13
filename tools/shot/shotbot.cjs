@@ -1,0 +1,15 @@
+const { chromium } = require('playwright')
+const S = process.argv[2]
+;(async () => {
+  const b = await chromium.launch()
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 860 } })
+  const p = await ctx.newPage()
+  await p.goto('file://' + S + '/bekal-bot.html', { waitUntil: 'load' })
+  await p.waitForTimeout(1600)
+  await p.screenshot({ path: S + '/bot-closed.png' })
+  await p.click('#stage')
+  await p.waitForTimeout(1800)
+  await p.screenshot({ path: S + '/bot-open.png' })
+  console.log('shot both states')
+  await b.close()
+})()
