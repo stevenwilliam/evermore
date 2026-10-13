@@ -677,6 +677,8 @@ tbody tr:hover { background: var(--warm); }
 @media (prefers-reduced-motion: reduce) {
   .bot-rig { animation: none; transform: rotateX(-15deg) rotateY(-10deg); }
   .bot-eye { animation: none; }
+  /* The lid and its tuft stop together — stopping one would detach them. */
+  .bf-lid, .bot-hair, .bot-tuft { animation: none; }
   .bot-face, .bot-part, .bot-floor { transition-duration: 1ms; }
 }
 
@@ -846,15 +848,66 @@ tbody tr:hover { background: var(--warm); }
  * same reason each time: .bf-lid has no preserve-3d, so its children flatten
  * into the lid's own plane and the blades disappeared edge-on. A flat overlay
  * is both visible and far easier to reason about. */
-.bot-hair {
+/* The tuft rides the lid, and the lid rides the rig.
+ *
+ * It cannot inherit the lid's transform — it is a 2D overlay precisely because
+ * .bf-lid has no preserve-3d — so it reproduces the lid's motion in screen
+ * space instead, in two layers that mirror the box's own two layers:
+ *
+ *   .bot-tuft  carries .bot-rig's float, by running the SAME animation with
+ *              the same duration and easing, so it is in phase by construction
+ *   .bot-hair  carries the lid's own bob
+ *
+ * Replicating only the lid's bob is what a first attempt did, and it beat
+ * visibly against the 6s rig float: equal amplitude, drifting phase. The two
+ * periods are 3.2s and 6s and never line up.
+ *
+ * The bob numbers are MEASURED, not derived. The lid moves on a plane turned
+ * by rotateX(-90deg), so its `translateY` is not a screen-space Y and
+ * arithmetic on the keyframe values gives the wrong answer. Sampling the lid's
+ * CENTRE — not its bounding box, which the lid's yaw inflates on both sides —
+ * through a full cycle at 1280px gives:
+ *
+ *   closed (lidRest, 3.2s)  rises 12.8px, drifts 8.3px right
+ *   open   (lidBob,  2.8s)  rises 11.1px, drifts 6.6px right
+ *   opening                 lifts the centre 28.6px, moves it 20.2px right
+ *
+ * Those figures are the lid's motion with the RIG FLOAT FROZEN. Measuring it
+ * running instead folds the rig's 16px into the lid's own numbers, and feeding
+ * that back in double-counts the float — which is what a second attempt did.
+ *
+ * The lid's `from` is its LOW point, so the tuft's `from` is low too, and the
+ * offsets are mean-centred so `bottom` stays the resting position. */
+.bot-tuft {
   position: absolute; left: 50%; z-index: 3;
-  translate: -50% 0; pointer-events: none;
-  width: 60px; height: 58px;
-  transition: bottom var(--dur) var(--ease);
+  /* Centred with a margin, not `translate`: `translate` carries the motion. */
+  margin-left: -30px;
+  pointer-events: none;
+  /* Identical to .bot-rig, so the float matches rather than approximates. */
+  scale: var(--box-scale);
+  animation: botHover 6s var(--ease-soft) infinite alternate;
+  transition: bottom var(--dur) var(--ease), margin-left var(--dur) var(--ease);
 }
+.bot-hair { display: block; width: 60px; height: 58px; }
+
 /* Positioned against the lid, which sits a little above the box centre. */
-.bot-pair .bot-stage .bot-hair { bottom: calc(50% + 51px * var(--box-scale)); }
-.bot-stage.is-open .bot-hair   { bottom: calc(50% + 77px * var(--box-scale)); }
+.bot-pair .bot-stage .bot-tuft { bottom: calc(50% + 51px * var(--box-scale)); }
+.bot-stage.is-open .bot-tuft {
+  bottom: calc(50% + 79px * var(--box-scale));
+  margin-left: calc(-30px + 20px * var(--box-scale));
+}
+/* The bob is inside .bot-tuft, which is already scaled, so these are plain px. */
+.bot-hair           { animation: hairRest 3.2s var(--ease-soft) infinite alternate; }
+.is-open .bot-hair  { animation: hairBob  2.8s var(--ease-soft) infinite alternate; }
+@keyframes hairRest {
+  from { translate: -4.2px 6.4px; }
+  to   { translate: 4.2px -6.4px; }
+}
+@keyframes hairBob {
+  from { translate: -3.3px 5.6px; }
+  to   { translate: 3.3px -5.6px; }
+}
+}
 
 /* One root, three separate blades. They have to be narrow enough, and spaced
  * far enough apart, that the lid shows between them — at 10px wide and 6px
@@ -911,23 +964,6 @@ tbody tr:hover { background: var(--warm); }
 }
 
 @media (prefers-reduced-motion: reduce) { .blade { animation: none; } }
-
-/* ---- the signature (D54) --------------------------------------------------
- * Two syllables that lift in turn. Decorative, so it is aria-hidden and the
- * heading it sits beside still reads correctly to a screen reader. */
-.sig { display: inline-flex; gap: 1px; vertical-align: baseline; }
-.sig span {
-  display: inline-block; color: var(--brand);
-  font-family: var(--font-display); font-style: italic; font-weight: var(--w-display);
-  animation: sigWave 2.6s var(--ease-soft) infinite;
-}
-.sig span:last-child { animation-delay: .32s; }
-@keyframes sigWave {
-  0%, 62%, 100% { transform: translateY(0) rotate(0deg); }
-  18%           { transform: translateY(-26%) rotate(-5deg); }
-  38%           { transform: translateY(0) rotate(3deg); }
-}
-@media (prefers-reduced-motion: reduce) { .sig span { animation: none; } }
 
 /* ---- testimonials (D53) -------------------------------------------------- */
 .testi-grid { display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
