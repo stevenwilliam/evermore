@@ -391,82 +391,103 @@ body.has-float-nav .wa-float { bottom: calc(var(--space-5) + 76px); }
 }
 
 /* ==========================================================================
-   D44 — Bekal Bot: the interactive hero.
-   A lunch box that opens and scatters into its six components on tap. Six
-   CSS-3D faces, no library. Prototyped as an artifact, wired in here against
-   the real Atelier tokens and the real Erode.
+   D45 — Bekal Bot, second pass.
+   Logo on the FRONT, seams closed, the box reads full, and the parts are
+   drawn food rather than labelled chips. Six CSS-3D faces, no library.
    ========================================================================== */
 
-/* The scatter distances are authored unitless and multiplied by --spread, so
- * one set of positions serves every width. Hand-placed values tuned for a
- * desktop column would otherwise throw chips outside a phone screen. */
 .bot-stage {
-  --spread: .52;
-  --box-scale: .62;
-  --chip: .82;
-  width: 100%; height: 320px;
+  --spread: .62; --box-scale: .64; --food: .72;
+  width: 100%; height: 340px;
   display: grid; place-items: center; position: relative;
   background: none; border: 0; padding: 0; margin: 0;
   font: inherit; color: inherit; cursor: pointer;
   perspective: 1100px; perspective-origin: 50% 46%;
 }
-@media (min-width: 640px)  { .bot-stage { --spread: .78; --box-scale: .84; --chip: .85; height: 380px; } }
-@media (min-width: 1024px) { .bot-stage { --spread: 1;   --box-scale: 1;   --chip: 1;   height: 420px; } }
+@media (min-width: 640px)  { .bot-stage { --spread: .82; --box-scale: .86; --food: .9; height: 390px; } }
+@media (min-width: 1024px) { .bot-stage { --spread: 1;   --box-scale: 1;   --food: 1;  height: 430px; } }
 
 .bot-floor {
-  position: absolute; bottom: 48px; left: 50%;
+  position: absolute; bottom: 46px; left: 50%;
   width: calc(210px * var(--box-scale)); height: 26px;
   translate: -50% 0; border-radius: 50%;
   background: radial-gradient(ellipse at center, rgba(18,22,20,.22), transparent 70%);
   transition: width var(--dur) var(--ease), opacity var(--dur) var(--ease);
 }
-.bot-stage.is-open .bot-floor { width: calc(120px * var(--box-scale)); opacity: .5; }
+.bot-stage.is-open .bot-floor { width: calc(130px * var(--box-scale)); opacity: .5; }
 
 .bot-rig {
-  transform-style: preserve-3d;
-  scale: var(--box-scale);
+  transform-style: preserve-3d; scale: var(--box-scale);
   animation: botHover 6s var(--ease-soft) infinite alternate;
 }
+/* Bob only. The rotation lives on .bot-spin, because a CSS animation and a
+ * JS-written transform on the same element overwrite one another. */
 @keyframes botHover {
-  from { transform: translateY(-6px) rotateX(-16deg) rotateY(-22deg); }
-  to   { transform: translateY(10px) rotateX(-13deg) rotateY(14deg); }
+  from { transform: translateY(-7px); }
+  to   { transform: translateY(9px); }
 }
 
-.bot-box { position: relative; width: 220px; height: 90px; transform-style: preserve-3d; }
+/* The user's rotation. --rx/--ry are written by the drag handler; these
+ * defaults are the resting three-quarter view. */
+.bot-spin {
+  --rx: -16deg; --ry: -20deg;
+  display: block; transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform var(--dur) var(--ease);
+}
+.bot-stage.is-dragging .bot-spin { transition: none; }
+.bot-stage.is-dragging { cursor: grabbing; }
+.bot-stage { cursor: grab; }
+.bot-stage.is-open { cursor: pointer; }
+
+/* 220 × 140 × 96. Faces meet edge to edge: the corner radius is 3px, not 10,
+ * and only the lid is rounded more — a 10px radius on every face is what left
+ * open corners where the walls should join. */
+.bot-box { position: relative; width: 220px; height: 96px; transform-style: preserve-3d; }
 .bot-face {
-  position: absolute;
+  /* Every face is centred on the box's centre FIRST, then rotated out to its
+   * wall. Left at the default left:0/top:0 the 140-wide side panels sit 40px
+   * off centre and the box renders as an exploded diagram rather than a
+   * sealed container. The individual `translate` property applies before
+   * `transform`, so the centring survives the rotation. */
+  position: absolute; left: 50%; top: 50%; translate: -50% -50%;
+  border-radius: 3px;
   background: var(--warm);
-  border: 1px solid var(--line-strong);
+  box-shadow: inset 0 0 0 1px rgba(18,22,20,.12);
   transition: transform 700ms var(--ease), opacity 500ms var(--ease);
-  background-image: linear-gradient(180deg, rgba(255,255,255,.34), transparent 44%);
 }
-.bf-front, .bf-back { width: 220px; height: 90px; border-radius: 10px; }
-.bf-left,  .bf-right { width: 140px; height: 90px; border-radius: 10px; }
-.bf-lid,   .bf-base  { width: 220px; height: 140px; border-radius: 14px; }
+.bf-front, .bf-back { width: 220px; height: 96px; }
+.bf-left,  .bf-right { width: 140px; height: 96px; }
+.bf-lid,   .bf-base  { width: 220px; height: 140px; }
+.bf-lid { border-radius: 8px; }
 
-.bf-front { transform: translateZ(70px); transform-origin: bottom center; }
-.bf-back  { transform: rotateY(180deg) translateZ(70px); transform-origin: bottom center; }
-.bf-left  { transform: rotateY(-90deg) translateZ(110px); transform-origin: bottom center; }
-.bf-right { transform: rotateY(90deg)  translateZ(110px); transform-origin: bottom center; }
-.bf-base  { transform: rotateX(90deg)  translateZ(-45px); background: var(--card); }
-.bf-lid   { transform: rotateX(90deg)  translateZ(45px); transform-origin: center top;
-            display: grid; place-items: center; }
-
-.bot-mark {
-  font-family: var(--font-display); font-weight: var(--w-display);
-  font-size: 22px; letter-spacing: -0.02em; color: var(--brand);
-  transform: rotate(-90deg); user-select: none; line-height: 1.1;
+/* Each wall is shaded by which way it faces, so the box reads as one solid
+ * object lit from above-left rather than six flat panels. */
+.bf-front { transform: translateZ(70px);  transform-origin: bottom center;
+            background-image: linear-gradient(180deg, rgba(255,255,255,.30), rgba(18,22,20,.05)); }
+.bf-back  { transform: rotateY(180deg) translateZ(70px); transform-origin: bottom center;
+            background-image: linear-gradient(180deg, rgba(18,22,20,.10), rgba(18,22,20,.02)); }
+.bf-left  { transform: rotateY(-90deg) translateZ(110px); transform-origin: bottom center;
+            background-image: linear-gradient(180deg, rgba(255,255,255,.18), rgba(18,22,20,.08)); }
+.bf-right { transform: rotateY(90deg)  translateZ(110px); transform-origin: bottom center;
+            background-image: linear-gradient(180deg, rgba(18,22,20,.06), rgba(18,22,20,.12)); }
+.bf-base  { transform: rotateX(90deg) translateZ(-48px); background: var(--card);
+            box-shadow: inset 0 0 0 1px rgba(18,22,20,.14), inset 0 0 24px rgba(18,22,20,.10); }
+.bf-lid   {
+  /* Centre origin, NOT `center top`. The lid is placed with rotateX(90deg),
+   * so a top origin rotates it about its own edge and parks it floating
+   * above the box instead of resting on it. The open animation translates
+   * and fades the lid, so it needs no hinge origin. */
+  transform: rotateX(90deg) translateZ(48px);
+  background-image: linear-gradient(145deg, rgba(255,255,255,.42), transparent 52%);
 }
-.bot-mark small {
-  display: block; font-family: var(--font-body); font-size: 8px; font-weight: 600;
-  letter-spacing: .3em; text-transform: uppercase; color: var(--ink-faint); margin-top: 3px;
-}
 
-/* Two sensor lights. The blink cycle is long and uneven so it reads as a
- * thing at rest, not as a loading indicator. */
-.bot-eyes { position: absolute; top: 26px; left: 50%; translate: -50% 0; display: flex; gap: 22px; }
+/* The lid carries the two sensor lights now that the wordmark has moved to
+ * the front. */
+.bot-eyes { position: absolute; top: 50%; left: 50%; translate: -50% -50%;
+            display: flex; gap: 26px; }
 .bot-eye {
-  width: 15px; height: 15px; border-radius: 50%;
+  width: 13px; height: 13px; border-radius: 50%;
   background: var(--brand); box-shadow: 0 0 0 3px var(--brand-wash);
   animation: botBlink 5.5s steps(1, end) infinite;
 }
@@ -477,41 +498,156 @@ body.has-float-nav .wa-float { bottom: calc(var(--space-5) + 76px); }
 }
 .bot-stage.is-open .bot-eye { background: var(--accent); box-shadow: 0 0 0 3px var(--accent-wash); }
 
-.bot-stage.is-open .bf-lid   { transform: rotateX(90deg) translateZ(45px) translateY(-190px) rotateZ(-26deg); opacity: 0; }
-.bot-stage.is-open .bf-front { transform: translateZ(70px) rotateX(96deg); opacity: .5; }
-.bot-stage.is-open .bf-back  { transform: rotateY(180deg) translateZ(70px) rotateX(96deg); opacity: .5; }
-.bot-stage.is-open .bf-left  { transform: rotateY(-90deg) translateZ(110px) rotateX(96deg); opacity: .5; }
-.bot-stage.is-open .bf-right { transform: rotateY(90deg) translateZ(110px) rotateX(96deg); opacity: .5; }
-.bot-stage.is-open .bf-base  { opacity: .62; }
-.bot-stage.is-open .bot-eyes { opacity: 0; transition: opacity 200ms var(--ease); }
+/* The wordmark, on the FRONT panel where a label belongs. */
+.bot-mark {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; user-select: none;
+}
+.bot-mark b {
+  font-family: var(--font-display); font-weight: var(--w-display);
+  font-size: 26px; letter-spacing: -0.02em; color: var(--brand); line-height: 1;
+}
+.bot-mark small {
+  font-family: var(--font-body); font-size: 8px; font-weight: 600;
+  letter-spacing: .34em; text-transform: uppercase; color: var(--ink-faint);
+}
 
-/* ---- the six components ---- */
+.bot-stage.is-open .bf-lid   { transform: rotateX(90deg) translateZ(48px) translateY(-200px) rotateZ(-24deg); opacity: 0; }
+.bot-stage.is-open .bf-front { transform: translateZ(70px) rotateX(98deg); opacity: .45; }
+.bot-stage.is-open .bf-back  { transform: rotateY(180deg) translateZ(70px) rotateX(98deg); opacity: .45; }
+.bot-stage.is-open .bf-left  { transform: rotateY(-90deg) translateZ(110px) rotateX(98deg); opacity: .45; }
+.bot-stage.is-open .bf-right { transform: rotateY(90deg) translateZ(110px) rotateX(98deg); opacity: .45; }
+.bot-stage.is-open .bf-base  { opacity: .7; }
+.bot-stage.is-open .bot-mark { opacity: 0; transition: opacity 240ms var(--ease); }
+
+/* ---- the food ----------------------------------------------------------
+ * Drawn in CSS, not typed. Each piece is one element plus its two pseudo
+ * elements: a mound of rice, a grilled fillet, a floret, a fried egg, a dish
+ * of sambal, a citrus slice. No labels — the shapes carry it.
+ *
+ * Three stages, not two: closed, then FULL (the parts sit in the base while
+ * the walls fall), then scattered. The middle stage is the point — a box you
+ * open should look like it had something in it. */
 .bot-parts { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; }
+
 .bot-part {
   position: absolute; top: 50%; left: 50%;
-  width: calc(var(--w) * var(--chip)); height: calc(var(--h) * var(--chip));
-  margin: calc(var(--h) * var(--chip) / -2) 0 0 calc(var(--w) * var(--chip) / -2);
-  border-radius: var(--r);
-  background: var(--c);
-  box-shadow: inset 0 -8px 16px rgba(0,0,0,.16), inset 0 6px 10px rgba(255,255,255,.26);
-  display: grid; place-items: center;
-  opacity: 0; transform: translate3d(0,0,0) scale(.3);
-  transition: transform 820ms var(--ease), opacity 420ms var(--ease);
+  width: calc(var(--w) * var(--food)); height: calc(var(--h) * var(--food));
+  margin: calc(var(--h) * var(--food) / -2) 0 0 calc(var(--w) * var(--food) / -2);
+  opacity: 0;
+  transform: translate3d(0,0,0) scale(.4);
+  transition: transform 760ms var(--ease), opacity 360ms var(--ease);
   transition-delay: var(--d);
 }
-.bot-part span {
-  font-family: var(--font-body); font-size: max(9px, calc(10px * var(--chip))); font-weight: 600;
-  letter-spacing: .08em; text-transform: uppercase; text-align: center;
-  padding: 0 6px; color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,.5);
-}
-.bot-part.on-light span { color: rgba(18,22,20,.82); text-shadow: none; }
-
+/* Stage 2 — in the box, arranged flat on the base. */
 .bot-stage.is-open .bot-part {
   opacity: 1;
+  transform: translate3d(calc(var(--ix) * 1px), calc(var(--iy) * 1px), -34px)
+             rotateX(90deg) rotate(var(--irot, 0deg)) scale(.82);
+  transition-delay: calc(var(--d) / 3);
+}
+/* Stage 3 — out and around. */
+.bot-stage.is-scattered .bot-part {
   transform: translate3d(calc(var(--xr) * var(--spread) * 1px),
                          calc(var(--yr) * var(--spread) * 1px),
                          calc(var(--zr) * 1px))
              rotate(var(--rot)) scale(1);
+  transition-delay: var(--d);
+}
+
+.food { position: absolute; inset: 0; }
+.food::before, .food::after { content: ""; position: absolute; }
+
+/* Nasi merah — a mound of red rice, grains suggested by a dot pattern. */
+.f-rice {
+  border-radius: 48% 52% 44% 56% / 62% 58% 42% 38%;
+  background:
+    radial-gradient(circle at 26% 30%, rgba(255,255,255,.30) 0 2px, transparent 3px),
+    radial-gradient(circle at 62% 24%, rgba(255,255,255,.22) 0 2px, transparent 3px),
+    radial-gradient(circle at 44% 58%, rgba(255,255,255,.20) 0 2px, transparent 3px),
+    radial-gradient(circle at 74% 62%, rgba(255,255,255,.24) 0 2px, transparent 3px),
+    radial-gradient(circle at 30% 76%, rgba(255,255,255,.18) 0 2px, transparent 3px),
+    radial-gradient(ellipse at 36% 28%, #A4604F, #8C4A3F 62%, #6E3930);
+  box-shadow: inset 0 -6px 12px rgba(0,0,0,.26);
+}
+
+/* Ayam panggang — a fillet with char marks across it. */
+.f-chicken {
+  border-radius: 46% 54% 52% 48% / 58% 56% 44% 42%;
+  background: linear-gradient(160deg, #EFCB91, #E0B773 46%, #C2924E);
+  box-shadow: inset 0 -6px 12px rgba(0,0,0,.22);
+  overflow: hidden;
+}
+.f-chicken::before {
+  inset: 0;
+  background: repeating-linear-gradient(118deg,
+    transparent 0 9px, rgba(92,56,24,.42) 9px 13px, transparent 13px 22px);
+}
+
+/* Sayur — a broccoli floret: a bumpy crown over a pale stalk. */
+.f-greens { border-radius: 50%; background: none; }
+.f-greens::before {
+  left: 8%; right: 8%; top: 0; height: 74%;
+  border-radius: 52% 48% 46% 54% / 64% 62% 38% 36%;
+  background: radial-gradient(ellipse at 34% 26%, #6D9E4A, #4E7A3A 58%, #37592A);
+  box-shadow:
+    inset 0 -5px 10px rgba(0,0,0,.28),
+    6px -4px 0 -2px #4E7A3A, -7px -3px 0 -3px #578A40;
+}
+.f-greens::after {
+  left: 40%; bottom: 2%; width: 20%; height: 34%;
+  border-radius: 40% 40% 30% 30%;
+  background: linear-gradient(180deg, #BFCF9A, #9FB47A);
+}
+
+/* Telur — a fried egg, white with a yolk sitting off centre. */
+.f-egg { background: none; }
+.f-egg::before {
+  inset: 0;
+  border-radius: 54% 46% 58% 42% / 48% 56% 44% 52%;
+  background: radial-gradient(ellipse at 40% 36%, #FFFFFF, #F3F0E4 70%, #E2DDCB);
+  box-shadow: inset 0 -4px 10px rgba(0,0,0,.12);
+}
+.f-egg::after {
+  left: 30%; top: 26%; width: 42%; height: 42%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 32%, #FFD97A, #F2C14E 62%, #D79E2C);
+  box-shadow: inset 0 -3px 6px rgba(0,0,0,.20);
+}
+
+/* Sambal — a small dish, rim and chilli paste. */
+.f-sambal { background: none; }
+.f-sambal::before {
+  inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #F3EFE6, #DED7C8);
+  box-shadow: inset 0 -4px 9px rgba(0,0,0,.18);
+}
+.f-sambal::after {
+  inset: 18%; border-radius: 50%;
+  background:
+    radial-gradient(circle at 60% 40%, rgba(255,255,255,.22) 0 2px, transparent 3px),
+    radial-gradient(circle at 36% 62%, rgba(255,255,255,.18) 0 2px, transparent 3px),
+    radial-gradient(circle at 44% 38%, #D4573A, #C0462B 60%, #93311C);
+}
+
+/* Buah — a citrus slice: rind, pith, and segments drawn with a conic sweep. */
+.f-fruit { background: none; }
+.f-fruit::before {
+  inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #F6C28A 0 58%, #FFF4E4 58% 68%, #D98A5B 68%);
+  box-shadow: inset 0 -4px 10px rgba(0,0,0,.18);
+}
+.f-fruit::after {
+  inset: 16%; border-radius: 50%;
+  background:
+    conic-gradient(from 0deg,
+      #F2A765 0 56deg, rgba(255,255,255,.72) 56deg 60deg,
+      #F2A765 60deg 116deg, rgba(255,255,255,.72) 116deg 120deg,
+      #F2A765 120deg 176deg, rgba(255,255,255,.72) 176deg 180deg,
+      #F2A765 180deg 236deg, rgba(255,255,255,.72) 236deg 240deg,
+      #F2A765 240deg 296deg, rgba(255,255,255,.72) 296deg 300deg,
+      #F2A765 300deg 356deg, rgba(255,255,255,.72) 356deg 360deg);
 }
 
 .bot-hint {
@@ -524,7 +660,7 @@ body.has-float-nav .wa-float { bottom: calc(var(--space-5) + 76px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bot-rig { animation: none; transform: rotateX(-14deg) rotateY(-10deg); }
+  .bot-rig { animation: none; transform: rotateX(-15deg) rotateY(-10deg); }
   .bot-eye { animation: none; }
   .bot-face, .bot-part, .bot-floor { transition-duration: 1ms; }
 }

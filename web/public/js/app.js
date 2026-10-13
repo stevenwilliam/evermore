@@ -362,20 +362,101 @@
   }
 })();
 
-/* D44 — Bekal Bot. The box is a <button>, so Enter and Space already fire
- * click; binding keys here as well would double-fire. With JS off the box
- * stays closed, which is a correct resting state rather than a broken one. */
+/* D45 — Bekal Bot: drag to turn it, tap to open it.
+ *
+ * Two gestures share one element, so the drag has to be told apart from the
+ * tap or every spin would also open the box. The rule is distance: past 6px
+ * of travel it is a drag, and the click that follows is swallowed.
+ *
+ * Opening is three stages, not two. The box fills before it scatters —
+ * a container you open should look like it had something in it.
+ */
 (function () {
   var stage = document.getElementById('bot-stage');
-  if (!stage) return;
+  var spin = document.getElementById('bot-spin');
+  if (!stage || !spin) return;
+
   var hint = document.getElementById('bot-hint-text');
-  var open = false;
-  stage.addEventListener('click', function () {
-    open = !open;
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var open = false, scatterTimer = null;
+  var rx = -16, ry = -20;              // the resting three-quarter view
+  var dragging = false, moved = false;
+  var startX = 0, startY = 0, startRx = 0, startRy = 0;
+
+  function apply() {
+    spin.style.setProperty('--rx', rx.toFixed(2) + 'deg');
+    spin.style.setProperty('--ry', ry.toFixed(2) + 'deg');
+  }
+  function clampX(v) { return Math.max(-62, Math.min(32, v)); }
+
+  function setOpen(next) {
+    open = next;
+    window.clearTimeout(scatterTimer);
     stage.classList.toggle('is-open', open);
     stage.setAttribute('aria-pressed', open ? 'true' : 'false');
-    if (hint) hint.textContent = open
-      ? 'Ketuk lagi untuk menutup'
-      : 'Ketuk kotaknya untuk melihat isinya';
+    if (open) {
+      // Let the walls fall and the food read as "in the box" before it flies
+      // apart. Skipped entirely under reduced motion, where the stages would
+      // collapse into one frame anyway.
+      if (reduced) stage.classList.add('is-scattered');
+      else scatterTimer = window.setTimeout(function () {
+        stage.classList.add('is-scattered');
+      }, 650);
+    } else {
+      stage.classList.remove('is-scattered');
+    }
+    if (hint) hint.textContent = open ? 'untuk menutup' : 'untuk membuka';
+  }
+
+  stage.addEventListener('pointerdown', function (e) {
+    dragging = true; moved = false;
+    startX = e.clientX; startY = e.clientY;
+    startRx = rx; startRy = ry;
+    stage.classList.add('is-dragging');
+    stage.setPointerCapture(e.pointerId);
   });
+
+  stage.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    var dx = e.clientX - startX, dy = e.clientY - startY;
+    if (!moved && Math.abs(dx) + Math.abs(dy) > 6) moved = true;
+    if (!moved) return;
+    ry = startRy + dx * 0.45;
+    rx = clampX(startRx - dy * 0.3);
+    apply();
+  });
+
+  function endDrag(e) {
+    if (!dragging) return;
+    dragging = false;
+    stage.classList.remove('is-dragging');
+    if (e && e.pointerId !== undefined && stage.hasPointerCapture(e.pointerId)) {
+      stage.releasePointerCapture(e.pointerId);
+    }
+  }
+  stage.addEventListener('pointerup', endDrag);
+  stage.addEventListener('pointercancel', endDrag);
+
+  // A drag ends in a click event too; swallow that one so spinning the box
+  // never opens it.
+  stage.addEventListener('click', function (e) {
+    if (moved) { moved = false; e.preventDefault(); return; }
+    setOpen(!open);
+  });
+
+  // The keyboard gets the same two powers: arrows turn it, Enter and Space
+  // open it (the <button> already fires click for those).
+  stage.addEventListener('keydown', function (e) {
+    var step = e.shiftKey ? 15 : 7;
+    if (e.key === 'ArrowLeft')      { ry -= step; }
+    else if (e.key === 'ArrowRight'){ ry += step; }
+    else if (e.key === 'ArrowUp')   { rx = clampX(rx - step); }
+    else if (e.key === 'ArrowDown') { rx = clampX(rx + step); }
+    else return;
+    e.preventDefault();
+    apply();
+  });
+
+  apply();
 })();
