@@ -168,7 +168,22 @@ and still reads as muted (8.59) on the ordinary one.
 | ink-soft under glass, worst ribbon pixel (REJECTED) | **4.03** | FAIL |
 | ink-on-glass on the dark glass, lightest ribbon pixel | **5.37** | AA |
 
-### 2.7 The WhatsApp float
+### 2.7 The hero's Indonesia map (D64)
+
+The archipelago behind the hero is a mask over `--brand` at 7% with a 3px
+blur — background filler, so it is measured where it is darkest: an island
+sitting directly behind the type.
+
+| Pairing | Ratio | Verdict |
+|---|---|---|
+| ink on the hero, over the map | **15.43** | AAA |
+| ink-soft on the hero, over the map | **5.74** | AA |
+| ink-faint on the hero, over the map | **4.61** | AA |
+| brand script on the hero, over the map | **7.51** | AAA |
+| ink on the dark hero, over the map | **15.00** | AAA |
+| ink-soft on the dark hero, over the map | **8.53** | AAA |
+
+### 2.8 The WhatsApp float
 
 | Pairing | Ratio | Verdict |
 |---|---|---|

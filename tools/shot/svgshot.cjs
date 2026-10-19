@@ -1,0 +1,12 @@
+const { chromium } = require('playwright')
+const fs = require('fs')
+;(async () => {
+  const b = await chromium.launch()
+  const p = await (await b.newContext({viewport:{width:1000,height:400}})).newPage()
+  const svg = fs.readFileSync('/home/dev/projects/evermore/web/public/images/indonesia.svg','utf8')
+  await p.setContent('<body style="margin:0;background:#fff">'+svg.replace('<svg','<svg width="1000"')+'</body>')
+  await p.waitForTimeout(400)
+  await p.screenshot({path: process.argv[2]+'/idn.png'})
+  console.log('ok')
+  await b.close()
+})()

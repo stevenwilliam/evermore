@@ -201,6 +201,15 @@ CHECKS: list[tuple[str, str, str, dict]] = [
     ("ink-soft under glass, worst ribbon pixel (REJECTED)", "#555D58", "#BBCBC5", {}),
     ("ink-on-glass on the dark glass, lightest ribbon pixel", "#C3C9C5", "#304F42", {}),
 
+    # --- the hero's Indonesia map (D64). 7% of brand over the ground, which is
+    # the darkest the hero can get where an island sits behind the type.
+    ("ink on the hero, over the map", INK, "#E9EDE9", {}),
+    ("ink-soft on the hero, over the map", "#555D58", "#E9EDE9", {}),
+    ("ink-faint on the hero, over the map", "#656B67", "#E9EDE9", {}),
+    ("brand script on the hero, over the map", BRAND, "#E9EDE9", {}),
+    ("ink on the dark hero, over the map", "#F2F3EF", "#16201B", {}),
+    ("ink-soft on the dark hero, over the map", "#B4BBB6", "#16201B", {}),
+
     # --- the WhatsApp float
     ("WA teal on paper", "#128C7E", PAPER, {"non_text": True}),
     ("WA white glyph on the teal", WHITE, "#128C7E", {"non_text": True}),
@@ -263,6 +272,12 @@ RECORDED: dict[str, float] = {
     "ink-faint under glass, worst ribbon pixel (REJECTED)": 3.23,
     "ink-soft under glass, worst ribbon pixel (REJECTED)": 4.03,
     "ink-on-glass on the dark glass, lightest ribbon pixel": 5.37,
+    "ink on the hero, over the map": 15.43,
+    "ink-soft on the hero, over the map": 5.74,
+    "ink-faint on the hero, over the map": 4.61,
+    "brand script on the hero, over the map": 7.51,
+    "ink on the dark hero, over the map": 15.00,
+    "ink-soft on the dark hero, over the map": 8.53,
     "WA teal on paper": 3.92,
     "WA white glyph on the teal": 4.14,
 }

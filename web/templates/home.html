@@ -3,6 +3,10 @@
      slightly tilted photograph on the right. The drifting blobs behind it are
      drawn by .hero-full::before/::after, not by markup. */}}
 <section class="hero-full">
+  {{/* The archipelago, as ground rather than illustration. It is a MASK, not
+       an image, so it takes its colour from the theme — a dark-green fill
+       baked into the file would disappear on the dark ground. */}}
+  <span class="hero-map" aria-hidden="true"></span>
   <div class="container hero-grid">
     <div class="hero-inner">
       <span class="eyebrow hero-eyebrow">{{t .L "home.eyebrow"}}</span>

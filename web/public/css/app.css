@@ -235,6 +235,27 @@ main { flex: 1 0 auto; }
 /* ----------------------------------------------------------------- hero */
 
 .hero-full { position: relative; overflow: hidden; }
+
+/* Indonesia behind the hero — background filler, not illustration.
+ *
+ * Drawn as a MASK over a token colour rather than as an <img>: a fill baked
+ * into the SVG would be one fixed colour and would vanish on the dark ground.
+ * The outline is Natural Earth 50m (public domain), simplified to 53 islands
+ * and 17KB, which is more than enough at 7% behind a blur.
+ *
+ * It must not compete: 7% opacity, a 3px blur, and it sits BELOW the existing
+ * wash so the two read as one soft ground rather than two layers. */
+.hero-map {
+  position: absolute; z-index: 0; pointer-events: none;
+  left: 50%; top: 50%; translate: -50% -50%;
+  width: 118%; aspect-ratio: 1600 / 578;
+  background: var(--brand);
+  -webkit-mask: url("/images/indonesia.svg") center / contain no-repeat;
+          mask: url("/images/indonesia.svg") center / contain no-repeat;
+  opacity: .07;
+  filter: blur(3px);
+}
+@media (min-width: 1024px) { .hero-map { width: 104%; } }
 /* The float nav and the WhatsApp button are fixed over the bottom of the
  * viewport, so on a phone the hero needs room underneath or the bot opens
  * behind them. */
@@ -981,13 +1002,33 @@ tbody tr:hover { background: var(--warm); }
    Cards and tiles already carry a solid background, so the ribbon shows only
    in the gaps between them — which is the whole effect.
    ========================================================================== */
-@keyframes sigRibbon{from{stroke-dashoffset:2000}to{stroke-dashoffset:0}}
+/* D64 — the signature WRITES ITSELF.
+ *
+ * It used to be two short dash segments sliding along a line that was already
+ * fully drawn: the motion read as something travelling past, not as a hand.
+ * Now the stroke starts at zero length and grows from the first letter to the
+ * last, rests while the finished name sits there, and fades out before the
+ * next pass. The dash is the full path length rather than a 520-unit segment,
+ * which is the whole mechanical difference.
+ *
+ * The faint guide path underneath never animates, so the signature is present
+ * the entire time and the colour is a pen going back over it — which is the
+ * idea the first version was after. */
+@keyframes sigWrite{
+  0%        {stroke-dashoffset:2000; opacity:0}
+  3%        {opacity:1}
+  46%       {stroke-dashoffset:0}
+  78%       {stroke-dashoffset:0; opacity:1}
+  94%, 100% {stroke-dashoffset:0; opacity:0}
+}
 @keyframes sigFloat{from{transform:translateY(-16px)}to{transform:translateY(16px)}}
 @media (prefers-reduced-motion:reduce){.sig-ribbon *{animation:none!important}}
 .sig-ribbon{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 .sig-ribbon .float{animation:sigFloat 14s ease-in-out infinite alternate}
-.sig-ribbon .r1{animation:sigRibbon 34s linear infinite}
-.sig-ribbon .r2{animation:sigRibbon 34s linear -17s infinite}
+/* The second colour trails the first, like a wet second pass over the same
+ * line, rather than running half a cycle away from it. */
+.sig-ribbon .r1{animation:sigWrite 22s var(--ease-soft) infinite}
+.sig-ribbon .r2{animation:sigWrite 22s var(--ease-soft) 1.4s infinite}
 
 .has-sig { position: relative; overflow: hidden; }
 .has-sig > .container { position: relative; z-index: 1; }

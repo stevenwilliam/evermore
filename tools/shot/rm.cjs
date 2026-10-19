@@ -1,0 +1,13 @@
+const { chromium } = require('playwright')
+;(async () => {
+  const b = await chromium.launch()
+  const p = await (await b.newContext({viewport:{width:1280,height:800}, reducedMotion:'reduce'})).newPage()
+  await p.goto('http://127.0.0.1:8082/', {waitUntil:'domcontentloaded', timeout:20000})
+  await p.waitForTimeout(1200)
+  const a = await p.evaluate(()=>{const r=document.querySelector('#week .r1')
+    return [getComputedStyle(r).animationName, getComputedStyle(r).strokeDashoffset, getComputedStyle(r).opacity]})
+  await p.waitForTimeout(1500)
+  const c = await p.evaluate(()=>getComputedStyle(document.querySelector('#week .r1')).strokeDashoffset)
+  console.log('reduced-motion: anim='+a[0]+' dashoffset '+a[1]+' -> '+c+' opacity '+a[2]+'  '+(a[1]===c?'STILL':'MOVING'))
+  await b.close()
+})()
