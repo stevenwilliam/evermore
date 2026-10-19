@@ -69,7 +69,7 @@ main { flex: 1 0 auto; }
 /* Unless it is a band. Zero trailing padding was right when the section was
  * the same colour as everything around it; on a block of colour it cuts the
  * band off flush against the cards (D65). */
-#week.band-linen { padding-bottom: var(--space-8); }
+#week.band-linen { padding-bottom: var(--space-6); }
 #week + .section { padding-top: var(--space-6); }
 
 /* The hero already supplies the space above whatever follows it. */
@@ -78,7 +78,7 @@ main { flex: 1 0 auto; }
  * them opened ~192px of empty page. The second one halves its top. */
 .section + .section { padding-top: var(--space-6); }
 .section.tight { padding-block: var(--space-5); }
-.section.tight { padding-block: var(--space-6); }
+.section.tight { padding-block: var(--space-6) var(--space-5); }
 /* D65 — the body is banded, not one flat sheet.
  *
  * Three grounds down the page instead of one, each carrying a bit of meaning:
@@ -98,9 +98,16 @@ main { flex: 1 0 auto; }
 .band-wash   { background: var(--brand-wash); }
 /* A band is a block of colour, so it keeps even padding — `.section + .section`
  * trims the top of a run of plain sections, which would leave it lopsided. */
+/* A band needs enough padding to breathe and no more. At --space-8 it stacked
+ * 96px on top of the previous section's own bottom padding, which put 202px —
+ * over 5cm — of nothing above "This week's menu" (D68). */
 .section.band-raised,
 .section.band-linen,
-.section.band-wash { padding-block: var(--space-8); }
+.section.band-wash { padding-block: var(--space-6); }
+/* And the section handing over to a band gives up most of its trailing
+ * padding, since the colour change already does the separating. */
+.hero-full + .band-linen,
+.hero-full + .band-wash { margin-top: 0; }
 
 /* Editorial, not centred. The head sits in a narrow measure on the left and
  * the content runs wider beneath it — asymmetry is what keeps a page from
@@ -833,7 +840,7 @@ tbody tr:hover { background: var(--warm); }
 /* The hero opened with ~148px of nothing above the eyebrow once the sticky
  * header arrived. The header already supplies that separation. */
 .hero-full { padding-block: var(--space-4) var(--space-5); }
-@media (min-width: 1024px) { .hero-full { padding-block: var(--space-5) var(--space-6); } }
+@media (min-width: 1024px) { .hero-full { padding-block: var(--space-5) var(--space-5); } }
 
 /* The header was a flat row of identical links. Three changes: a hairline
  * under the hovered or current item so the target is unmistakable, a real
