@@ -57,7 +57,7 @@
               {{if not .Panel.Complete}}<br><span class="pill pill-warn">{{t $.L "menu.incomplete"}}</span>{{end}}
             </p>
             <div class="card-foot">
-              {{if .PriceIDR}}<span class="price">{{rupiah .PriceIDR}}<small>{{t $.L "price.incl"}}</small></span>{{end}}
+              <span class="price">{{t $.L "meal.onecredit"}}</span>
               <a class="btn btn-solid" href="/menu/{{.ID}}">{{t $.L "menu.view"}}</a>
             </div>
           </div>

@@ -117,9 +117,8 @@ func (h *AppHandler) validSlugs(ctx context.Context, want []string) ([]string, e
 // Addresses lists the customer's delivery addresses.
 func (h *AppHandler) Addresses(c *gin.Context) {
 	ctx := c.Request.Context()
-	custID, ok := CustomerIDOf(c)
+	custID, ok := h.requireCustomer(c, "/app/addresses")
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/addresses")
 		return
 	}
 	params, _ := h.repo.Params(ctx)
@@ -212,9 +211,8 @@ func readAddressForm(c *gin.Context) (*addressForm, error) {
 // AddAddress creates one.
 func (h *AppHandler) AddAddress(c *gin.Context) {
 	ctx := c.Request.Context()
-	custID, ok := CustomerIDOf(c)
+	custID, ok := h.requireCustomer(c, "/app/addresses")
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/addresses")
 		return
 	}
 	f, err := readAddressForm(c)
@@ -262,9 +260,8 @@ func (h *AppHandler) AddAddress(c *gin.Context) {
 // EditAddress updates one the customer owns.
 func (h *AppHandler) EditAddress(c *gin.Context) {
 	ctx := c.Request.Context()
-	custID, ok := CustomerIDOf(c)
+	custID, ok := h.requireCustomer(c, "/app/addresses")
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/addresses")
 		return
 	}
 	addrID, err := uuid.Parse(c.Param("id"))
@@ -327,9 +324,8 @@ func (h *AppHandler) setDefaultAddress(ctx context.Context, custID, addrID uuid.
 
 // DefaultAddress marks one as the default.
 func (h *AppHandler) DefaultAddress(c *gin.Context) {
-	custID, ok := CustomerIDOf(c)
+	custID, ok := h.requireCustomer(c, "/app/addresses")
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/addresses")
 		return
 	}
 	addrID, err := uuid.Parse(c.Param("id"))
@@ -351,9 +347,8 @@ func (h *AppHandler) DefaultAddress(c *gin.Context) {
 // is append-only (CLAUDE.md §4).
 func (h *AppHandler) RemoveAddress(c *gin.Context) {
 	ctx := c.Request.Context()
-	custID, ok := CustomerIDOf(c)
+	custID, ok := h.requireCustomer(c, "/app/addresses")
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/addresses")
 		return
 	}
 	addrID, err := uuid.Parse(c.Param("id"))
@@ -396,9 +391,8 @@ func (h *AppHandler) RemoveAddress(c *gin.Context) {
 // Allergies renders the allergen profile.
 func (h *AppHandler) Allergies(c *gin.Context) {
 	ctx := c.Request.Context()
-	custID, ok := CustomerIDOf(c)
+	custID, ok := h.requireCustomer(c, "/app/allergies")
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/allergies")
 		return
 	}
 	chosen, err := h.allergenProfile(ctx, custID)
@@ -424,9 +418,8 @@ func (h *AppHandler) Allergies(c *gin.Context) {
 // SaveAllergies replaces the profile with the submitted set.
 func (h *AppHandler) SaveAllergies(c *gin.Context) {
 	ctx := c.Request.Context()
-	custID, ok := CustomerIDOf(c)
+	custID, ok := h.requireCustomer(c, "/app/allergies")
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/allergies")
 		return
 	}
 	slugs, err := h.validSlugs(ctx, c.PostFormArray("allergen"))

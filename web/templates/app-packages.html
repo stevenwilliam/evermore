@@ -56,7 +56,7 @@
         <div class="card-body">
           {{if .IsFeatured}}<p><span class="pill pill-warn">{{t $.L "cr.popular"}}</span></p>{{end}}
           <h3>{{.MealCredits}} {{t $.L "pkg.portions"}}</h3>
-          <p class="meta">{{rupiah .PerMealIDR}} {{t $.L "pkg.per"}} &middot; {{printf (t $.L "pkg.valid") (printf "%d" .ValidityDays)}}</p>
+          <p class="meta">{{printf (t $.L "pkg.valid") (printf "%d" .ValidityDays)}}</p>
           <div class="card-foot"><span class="price">{{rupiah .PriceIDR}}</span></div>
         </div>
       </article>

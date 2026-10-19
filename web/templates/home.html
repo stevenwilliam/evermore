@@ -233,10 +233,12 @@
         <div class="card-body">
           {{if .IsFeatured}}<p class="card-flag">{{template "flagPopular" $.L}}</p>{{end}}
           <h3>{{.MealCredits}} {{t $.L "pkg.portions"}}</h3>
-          <p class="meta">{{rupiah .PerMealIDR}} {{t $.L "pkg.per"}} &middot; {{printf (t $.L "pkg.valid") (printf "%d" .ValidityDays)}}</p>
+          {{/* No per-meal rupiah: a meal costs a credit, not money (D86). The
+               only price here is what the credits themselves cost. */}}
+          <p class="meta">{{printf (t $.L "pkg.valid") (printf "%d" .ValidityDays)}}</p>
           <div class="card-foot">
             <span class="price">{{rupiah .PriceIDR}}</span>
-            <a class="btn btn-solid" href="/packages">Lihat paket</a>
+            <a class="btn btn-solid" href="/packages">{{t $.L "pkg.buy"}}</a>
           </div>
         </div>
       </article>

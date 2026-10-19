@@ -58,9 +58,7 @@
         <div class="card" style="margin-top:var(--space-6)">
           <div class="card-body">
             <div class="card-foot" style="padding-top:0">
-              {{if .Meal.PriceIDR}}
-              <span class="price">{{rupiah .Meal.PriceIDR}}<small>{{t .L "price.per.incl"}}</small></span>
-              {{end}}
+              <span class="price">{{t .L "meal.onecredit"}}<small>{{t .L "meal.onecredit.note"}}</small></span>
               {{/* A POST, not a link. /app/pesan was never a registered route, so this
                    button had always 404'd; AddToCart takes meal_id as form data and
                    redirects to the cart (D84). */}}

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -150,6 +151,43 @@ func (h *AppHandler) AddToCart(c *gin.Context) {
 }
 
 // Cart renders the priced cart.
+// requireCustomer resolves the customer behind a request, or answers for it.
+//
+// Two different situations used to get the same answer. An anonymous visitor
+// belongs at the sign-in page. A STAFF user does not: they are already signed
+// in, so sending them to sign in again is a dead end they cannot get past —
+// the form renders, they sign in, and they are bounced straight back (D87).
+// They get a readable page instead, pointing at the back office.
+func (h *AppHandler) requireCustomer(c *gin.Context, next string) (uuid.UUID, bool) {
+	if custID, ok := CustomerIDOf(c); ok {
+		return custID, true
+	}
+	if PrincipalOf(c) == nil {
+		c.Redirect(http.StatusSeeOther, "/app/sign-in?next="+url.QueryEscape(next))
+		return uuid.Nil, false
+	}
+	h.staffHasNoCustomerArea(c)
+	return uuid.Nil, false
+}
+
+// staffHasNoCustomerArea renders the "wrong side of the house" page.
+func (h *AppHandler) staffHasNoCustomerArea(c *gin.Context) {
+	ctx := c.Request.Context()
+	params, _ := h.repo.Params(ctx)
+	if params == nil {
+		params = map[string]string{}
+	}
+	d := h.base(c, params, "", "", "")
+	d.NoIndex = true
+	d.Code = "403"
+	d.Heading = messages.T(d.L, "e403.staff.heading")
+	d.Message = messages.T(d.L, "e403.staff.message")
+	if id, ok := c.Get("trace_id"); ok {
+		d.TraceID, _ = id.(string)
+	}
+	h.render(c, "error", http.StatusForbidden, d)
+}
+
 func (h *AppHandler) Cart(c *gin.Context) {
 	ctx := c.Request.Context()
 	params, err := h.repo.Params(ctx)
@@ -187,9 +225,8 @@ func (h *AppHandler) Cart(c *gin.Context) {
 // Checkout renders the address and slot confirmation step.
 func (h *AppHandler) Checkout(c *gin.Context) {
 	ctx := c.Request.Context()
-	custID, ok := CustomerIDOf(c)
+	custID, ok := h.requireCustomer(c, "/app/checkout")
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/checkout")
 		return
 	}
 	params, err := h.repo.Params(ctx)
@@ -276,11 +313,8 @@ func (h *AppHandler) PlaceOrder(c *gin.Context) {
 // issuance — is the shared path.
 func (h *AppHandler) BuyPackage(c *gin.Context) {
 	ctx := c.Request.Context()
-	custID, ok := CustomerIDOf(c)
+	custID, ok := h.requireCustomer(c, "/packages")
 	if !ok {
-		// Send them to sign in and back to the packages page afterwards,
-		// rather than failing a POST they cannot retry.
-		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/packages")
 		return
 	}
 	packageID, err := uuid.Parse(c.PostForm("package_id"))
@@ -418,9 +452,8 @@ func (h *AppHandler) UploadProof(c *gin.Context) {
 // Orders lists the customer's orders.
 func (h *AppHandler) Orders(c *gin.Context) {
 	ctx := c.Request.Context()
-	custID, ok := CustomerIDOf(c)
+	custID, ok := h.requireCustomer(c, "/app/orders")
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/orders")
 		return
 	}
 	params, err := h.repo.Params(ctx)
@@ -449,9 +482,8 @@ func (h *AppHandler) Orders(c *gin.Context) {
 // Packages renders the credit balance and ledger.
 func (h *AppHandler) Packages(c *gin.Context) {
 	ctx := c.Request.Context()
-	custID, ok := CustomerIDOf(c)
+	custID, ok := h.requireCustomer(c, "/app/packages")
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/packages")
 		return
 	}
 	params, err := h.repo.Params(ctx)
