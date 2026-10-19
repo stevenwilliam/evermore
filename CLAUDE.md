@@ -212,6 +212,14 @@ build's own code.
 - **Editor is `vi`** in every runbook and docs example — never `nano`.
 - **OS/server guides use full absolute paths**, never relative ones.
 - Prefer editing existing files and reusing `platform/*` over new scaffolding.
+- **Everything a developer types is in standard English**
+  (`99-steven-preference.md` §2): URL paths, query and form parameters,
+  variables, functions, types, struct fields, database columns, catalogue keys
+  and CSS class names. The product is bilingual; the code is not. Indonesian
+  belongs in message-catalogue *values* and seeded data, never in a name — a
+  locale-suffixed identifier such as `weekdayID` is naming the locale, not
+  written in it. Routes that have ever been served keep a permanent redirect
+  when they move (D81).
 - **End every reply with the access table** (`99-steven-preference.md` §2).
   Every response, including short and talk-only ones, finishes with:
 

@@ -13,7 +13,7 @@
     <nav class="filterbar" aria-label="{{t .L "bo.nav"}}">
       <a class="chip" href="/bo">{{t .L "bo.dashboard"}}</a>
       <a class="chip" href="/bo/menu">{{t .L "bo.menu"}}</a>
-      <a class="chip is-active" href="/bo/pembayaran">{{t .L "bo.payments"}}</a>
+      <a class="chip is-active" href="/bo/payments">{{t .L "bo.payments"}}</a>
     </nav>
 
     {{if .Flash}}
@@ -22,7 +22,7 @@
     </div>
     {{end}}
 
-    <form class="filterbar" method="get" action="/bo/pembayaran" role="search">
+    <form class="filterbar" method="get" action="/bo/payments" role="search">
       <div class="searchbox">
         <label class="visually-hidden" for="q">{{t .L "bo.pay.search"}}</label>
         <input type="search" id="q" name="q" value="{{.Search}}"
@@ -51,13 +51,13 @@
             <td>{{duration .WaitingFor}}</td>
             <td>{{if eq .Match "Cocok"}}<span class="pill pill-ok">{{.Match}}</span>{{else}}<span class="pill pill-warn">{{.Match}}</span>{{end}}</td>
             <td>
-              <form method="post" action="/bo/pembayaran/verifikasi" style="display:inline">
+              <form method="post" action="/bo/payments/verify" style="display:inline">
                 <input type="hidden" name="payment_id" value="{{.PaymentID}}">
                 <button class="btn btn-solid" type="submit">{{t $.L "bo.pay.verify"}}</button>
               </form>
               <details style="display:inline-block;margin-left:var(--space-2)">
                 <summary class="chip" style="display:inline-flex">{{t $.L "bo.pay.reject"}}</summary>
-                <form method="post" action="/bo/pembayaran/tolak" class="card" style="margin-top:var(--space-2);padding:var(--space-3)">
+                <form method="post" action="/bo/payments/reject" class="card" style="margin-top:var(--space-2);padding:var(--space-3)">
                   <input type="hidden" name="payment_id" value="{{.PaymentID}}">
                   <label class="visually-hidden" for="reason-{{.PaymentID}}">{{t $.L "bo.pay.reason"}}</label>
                   <input class="searchbox" style="width:100%" type="text" id="reason-{{.PaymentID}}"

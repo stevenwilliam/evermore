@@ -135,6 +135,31 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	authGroup.GET("/me", RequireAuth(), ah.Me)
 
 	// --- SEO surface ---
+	// D81 — the routes moved to standard English. Everything that existed
+	// under the old Indonesian paths answers with a permanent redirect rather
+	// than a 404, so a bookmark, a shared link or an indexed URL still lands.
+	for old, dst := range map[string]string{
+		"/paket":             "/packages",
+		"/cara-kerja":        "/how-it-works",
+		"/untuk-kantor":      "/corporate",
+		"/wilayah-antar":     "/delivery-area",
+		"/kebijakan-privasi": "/privacy-policy",
+		"/syarat-ketentuan":  "/terms",
+		"/app/masuk":         "/app/sign-in",
+		"/app/daftar":        "/app/register",
+		"/app/keranjang":     "/app/cart",
+		"/app/pesanan":       "/app/orders",
+		"/app/paket":         "/app/packages",
+		"/app/alamat":        "/app/addresses",
+		"/app/alergi":        "/app/allergies",
+		"/bo/pembayaran":     "/bo/payments",
+	} {
+		to := dst
+		r.GET(old, func(c *gin.Context) {
+			c.Redirect(http.StatusMovedPermanently, to)
+		})
+	}
+
 	r.GET("/robots.txt", ph.Robots)
 	r.GET("/sitemap.xml", ph.Sitemap)
 
@@ -142,10 +167,10 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	r.GET("/", ph.Home)
 	r.GET("/menu", ph.Menu)
 	r.GET("/menu/:id", ph.Meal)
-	r.GET("/paket", ph.Packages)
-	r.GET("/cara-kerja", ph.HowItWorks)
-	r.GET("/untuk-kantor", ph.Corporate)
-	r.GET("/wilayah-antar", ph.Coverage)
+	r.GET("/packages", ph.Packages)
+	r.GET("/how-it-works", ph.HowItWorks)
+	r.GET("/corporate", ph.Corporate)
+	r.GET("/delivery-area", ph.Coverage)
 
 	// --- signed-in surface ---
 	//
@@ -154,41 +179,41 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	// it does not. RequireAuth and RequirePermission are per-route, so every
 	// protected handler declares what it needs.
 	appGroup := r.Group("/app", Authenticate(tokens, authSvc))
-	appGroup.GET("/masuk", app.LoginPage)
-	appGroup.GET("/daftar", app.RegisterPage)
-	appGroup.GET("/keranjang", app.Cart)
-	appGroup.POST("/keranjang/tambah", RateLimit(limiter, rlWrite), app.AddToCart)
+	appGroup.GET("/sign-in", app.LoginPage)
+	appGroup.GET("/register", app.RegisterPage)
+	appGroup.GET("/cart", app.Cart)
+	appGroup.POST("/cart/add", RateLimit(limiter, rlWrite), app.AddToCart)
 	appGroup.GET("/checkout", app.Checkout)
 	appGroup.POST("/checkout", RequireAuth(), RateLimit(limiter, rlWrite), app.PlaceOrder)
-	appGroup.GET("/pembayaran/:id", app.Payment)
-	appGroup.POST("/pembayaran/:id/bukti", RequireAuth(), RateLimit(limiter, rlWrite), app.UploadProof)
-	appGroup.GET("/pesanan", app.Orders)
-	appGroup.GET("/paket", app.Packages)
+	appGroup.GET("/payment/:id", app.Payment)
+	appGroup.POST("/payment/:id/proof", RequireAuth(), RateLimit(limiter, rlWrite), app.UploadProof)
+	appGroup.GET("/orders", app.Orders)
+	appGroup.GET("/packages", app.Packages)
 
 	// Delivery addresses and the allergen profile (D40). No RequireAuth: each
 	// handler checks the session and redirects a signed-out visitor to the
 	// login page rather than answering a browser with a JSON 401 (D38).
-	appGroup.GET("/alamat", app.Addresses)
-	appGroup.POST("/alamat", RateLimit(limiter, rlWrite), app.AddAddress)
-	appGroup.POST("/alamat/:id/ubah", RateLimit(limiter, rlWrite), app.EditAddress)
-	appGroup.POST("/alamat/:id/utama", RateLimit(limiter, rlWrite), app.DefaultAddress)
-	appGroup.POST("/alamat/:id/hapus", RateLimit(limiter, rlWrite), app.RemoveAddress)
-	appGroup.GET("/alergi", app.Allergies)
-	appGroup.POST("/alergi", RateLimit(limiter, rlWrite), app.SaveAllergies)
-	// No RequireAuth: /paket is a PUBLIC page, so a signed-out visitor sees
+	appGroup.GET("/addresses", app.Addresses)
+	appGroup.POST("/addresses", RateLimit(limiter, rlWrite), app.AddAddress)
+	appGroup.POST("/addresses/:id/edit", RateLimit(limiter, rlWrite), app.EditAddress)
+	appGroup.POST("/addresses/:id/default", RateLimit(limiter, rlWrite), app.DefaultAddress)
+	appGroup.POST("/addresses/:id/delete", RateLimit(limiter, rlWrite), app.RemoveAddress)
+	appGroup.GET("/allergies", app.Allergies)
+	appGroup.POST("/allergies", RateLimit(limiter, rlWrite), app.SaveAllergies)
+	// No RequireAuth: /packages is a PUBLIC page, so a signed-out visitor sees
 	// the buy button. RequireAuth would answer their click with a raw JSON
 	// 401 before the handler ran; BuyPackage checks the session itself and
 	// redirects them to sign in and come back (D38).
-	appGroup.POST("/paket/beli", RateLimit(limiter, rlWrite), app.BuyPackage)
+	appGroup.POST("/packages/buy", RateLimit(limiter, rlWrite), app.BuyPackage)
 
 	// --- back office ---
 	bo := r.Group("/bo", Authenticate(tokens, authSvc), RequireAuth())
 	bo.GET("", RequirePermission("dashboard.view"), app.Dashboard)
 	bo.GET("/menu", RequirePermission("menu.view"), app.MenuCalendar)
-	bo.POST("/menu/terbitkan", RequirePermission("menu.manage"), RateLimit(limiter, rlWrite), app.PublishMeal)
-	bo.GET("/pembayaran", RequirePermission("payment.view"), app.PaymentQueue)
-	bo.POST("/pembayaran/verifikasi", RequirePermission("payment.verify"), RateLimit(limiter, rlWrite), app.VerifyPayment)
-	bo.POST("/pembayaran/tolak", RequirePermission("payment.verify"), RateLimit(limiter, rlWrite), app.RejectPayment)
+	bo.POST("/menu/publish", RequirePermission("menu.manage"), RateLimit(limiter, rlWrite), app.PublishMeal)
+	bo.GET("/payments", RequirePermission("payment.view"), app.PaymentQueue)
+	bo.POST("/payments/verify", RequirePermission("payment.verify"), RateLimit(limiter, rlWrite), app.VerifyPayment)
+	bo.POST("/payments/reject", RequirePermission("payment.verify"), RateLimit(limiter, rlWrite), app.RejectPayment)
 
 	r.NoRoute(ph.NotFound)
 	r.NoMethod(func(c *gin.Context) {
@@ -242,10 +267,10 @@ func (h *PublicHandler) Sitemap(c *gin.Context) {
 	entries := []entry{
 		{base + "/", today.Format("2006-01-02"), "1.0", "daily"},
 		{base + "/menu", today.Format("2006-01-02"), "0.9", "daily"},
-		{base + "/paket", today.Format("2006-01-02"), "0.8", "weekly"},
-		{base + "/cara-kerja", today.Format("2006-01-02"), "0.6", "monthly"},
-		{base + "/untuk-kantor", today.Format("2006-01-02"), "0.6", "monthly"},
-		{base + "/wilayah-antar", today.Format("2006-01-02"), "0.7", "weekly"},
+		{base + "/packages", today.Format("2006-01-02"), "0.8", "weekly"},
+		{base + "/how-it-works", today.Format("2006-01-02"), "0.6", "monthly"},
+		{base + "/corporate", today.Format("2006-01-02"), "0.6", "monthly"},
+		{base + "/delivery-area", today.Format("2006-01-02"), "0.7", "weekly"},
 	}
 
 	dates, err := h.repo.ServiceDates(ctx, today, 14)

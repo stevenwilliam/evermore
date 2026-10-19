@@ -17,7 +17,7 @@
     <nav class="filterbar" aria-label="{{t .L "bo.nav"}}">
       <a class="chip" href="/bo">{{t .L "bo.dashboard"}}</a>
       <a class="chip is-active" href="/bo/menu">{{t .L "bo.menu"}}</a>
-      <a class="chip" href="/bo/pembayaran">{{t .L "bo.payments"}}</a>
+      <a class="chip" href="/bo/payments">{{t .L "bo.payments"}}</a>
     </nav>
 
     {{if .Flash}}
@@ -50,7 +50,7 @@
               {{end}}
               {{if eq .Status "DRAFT"}}
                 {{if .Complete}}
-                <form method="post" action="/bo/menu/terbitkan" style="margin-top:var(--space-2)">
+                <form method="post" action="/bo/menu/publish" style="margin-top:var(--space-2)">
                   <input type="hidden" name="meal_id" value="{{.ID}}">
                   <input type="hidden" name="minggu" value="{{$.ThisWeek}}">
                   <button class="btn btn-solid" type="submit">{{t $.L "bo.publish"}}</button>

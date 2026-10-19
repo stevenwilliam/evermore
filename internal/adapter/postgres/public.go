@@ -74,7 +74,7 @@ type PackageCard struct {
 	PriceIDR     money.IDR
 	PerMealIDR   money.IDR
 	IsFeatured   bool
-	// D74 — what the tier includes, for the tick/cross list on /paket.
+	// D74 — what the tier includes, for the tick/cross list on /packages.
 	FreeDelivery       bool
 	FreeAllergenCustom bool
 	DieticianSessions  int

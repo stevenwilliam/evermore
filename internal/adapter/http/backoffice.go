@@ -210,7 +210,7 @@ func (h *AppHandler) dashboard(ctx context.Context, l i18n.Locale, params map[st
 		dv.Actions = append(dv.Actions, ActionRow{
 			Title:  plural(dv.AwaitingVerify, "bukti transfer menunggu"),
 			Detail: "tertua " + minutesLabel(dv.OldestWaitMin),
-			Link:   "/bo/pembayaran", CTA: "Verifikasi", Kind: "warn",
+			Link:   "/bo/payments", CTA: "Verifikasi", Kind: "warn",
 		})
 	}
 	var drafts int
@@ -294,10 +294,10 @@ func (h *AppHandler) VerifyPayment(c *gin.Context) {
 	}
 	err = h.payments.Verify(c.Request.Context(), p.UserID, paymentID, actorFor(p))
 	if err != nil {
-		c.Redirect(http.StatusSeeOther, "/bo/pembayaran?err="+urlSafe(err.Error()))
+		c.Redirect(http.StatusSeeOther, "/bo/payments?err="+urlSafe(err.Error()))
 		return
 	}
-	c.Redirect(http.StatusSeeOther, "/bo/pembayaran?ok="+urlSafe("Pembayaran diverifikasi."))
+	c.Redirect(http.StatusSeeOther, "/bo/payments?ok="+urlSafe("Pembayaran diverifikasi."))
 }
 
 // RejectPayment sends a transfer back with a reason.
@@ -310,19 +310,19 @@ func (h *AppHandler) RejectPayment(c *gin.Context) {
 	}
 	reason, err := sanitize.Required("reason", c.PostForm("reason"), 240)
 	if err != nil {
-		c.Redirect(http.StatusSeeOther, "/bo/pembayaran?err="+urlSafe("Alasan penolakan wajib diisi."))
+		c.Redirect(http.StatusSeeOther, "/bo/payments?err="+urlSafe("Alasan penolakan wajib diisi."))
 		return
 	}
 	err = h.payments.Reject(c.Request.Context(), p.UserID, paymentID, actorFor(p), reason)
 	if errors.Is(err, payments.ErrReasonRequired) {
-		c.Redirect(http.StatusSeeOther, "/bo/pembayaran?err="+urlSafe("Alasan penolakan wajib diisi."))
+		c.Redirect(http.StatusSeeOther, "/bo/payments?err="+urlSafe("Alasan penolakan wajib diisi."))
 		return
 	}
 	if err != nil {
-		c.Redirect(http.StatusSeeOther, "/bo/pembayaran?err="+urlSafe(err.Error()))
+		c.Redirect(http.StatusSeeOther, "/bo/payments?err="+urlSafe(err.Error()))
 		return
 	}
-	c.Redirect(http.StatusSeeOther, "/bo/pembayaran?ok="+urlSafe("Pembayaran ditolak dan pelanggan diberi tahu."))
+	c.Redirect(http.StatusSeeOther, "/bo/payments?ok="+urlSafe("Pembayaran ditolak dan pelanggan diberi tahu."))
 }
 
 // MenuCalendar renders the DRAFT/PUBLISHED grid (S2).

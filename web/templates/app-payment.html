@@ -48,7 +48,7 @@
         <div class="card">
           <div class="card-body">
             <h2 style="font-size:var(--text-lg)">{{t .L "pay.proof"}}</h2>
-            <form method="post" action="/app/pembayaran/{{.Payment.OrderID}}/bukti" enctype="multipart/form-data" class="stack">
+            <form method="post" action="/app/payment/{{.Payment.OrderID}}/bukti" enctype="multipart/form-data" class="stack">
               <p>
                 <label for="proof">{{t .L "pay.proof.upload"}}</label><br>
                 <input type="file" id="proof" name="proof" accept="image/jpeg,image/png" required>
@@ -87,7 +87,7 @@
               </tbody>
             </table>
           </div>
-          <p style="margin-top:var(--space-4)"><a href="/app/pesanan">{{t .L "pay.allorders"}}</a></p>
+          <p style="margin-top:var(--space-4)"><a href="/app/orders">{{t .L "pay.allorders"}}</a></p>
         </div>
       </aside>
     </div>

@@ -89,7 +89,7 @@ func TestSignedInPagesAuthenticateFromCookiesAlone(t *testing.T) {
 		t.Fatal("login set no evermore_session cookie, so no browser navigation can authenticate")
 	}
 
-	for _, path := range []string{"/app/pesanan", "/app/paket"} {
+	for _, path := range []string{"/app/orders", "/app/packages"} {
 		req, _ := http.NewRequest(http.MethodGet, srv.URL+path, nil)
 		// Deliberately no Authorization header.
 		resp, err := client.Do(req)
@@ -102,7 +102,7 @@ func TestSignedInPagesAuthenticateFromCookiesAlone(t *testing.T) {
 			t.Errorf("%s: got %d (Location %q), want 200 — a signed-in browser was bounced to the login page",
 				path, resp.StatusCode, loc)
 		}
-		if strings.Contains(loc, "/app/masuk") {
+		if strings.Contains(loc, "/app/sign-in") {
 			t.Errorf("%s: redirected to the login page while holding a valid session cookie", path)
 		}
 	}
@@ -111,7 +111,7 @@ func TestSignedInPagesAuthenticateFromCookiesAlone(t *testing.T) {
 // D38: a signed-out visitor clicking "Beli paket" must be sent to the login
 // page, not handed a JSON 401.
 //
-// /paket is a PUBLIC page, so the buy button is visible to anyone. The route
+// /packages is a PUBLIC page, so the buy button is visible to anyone. The route
 // originally carried RequireAuth(), which answers before the handler runs and
 // renders a raw error object into the browser window — which is exactly what
 // Steven saw. The handler checks the session itself and redirects instead.
@@ -125,7 +125,7 @@ func TestBuyPackageSignedOutRedirectsToLogin(t *testing.T) {
 	}
 
 	form := url.Values{"package_id": {"00000000-0000-0000-0000-000000000000"}}
-	resp, err := client.PostForm(srv.URL+"/app/paket/beli", form)
+	resp, err := client.PostForm(srv.URL+"/app/packages/buy", form)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -136,7 +136,7 @@ func TestBuyPackageSignedOutRedirectsToLogin(t *testing.T) {
 		t.Fatalf("got %d body %q, want 303 to the login page — a browser must never be shown a JSON error object",
 			resp.StatusCode, strings.TrimSpace(string(body)))
 	}
-	if loc := resp.Header.Get("Location"); !strings.HasPrefix(loc, "/app/masuk") {
+	if loc := resp.Header.Get("Location"); !strings.HasPrefix(loc, "/app/sign-in") {
 		t.Errorf("Location is %q, want the login page", loc)
 	}
 }

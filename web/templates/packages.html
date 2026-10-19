@@ -28,7 +28,7 @@
                  the price is resolved server-side at checkout, so editing this
                  markup changes which package is bought, never what it costs.
                  An anonymous visitor is redirected to sign in and back. */}}
-            <form method="post" action="/app/paket/beli" style="margin:0">
+            <form method="post" action="/app/packages/buy" style="margin:0">
               <input type="hidden" name="package_id" value="{{.ID}}">
               <input type="hidden" name="idempotency_key" value="{{newkey}}">
               <button class="btn btn-solid" type="submit">{{t $.L "pkg.buy"}}</button>

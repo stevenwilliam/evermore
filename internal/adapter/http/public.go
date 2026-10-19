@@ -631,7 +631,7 @@ func (h *PublicHandler) Menu(c *gin.Context) {
 
 	today := h.today()
 	selected := today
-	if raw := c.Query("tanggal"); raw != "" {
+	if raw := c.Query("date"); raw != "" {
 		parsed, perr := time.ParseInLocation("2006-01-02", raw, h.cfg.Location)
 		if perr != nil {
 			Fail(c, apierror.Validation("Format tanggal tidak valid."))
@@ -686,7 +686,7 @@ func (h *PublicHandler) Menu(c *gin.Context) {
 
 	for _, dt := range dates {
 		l := dt.In(h.cfg.Location)
-		q := "/menu?tanggal=" + l.Format("2006-01-02")
+		q := "/menu?date=" + l.Format("2006-01-02")
 		if dietSlug != "" {
 			q += "&diet=" + dietSlug
 		}
@@ -699,8 +699,8 @@ func (h *PublicHandler) Menu(c *gin.Context) {
 	}
 
 	d.SelectedDate = selected.Format("2006-01-02")
-	d.DateQuery = "?tanggal=" + d.SelectedDate
-	d.DateQueryAmp = "&tanggal=" + d.SelectedDate
+	d.DateQuery = "?date=" + d.SelectedDate
+	d.DateQueryAmp = "&date=" + d.SelectedDate
 
 	if d.Meals, err = h.repo.PublishedMeals(ctx, selected, dietSlug, search); err != nil {
 		Fail(c, apierror.Internal(err))

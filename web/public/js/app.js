@@ -165,7 +165,7 @@
   var mark = document.querySelector('[data-sticky-logo]');
   if (mark) {
     // Appears once the hero has scrolled past. Falls back to a fixed offset
-    // on pages with no hero, so it still behaves on /menu and /paket.
+    // on pages with no hero, so it still behaves on /menu and /packages.
     var hero = document.querySelector('.hero-full');
     var trigger = function () { return hero ? hero.offsetHeight - 120 : 200; };
     var sync = function () {

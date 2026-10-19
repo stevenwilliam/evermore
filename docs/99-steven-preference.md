@@ -236,6 +236,30 @@ If you are unsure whether the hold is still on, it is. Ask.
   copy-pasted command can never run in the wrong directory.
 - Prefer editing existing files and reusing `platform/*` over new scaffolding.
 
+### Everything a developer types is in standard English
+
+**Routes, identifiers, parameters, columns and keys are English.** The product
+can be in any language — the code is not. That means:
+
+- **URL paths**: `/packages`, `/how-it-works`, `/delivery-area`,
+  `/app/addresses/:id/delete`. Not `/paket`, not `/alamat/:id/hapus`.
+- **Query and form parameters**: `?date=`, `package_id`. Not `?tanggal=`.
+- **Variables, functions, types, struct fields, database columns, message
+  catalogue keys and CSS class names** — all English.
+
+The exception is a *value*, not a name: Indonesian copy inside a message
+catalogue, a seeded row, or a locale-suffixed identifier such as
+`weekdayID` (the Indonesian spelling of a weekday) is the thing being
+translated, not the thing being named.
+
+**Why:** a mixed-language codebase forces whoever reads it to hold two
+vocabularies at once, and the mix lands in the worst place — a route is public,
+permanent and quoted in bookmarks, docs and support tickets.
+
+**When renaming, keep the old paths alive.** A route that has ever been served
+gets a permanent redirect rather than a 404; a bookmark, a shared link or an
+indexed URL must still land.
+
 ### End every reply with the access table
 
 **Standing instruction.** Every response, every time, finishes with a table

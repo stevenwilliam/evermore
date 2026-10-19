@@ -72,7 +72,7 @@ func TestAddressRejectsAMissingOrImplausiblePin(t *testing.T) {
 			f := addressForm()
 			f.Set("latitude", tc.lat)
 			f.Set("longitude", tc.lng)
-			resp, err := c.PostForm(srv.URL+"/app/alamat", f)
+			resp, err := c.PostForm(srv.URL+"/app/addresses", f)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -97,7 +97,7 @@ func TestAddressIsScopedToItsOwner(t *testing.T) {
 
 	owner := browser(t, srv.URL)
 	signIn(t, owner, srv.URL, "sinta@example.com", seed.DemoPassword)
-	resp, err := owner.PostForm(srv.URL+"/app/alamat", addressForm())
+	resp, err := owner.PostForm(srv.URL+"/app/addresses", addressForm())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -108,7 +108,7 @@ func TestAddressIsScopedToItsOwner(t *testing.T) {
 	}
 
 	// Find what was just written, through the owner's own screen.
-	page, err := owner.Get(srv.URL + "/app/alamat")
+	page, err := owner.Get(srv.URL + "/app/addresses")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -118,7 +118,7 @@ func TestAddressIsScopedToItsOwner(t *testing.T) {
 		t.Fatal(err)
 	}
 	id := ""
-	for _, part := range strings.Split(string(raw), `/app/alamat/`) {
+	for _, part := range strings.Split(string(raw), `/app/addresses/`) {
 		if i := strings.Index(part, "/hapus"); i > 0 {
 			id = part[:i]
 			break
@@ -131,7 +131,7 @@ func TestAddressIsScopedToItsOwner(t *testing.T) {
 	intruder := browser(t, srv.URL)
 	signIn(t, intruder, srv.URL, "bagas@example.com", seed.DemoPassword)
 	for _, action := range []string{"/utama", "/hapus"} {
-		r, err := intruder.PostForm(srv.URL+"/app/alamat/"+id+action, url.Values{})
+		r, err := intruder.PostForm(srv.URL+"/app/addresses/"+id+action, url.Values{})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -151,7 +151,7 @@ func TestAllergyProfileRefusesAnUnknownSlug(t *testing.T) {
 	c := browser(t, srv.URL)
 	signIn(t, c, srv.URL, "sinta@example.com", seed.DemoPassword)
 
-	resp, err := c.PostForm(srv.URL+"/app/alergi",
+	resp, err := c.PostForm(srv.URL+"/app/allergies",
 		url.Values{"allergen": {"kacang", "uranium"}})
 	if err != nil {
 		t.Fatal(err)

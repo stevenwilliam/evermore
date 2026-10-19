@@ -419,7 +419,11 @@ tbody tr:hover { background: var(--warm); }
    The seals carry their meaning in their TEXT, which is --brand on the seal's
    own pale face at 8.42. The gold rim is decoration and is measured as such.
    ========================================================================== */
-.certs { background: var(--warm); padding-block: var(--space-7); text-align: center; }
+/* A hairline on top: the band is a different KIND of thing from the page
+ * above it, and on /packages it was reading as a continuation of the pricing
+ * section rather than as site-wide chrome. */
+.certs { background: var(--warm); border-top: 1px solid var(--line);
+         padding-block: var(--space-7); text-align: center; }
 .certs-title { font-size: var(--text-xl); margin: 0; }
 /* A global readable measure caps every <p> at 630px, so the box has to be
  * centred as well as its text — otherwise the line sits centred inside a box
@@ -441,6 +445,10 @@ tbody tr:hover { background: var(--warm); }
 
 /* Compact: it was carrying 148px of margin and 96px of top padding, which
  * made the footer the tallest block on a short page. */
+/* The certification band already separates the page from the footer, so the
+ * footer's own top margin would otherwise show as a 40px strip of bare paper
+ * between the two (D80). */
+.certs + .footer { margin-top: 0; }
 .footer { background: var(--ink); color: var(--paper); margin-top: var(--space-6);
   padding-block: var(--space-6) var(--space-4); flex-shrink: 0; font-size: var(--text-sm); }
 .footer p { margin: 0 0 var(--space-2); }
@@ -468,7 +476,7 @@ tbody tr:hover { background: var(--warm); }
   transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
 }
 .social a:hover { background: rgba(242,243,239,.14); border-color: var(--accent); color: var(--accent); }
-.social a span { font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+.social a svg { width: 18px; height: 18px; display: block; }
 .footer-fineprint a { color: var(--accent); }
 
 /* ------------------------------------------------ floating nav + float */

@@ -1,0 +1,16 @@
+const { chromium } = require('playwright')
+;(async () => {
+  const b = await chromium.launch()
+  const S=process.argv[2]
+  const p = await (await b.newContext({viewport:{width:1366,height:900}, deviceScaleFactor:2})).newPage()
+  await p.goto('http://127.0.0.1:8082/packages', {waitUntil:'domcontentloaded', timeout:20000})
+  await p.waitForTimeout(1400)
+  await p.evaluate(()=>window.scrollTo(0,document.body.scrollHeight))
+  await p.waitForTimeout(500)
+  const f = await p.locator('.footer').boundingBox()
+  await p.screenshot({path:S+'/footer.png', clip:f})
+  const s = await p.locator('.social').boundingBox()
+  await p.screenshot({path:S+'/social.png', clip:{x:s.x-10,y:s.y-10,width:s.width+20,height:s.height+20}})
+  console.log('ok')
+  await b.close()
+})()

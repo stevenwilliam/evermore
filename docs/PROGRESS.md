@@ -228,8 +228,8 @@ a browser puts no header on a navigation or a form POST. Measured:
 
 | Page | Before (cookies only) | After |
 |---|---|---|
-| `/app/pesanan` | 303 → login | **200** |
-| `/app/paket` | 303 → login | **200** |
+| `/app/orders` | 303 → login | **200** |
+| `/app/packages` | 303 → login | **200** |
 
 Every existing test sent a bearer token — precisely what a browser never does —
 so the suite could not see it.
@@ -238,7 +238,7 @@ so the suite could not see it.
 
 | Step | Result |
 |---|---|
-| `POST /app/paket/beli` (browser-style, cookies only) | 303 → payment page |
+| `POST /app/packages/buy` (browser-style, cookies only) | 303 → payment page |
 | Order | `EVM-2609-0002`, type `PACKAGE`, `AWAITING_PAYMENT` |
 | Tax (inclusive, 1100 bps) | 1.279.279 + 140.721 = **1.420.000**, reconciles |
 | Transfer suffix | **Rp 1.420.333** (rounding 333) |
@@ -256,12 +256,12 @@ so the suite could not see it.
 
 **D38 follow-up.** The first click of the live button returned a raw JSON 401:
 the route carried `RequireAuth()`, which answers before the handler and so beat
-the handler's own login redirect. `/paket` is public, so the button is visible
+the handler's own login redirect. `/packages` is public, so the button is visible
 signed-out. Fixed and covered by `TestBuyPackageSignedOutRedirectsToLogin`.
 
 | Path | Result |
 |---|---|
-| signed OUT → click Beli paket | **303 → `/app/masuk?next=/paket`** |
+| signed OUT → click Beli paket | **303 → `/app/sign-in?next=/packages`** |
 | signed IN → click Beli paket | **303 → the payment page** |
 
 Still not built: **credit redemption** — spending a credit on a schedule slot.
@@ -278,8 +278,8 @@ checkout could never be completed by a real customer.
 | Surface | Status |
 |---|---|
 | Sign-up collects first address + allergies, atomically | ✅ |
-| `/app/alamat` — list, add, set default, soft-delete | ✅ |
-| `/app/alergi` — edit the profile | ✅ |
+| `/app/addresses` — list, add, set default, soft-delete | ✅ |
+| `/app/allergies` — edit the profile | ✅ |
 | Checkout picker fed by real data | ✅ |
 | Account links in every nav | ✅ |
 

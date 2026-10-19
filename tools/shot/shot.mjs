@@ -24,24 +24,24 @@ const OUT = process.argv[3] || './shots';
 const PAGES = [
   ['home', '/'],
   ['menu', '/menu'],
-  ['packages', '/paket'],
-  ['how', '/cara-kerja'],
-  ['corporate', '/untuk-kantor'],
-  ['coverage', '/wilayah-antar'],
-  ['login', '/app/masuk'],
-  ['register', '/app/daftar'],
-  ['cart', '/app/keranjang'],
+  ['packages', '/packages'],
+  ['how', '/how-it-works'],
+  ['corporate', '/corporate'],
+  ['coverage', '/delivery-area'],
+  ['login', '/app/sign-in'],
+  ['register', '/app/register'],
+  ['cart', '/app/cart'],
   ['notfound', '/tidak-ada'],
 ];
 
 // Pages that need a session. Each entry names the account to sign in as, so
 // the back office is probed as staff and the customer pages as a customer.
 const AUTHED_PAGES = [
-  ['app-orders', '/app/pesanan', 'sinta@example.com'],
-  ['app-packages', '/app/paket', 'sinta@example.com'],
+  ['app-orders', '/app/orders', 'sinta@example.com'],
+  ['app-packages', '/app/packages', 'sinta@example.com'],
   ['bo-dashboard', '/bo', 'ratna@evermore.co.id'],
   ['bo-menu', '/bo/menu', 'ratna@evermore.co.id'],
-  ['bo-payments', '/bo/pembayaran', 'ratna@evermore.co.id'],
+  ['bo-payments', '/bo/payments', 'ratna@evermore.co.id'],
 ];
 
 const PASSWORD = 'Evermore#2026';

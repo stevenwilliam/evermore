@@ -21,7 +21,7 @@
         <input type="search" id="q" name="q" value="{{.Search}}"
                placeholder="{{t .L "menu.search"}}" autocomplete="off">
       </div>
-      {{if .SelectedDate}}<input type="hidden" name="tanggal" value="{{.SelectedDate}}">{{end}}
+      {{if .SelectedDate}}<input type="hidden" name="date" value="{{.SelectedDate}}">{{end}}
       <a class="chip{{if not .SelectedDiet}} is-active{{end}}" href="/menu{{.DateQuery}}">{{t .L "menu.all"}}</a>
       {{range .Diets}}
       <a class="chip{{if eq $.SelectedDiet .Slug}} is-active{{end}}"

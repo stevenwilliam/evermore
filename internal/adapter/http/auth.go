@@ -142,7 +142,7 @@ const refreshCookie = "evermore_refresh"
 //
 // D26 made the signed-in screens Go templates rather than a SPA, but auth was
 // left bearer-header-only. A browser cannot put an Authorization header on a
-// link click or a form POST, so /app/pesanan, /app/paket and /app/checkout all
+// link click or a form POST, so /app/orders, /app/packages and /app/checkout all
 // redirected to the login page for a signed-in user — proven by requesting
 // them with cookies and without the header.
 //

@@ -59,16 +59,16 @@
 
     <nav class="masthead-nav" aria-label="{{t .L "nav.aria"}}">
       <a href="/menu"{{if eq .Nav "menu"}} aria-current="page"{{end}}>{{t .L "nav.menu"}}</a>
-      <a href="/cara-kerja"{{if eq .Nav "how"}} aria-current="page"{{end}}>{{t .L "nav.how"}}</a>
-      <a href="/paket"{{if eq .Nav "packages"}} aria-current="page"{{end}}>{{t .L "nav.packages"}}</a>
-      <a href="/untuk-kantor"{{if eq .Nav "corporate"}} aria-current="page"{{end}}>{{t .L "nav.corporate"}}</a>
-      <a href="/wilayah-antar"{{if eq .Nav "coverage"}} aria-current="page"{{end}}>{{t .L "nav.coverage"}}</a>
+      <a href="/how-it-works"{{if eq .Nav "how"}} aria-current="page"{{end}}>{{t .L "nav.how"}}</a>
+      <a href="/packages"{{if eq .Nav "packages"}} aria-current="page"{{end}}>{{t .L "nav.packages"}}</a>
+      <a href="/corporate"{{if eq .Nav "corporate"}} aria-current="page"{{end}}>{{t .L "nav.corporate"}}</a>
+      <a href="/delivery-area"{{if eq .Nav "coverage"}} aria-current="page"{{end}}>{{t .L "nav.coverage"}}</a>
     </nav>
 
     <div class="masthead-actions">
       {{/* The account links live in the panel below, not here: ten items in
            one row wrapped to two lines and crushed the header (D48). */}}
-      <a href="/app/masuk">{{t .L "nav.signin"}}</a>
+      <a href="/app/sign-in">{{t .L "nav.signin"}}</a>
       <a class="lang-switch" href="?lang={{if eq .L "en"}}id{{else}}en{{end}}"
          aria-label="{{t .L "nav.lang.aria"}}" rel="nofollow">
         {{if eq .L "en"}}
@@ -98,14 +98,14 @@
   </div>
   <nav class="mobile-nav" id="mobile-nav" aria-label="{{t .L "nav.aria"}}" hidden>
     <a href="/menu">{{t .L "nav.menu"}}</a>
-    <a href="/cara-kerja">{{t .L "nav.how"}}</a>
-    <a href="/paket">{{t .L "nav.packages"}}</a>
-    <a href="/untuk-kantor">{{t .L "nav.corporate"}}</a>
-    <a href="/wilayah-antar">{{t .L "nav.coverage"}}</a>
-    <a href="/app/alamat">{{t .L "nav.addresses"}}</a>
-    <a href="/app/alergi">{{t .L "nav.allergies"}}</a>
-    <a href="/app/pesanan">{{t .L "nav.orders"}}</a>
-    <a href="/app/masuk">{{t .L "nav.signin"}}</a>
+    <a href="/how-it-works">{{t .L "nav.how"}}</a>
+    <a href="/packages">{{t .L "nav.packages"}}</a>
+    <a href="/corporate">{{t .L "nav.corporate"}}</a>
+    <a href="/delivery-area">{{t .L "nav.coverage"}}</a>
+    <a href="/app/addresses">{{t .L "nav.addresses"}}</a>
+    <a href="/app/allergies">{{t .L "nav.allergies"}}</a>
+    <a href="/app/orders">{{t .L "nav.orders"}}</a>
+    <a href="/app/sign-in">{{t .L "nav.signin"}}</a>
   </nav>
 </header>
 
@@ -151,8 +151,8 @@
     <div>
       <p>Jelajahi</p>
       <p><a href="/menu">Menu</a></p>
-      <p><a href="/paket">{{t .L "nav.packages"}}</a></p>
-      <p><a href="/wilayah-antar">{{t .L "nav.coverage"}}</a></p>
+      <p><a href="/packages">{{t .L "nav.packages"}}</a></p>
+      <p><a href="/delivery-area">{{t .L "nav.coverage"}}</a></p>
     </div>
     <div>
       <p>Hubungi</p>
@@ -161,14 +161,16 @@
 
       {{/* D51 — social links. Each is a sys_parameter, so a channel is added,
            changed or removed from the back office without a deploy, and an
-           empty value renders nothing rather than a dead link. The labels are
-           words, not brand marks: the official logos are licensed assets and
-           belong in web/public/images once Evermore has them. */}}
+           empty value renders nothing rather than a dead link.
+           D80 — the labels become the platforms' own glyphs. The accessible
+           name stays on the <a>, so the icon is aria-hidden and the link is
+           still announced as "Instagram" rather than as a picture. */}}
       <div class="social">
-        {{if .Params.social_instagram}}<a href="{{.Params.social_instagram}}" rel="noopener me" target="_blank" aria-label="Instagram"><span>IG</span></a>{{end}}
-        {{if .Params.social_tiktok}}<a href="{{.Params.social_tiktok}}" rel="noopener me" target="_blank" aria-label="TikTok"><span>TT</span></a>{{end}}
-        {{if .Params.social_facebook}}<a href="{{.Params.social_facebook}}" rel="noopener me" target="_blank" aria-label="Facebook"><span>FB</span></a>{{end}}
-        {{if .Params.social_linkedin}}<a href="{{.Params.social_linkedin}}" rel="noopener me" target="_blank" aria-label="LinkedIn"><span>IN</span></a>{{end}}
+        {{if .Params.social_instagram}}<a href="{{.Params.social_instagram}}" rel="noopener me" target="_blank" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.2"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.3" cy="6.7" r="1.15" fill="currentColor" stroke="none"/></svg></a>{{end}}
+        {{if .Params.social_tiktok}}<a href="{{.Params.social_tiktok}}" rel="noopener me" target="_blank" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 2.8h-2.75v12.46a2.26 2.26 0 1 1-2.26-2.26c.22 0 .44.03.64.1v-2.8a5.06 5.06 0 1 0 4.37 5.01V9.05a6.2 6.2 0 0 0 3.6 1.15V7.41A3.61 3.61 0 0 1 16.6 3.8v-1Z"/></svg></a>{{end}}
+        {{if .Params.social_facebook}}<a href="{{.Params.social_facebook}}" rel="noopener me" target="_blank" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.6 21.2v-8.1h2.72l.41-3.16H13.6V7.92c0-.91.25-1.54 1.57-1.54h1.67V3.55a22.4 22.4 0 0 0-2.44-.13c-2.42 0-4.07 1.48-4.07 4.19v2.33H7.6v3.16h2.73v8.1h3.27Z"/></svg></a>{{end}}
+        {{if .Params.social_linkedin}}<a href="{{.Params.social_linkedin}}" rel="noopener me" target="_blank" aria-label="Linkedin"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.1 9.2H4.3v11.5h2.8V9.2Zm-1.4-4.6a1.63 1.63 0 1 0 0 3.26 1.63 1.63 0 0 0 0-3.26ZM20.2 14.3c0-3.15-1.68-4.62-3.93-4.62-1.82 0-2.63 1-3.08 1.7V9.2H10.4v11.5h2.79v-6.26c0-.33.02-.66.12-.9.26-.66.87-1.35 1.89-1.35 1.33 0 1.86 1 1.86 2.49v6.02h2.79V14.3Z"/></svg></a>{{end}}
+
       </div>
     </div>
   </div>
@@ -176,8 +178,8 @@
     <div class="container">
       <p style="margin:0">
         &copy; {{.Year}} {{.Params.company_name}} &middot; {{.Params.company_address}}
-        &middot; <a href="/kebijakan-privasi">Kebijakan privasi</a>
-        &middot; <a href="/syarat-ketentuan">Syarat &amp; ketentuan</a>
+        &middot; <a href="/privacy-policy">Kebijakan privasi</a>
+        &middot; <a href="/terms">Syarat &amp; ketentuan</a>
       </p>
     </div>
   </div>

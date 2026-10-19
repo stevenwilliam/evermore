@@ -14,7 +14,7 @@
       <p class="lede">{{t .L "home.lede"}}</p>
       <p style="display:flex;gap:var(--space-3);flex-wrap:wrap;margin-top:var(--space-6)">
         <a class="btn btn-primary" href="/menu">{{t .L "home.cta.menu"}}</a>
-        <a class="btn btn-secondary" href="/wilayah-antar">{{t .L "home.cta.area"}}</a>
+        <a class="btn btn-secondary" href="/delivery-area">{{t .L "home.cta.area"}}</a>
       </p>
     </div>
 
@@ -236,7 +236,7 @@
           <p class="meta">{{rupiah .PerMealIDR}} {{t $.L "pkg.per"}} &middot; {{printf (t $.L "pkg.valid") (printf "%d" .ValidityDays)}}</p>
           <div class="card-foot">
             <span class="price">{{rupiah .PriceIDR}}</span>
-            <a class="btn btn-solid" href="/paket">Lihat paket</a>
+            <a class="btn btn-solid" href="/packages">Lihat paket</a>
           </div>
         </div>
       </article>

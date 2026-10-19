@@ -3,7 +3,7 @@
   <div class="container container-narrow">
     <h1>{{t .L "auth.register"}}</h1>
     <form class="stack" data-auth-form data-address-form
-          data-endpoint="/api/v1/auth/register" data-next="/app/masuk">
+          data-endpoint="/api/v1/auth/register" data-next="/app/sign-in">
       <p>
         <label for="full_name">{{t .L "auth.fullname"}}</label><br>
         <input class="searchbox" style="width:100%" type="text" id="full_name" name="full_name"
@@ -102,7 +102,7 @@
 
       <p role="alert" aria-live="polite" data-auth-error class="callout callout-warn" hidden></p>
       <p><button class="btn btn-solid" type="submit">{{t .L "auth.register"}}</button></p>
-      <p class="meta">{{t .L "auth.haveaccount"}} <a href="/app/masuk">{{t .L "auth.signin"}}</a></p>
+      <p class="meta">{{t .L "auth.haveaccount"}} <a href="/app/sign-in">{{t .L "auth.signin"}}</a></p>
     </form>
   </div>
 </section>

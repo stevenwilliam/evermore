@@ -119,7 +119,7 @@ func (h *AppHandler) Addresses(c *gin.Context) {
 	ctx := c.Request.Context()
 	custID, ok := CustomerIDOf(c)
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/masuk?next=/app/alamat")
+		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/addresses")
 		return
 	}
 	params, _ := h.repo.Params(ctx)
@@ -214,12 +214,12 @@ func (h *AppHandler) AddAddress(c *gin.Context) {
 	ctx := c.Request.Context()
 	custID, ok := CustomerIDOf(c)
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/masuk?next=/app/alamat")
+		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/addresses")
 		return
 	}
 	f, err := readAddressForm(c)
 	if err != nil {
-		redirectWithErr(c, "/app/alamat", err)
+		redirectWithErr(c, "/app/addresses", err)
 		return
 	}
 	err = database.InTx(ctx, h.db, nil, func(tx *sql.Tx) error {
@@ -253,10 +253,10 @@ func (h *AppHandler) AddAddress(c *gin.Context) {
 		return err
 	})
 	if err != nil {
-		redirectWithErr(c, "/app/alamat", err)
+		redirectWithErr(c, "/app/addresses", err)
 		return
 	}
-	c.Redirect(http.StatusSeeOther, "/app/alamat?ok=Alamat+disimpan.")
+	c.Redirect(http.StatusSeeOther, "/app/addresses?ok=Alamat+disimpan.")
 }
 
 // EditAddress updates one the customer owns.
@@ -264,7 +264,7 @@ func (h *AppHandler) EditAddress(c *gin.Context) {
 	ctx := c.Request.Context()
 	custID, ok := CustomerIDOf(c)
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/masuk?next=/app/alamat")
+		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/addresses")
 		return
 	}
 	addrID, err := uuid.Parse(c.Param("id"))
@@ -274,7 +274,7 @@ func (h *AppHandler) EditAddress(c *gin.Context) {
 	}
 	f, err := readAddressForm(c)
 	if err != nil {
-		redirectWithErr(c, "/app/alamat", err)
+		redirectWithErr(c, "/app/addresses", err)
 		return
 	}
 	// Ownership is in the WHERE clause, not checked afterwards (CLAUDE.md §4):
@@ -291,7 +291,7 @@ func (h *AppHandler) EditAddress(c *gin.Context) {
 		f.District, f.City, f.Prov, f.Postal, f.Lat, f.Lng,
 		f.PlaceID, f.Formatted, f.Note)
 	if err != nil {
-		redirectWithErr(c, "/app/alamat", err)
+		redirectWithErr(c, "/app/addresses", err)
 		return
 	}
 	if n, _ := res.RowsAffected(); n == 0 {
@@ -300,11 +300,11 @@ func (h *AppHandler) EditAddress(c *gin.Context) {
 	}
 	if f.MakeDefault {
 		if err := h.setDefaultAddress(ctx, custID, addrID); err != nil {
-			redirectWithErr(c, "/app/alamat", err)
+			redirectWithErr(c, "/app/addresses", err)
 			return
 		}
 	}
-	c.Redirect(http.StatusSeeOther, "/app/alamat?ok=Alamat+diperbarui.")
+	c.Redirect(http.StatusSeeOther, "/app/addresses?ok=Alamat+diperbarui.")
 }
 
 func (h *AppHandler) setDefaultAddress(ctx context.Context, custID, addrID uuid.UUID) error {
@@ -329,7 +329,7 @@ func (h *AppHandler) setDefaultAddress(ctx context.Context, custID, addrID uuid.
 func (h *AppHandler) DefaultAddress(c *gin.Context) {
 	custID, ok := CustomerIDOf(c)
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/masuk?next=/app/alamat")
+		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/addresses")
 		return
 	}
 	addrID, err := uuid.Parse(c.Param("id"))
@@ -338,10 +338,10 @@ func (h *AppHandler) DefaultAddress(c *gin.Context) {
 		return
 	}
 	if err := h.setDefaultAddress(c.Request.Context(), custID, addrID); err != nil {
-		redirectWithErr(c, "/app/alamat", err)
+		redirectWithErr(c, "/app/addresses", err)
 		return
 	}
-	c.Redirect(http.StatusSeeOther, "/app/alamat?ok=Alamat+utama+diubah.")
+	c.Redirect(http.StatusSeeOther, "/app/addresses?ok=Alamat+utama+diubah.")
 }
 
 // RemoveAddress soft-deletes one.
@@ -353,7 +353,7 @@ func (h *AppHandler) RemoveAddress(c *gin.Context) {
 	ctx := c.Request.Context()
 	custID, ok := CustomerIDOf(c)
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/masuk?next=/app/alamat")
+		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/addresses")
 		return
 	}
 	addrID, err := uuid.Parse(c.Param("id"))
@@ -385,10 +385,10 @@ func (h *AppHandler) RemoveAddress(c *gin.Context) {
 		return err
 	})
 	if err != nil {
-		redirectWithErr(c, "/app/alamat", err)
+		redirectWithErr(c, "/app/addresses", err)
 		return
 	}
-	c.Redirect(http.StatusSeeOther, "/app/alamat?ok=Alamat+dihapus.")
+	c.Redirect(http.StatusSeeOther, "/app/addresses?ok=Alamat+dihapus.")
 }
 
 // ---------------------------------------------------------------- allergies
@@ -398,7 +398,7 @@ func (h *AppHandler) Allergies(c *gin.Context) {
 	ctx := c.Request.Context()
 	custID, ok := CustomerIDOf(c)
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/masuk?next=/app/alergi")
+		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/allergies")
 		return
 	}
 	chosen, err := h.allergenProfile(ctx, custID)
@@ -426,12 +426,12 @@ func (h *AppHandler) SaveAllergies(c *gin.Context) {
 	ctx := c.Request.Context()
 	custID, ok := CustomerIDOf(c)
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/masuk?next=/app/alergi")
+		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/allergies")
 		return
 	}
 	slugs, err := h.validSlugs(ctx, c.PostFormArray("allergen"))
 	if err != nil {
-		redirectWithErr(c, "/app/alergi", err)
+		redirectWithErr(c, "/app/allergies", err)
 		return
 	}
 	blob, err := json.Marshal(slugs)
@@ -444,7 +444,7 @@ func (h *AppHandler) SaveAllergies(c *gin.Context) {
 		Fail(c, apierror.Internal(err))
 		return
 	}
-	c.Redirect(http.StatusSeeOther, "/app/alergi?ok=Profil+alergi+disimpan.")
+	c.Redirect(http.StatusSeeOther, "/app/allergies?ok=Profil+alergi+disimpan.")
 }
 
 // redirectWithErr sends a browser back to the page with a readable message,

@@ -145,7 +145,7 @@ func (h *AppHandler) AddToCart(c *gin.Context) {
 		next = append(next, cartEntry{MealID: mealID, Qty: qty})
 	}
 	writeCart(c, next, h.cfg.IsProduction())
-	c.Redirect(http.StatusSeeOther, "/app/keranjang")
+	c.Redirect(http.StatusSeeOther, "/app/cart")
 }
 
 // Cart renders the priced cart.
@@ -195,7 +195,7 @@ func (h *AppHandler) Checkout(c *gin.Context) {
 	ctx := c.Request.Context()
 	custID, ok := CustomerIDOf(c)
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/masuk?next=/app/checkout")
+		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/checkout")
 		return
 	}
 	params, err := h.repo.Params(ctx)
@@ -205,7 +205,7 @@ func (h *AppHandler) Checkout(c *gin.Context) {
 	}
 	items := h.items(c)
 	if len(items) == 0 {
-		c.Redirect(http.StatusSeeOther, "/app/keranjang")
+		c.Redirect(http.StatusSeeOther, "/app/cart")
 		return
 	}
 
@@ -247,7 +247,7 @@ func (h *AppHandler) PlaceOrder(c *gin.Context) {
 
 	items := h.items(c)
 	if len(items) == 0 {
-		c.Redirect(http.StatusSeeOther, "/app/keranjang")
+		c.Redirect(http.StatusSeeOther, "/app/cart")
 		return
 	}
 
@@ -268,7 +268,7 @@ func (h *AppHandler) PlaceOrder(c *gin.Context) {
 	}
 
 	writeCart(c, nil, h.cfg.IsProduction()) // the cart is now an order
-	c.Redirect(http.StatusSeeOther, "/app/pembayaran/"+orderID.String())
+	c.Redirect(http.StatusSeeOther, "/app/payment/"+orderID.String())
 }
 
 // BuyPackage places an order for a single credit package.
@@ -284,7 +284,7 @@ func (h *AppHandler) BuyPackage(c *gin.Context) {
 	if !ok {
 		// Send them to sign in and back to the packages page afterwards,
 		// rather than failing a POST they cannot retry.
-		c.Redirect(http.StatusSeeOther, "/app/masuk?next=/paket")
+		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/packages")
 		return
 	}
 	packageID, err := uuid.Parse(c.PostForm("package_id"))
@@ -304,7 +304,7 @@ func (h *AppHandler) BuyPackage(c *gin.Context) {
 		Fail(c, checkoutError(err))
 		return
 	}
-	c.Redirect(http.StatusSeeOther, "/app/pembayaran/"+orderID.String())
+	c.Redirect(http.StatusSeeOther, "/app/payment/"+orderID.String())
 }
 
 // Payment renders the transfer instructions.
@@ -312,7 +312,7 @@ func (h *AppHandler) Payment(c *gin.Context) {
 	ctx := c.Request.Context()
 	custID, ok := CustomerIDOf(c)
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/masuk")
+		c.Redirect(http.StatusSeeOther, "/app/sign-in")
 		return
 	}
 	orderID, err := uuid.Parse(c.Param("id"))
@@ -416,7 +416,7 @@ func (h *AppHandler) UploadProof(c *gin.Context) {
 		Fail(c, apierror.From(err))
 		return
 	}
-	c.Redirect(http.StatusSeeOther, "/app/pembayaran/"+orderID.String())
+	c.Redirect(http.StatusSeeOther, "/app/payment/"+orderID.String())
 }
 
 // Orders lists the customer's orders.
@@ -424,7 +424,7 @@ func (h *AppHandler) Orders(c *gin.Context) {
 	ctx := c.Request.Context()
 	custID, ok := CustomerIDOf(c)
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/masuk?next=/app/pesanan")
+		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/orders")
 		return
 	}
 	params, err := h.repo.Params(ctx)
@@ -455,7 +455,7 @@ func (h *AppHandler) Packages(c *gin.Context) {
 	ctx := c.Request.Context()
 	custID, ok := CustomerIDOf(c)
 	if !ok {
-		c.Redirect(http.StatusSeeOther, "/app/masuk?next=/app/paket")
+		c.Redirect(http.StatusSeeOther, "/app/sign-in?next=/app/packages")
 		return
 	}
 	params, err := h.repo.Params(ctx)

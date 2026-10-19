@@ -2,7 +2,7 @@
 <section class="section">
   <div class="container">
     <h1>{{t .L "ord.title"}}</h1>
-    <form class="filterbar" method="get" action="/app/pesanan" role="search" data-live-search>
+    <form class="filterbar" method="get" action="/app/orders" role="search" data-live-search>
       <div class="searchbox">
         <label class="visually-hidden" for="q">{{t .L "ord.search"}}</label>
         <input type="search" id="q" name="q" value="{{.Search}}" placeholder="{{t .L "ord.search.ph"}}" autocomplete="off">
@@ -34,7 +34,7 @@
               <td class="num">{{.Meals}}</td>
               <td class="num">{{rupiah .TotalIDR}}</td>
               <td>{{if or (eq .Status "AWAITING_PAYMENT") (eq .Status "PAYMENT_SUBMITTED")}}
-                <a class="btn btn-outline" href="/app/pembayaran/{{.ID}}">{{t $.L "ord.pay"}}</a>{{end}}</td>
+                <a class="btn btn-outline" href="/app/payment/{{.ID}}">{{t $.L "ord.pay"}}</a>{{end}}</td>
             </tr>
           {{end}}
           </tbody>
