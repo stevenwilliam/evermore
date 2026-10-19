@@ -212,6 +212,22 @@ build's own code.
 - **Editor is `vi`** in every runbook and docs example — never `nano`.
 - **OS/server guides use full absolute paths**, never relative ones.
 - Prefer editing existing files and reusing `platform/*` over new scaffolding.
+- **End every reply with the access table** (`99-steven-preference.md` §2).
+  Every response, including short and talk-only ones, finishes with:
+
+  | | |
+  |---|---|
+  | **URL** | `http://192.168.88.101:8091` |
+  | **Backend URL** | `http://192.168.88.101:8091/bo` |
+  | **Admin user** | `admin@evermore.co.id` |
+  | **Admin password** | `Evermore#2026` |
+
+  The password is `seed.DemoPassword` — a development-only constant that is
+  already in the repo and that `13-production-deployment-runbook.md` rotates
+  before anything real. It is printed here for that reason only; a production
+  credential would be named, not quoted. If the service is down or a route is
+  missing, say so in the cell rather than printing an address that will not
+  load. `APP_BASE_URL` in `.env` is the source for the host.
 
 ---
 

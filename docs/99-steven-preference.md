@@ -236,6 +236,34 @@ If you are unsure whether the hold is still on, it is. Ask.
   copy-pasted command can never run in the wrong directory.
 - Prefer editing existing files and reusing `platform/*` over new scaffolding.
 
+### End every reply with the access table
+
+**Standing instruction.** Every response, every time, finishes with a table
+giving the four things I need to go and look at what you just did:
+
+| | |
+|---|---|
+| **URL** | the running front end |
+| **Backend URL** | the back office / admin surface |
+| **Admin user** | the account to sign in with |
+| **Admin password** | its password |
+
+It goes at the very bottom, after everything else, on every reply — including
+short ones, talk-only ones and ones that changed nothing. I should never have
+to scroll back through a session to find the address again.
+
+Keep it accurate rather than decorative: if the service is not running, or a
+route does not exist yet, say so **in the cell** instead of printing a URL that
+will not load.
+
+**The password cell has one rule.** Print the value only when it is a
+development or seeded credential — the kind that already lives in the repo and
+the deployment handbook rotates. When the environment is anything else, put
+*where to get it* in the cell (`see /etc/<app>/<app>.env`, `1Password`, …) and
+not the secret itself. Every reply ends up in terminal scrollback, screen
+shares and pasted transcripts, and a real password does not belong in any of
+them.
+
 ### How I report a problem
 
 **Symptom only. I will not tell you where to look.** A whole bug report from me
