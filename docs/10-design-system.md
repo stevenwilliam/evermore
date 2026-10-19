@@ -185,32 +185,44 @@ sitting directly behind the type.
 
 ### 2.9 The banded home body (D65)
 
-The home body runs on three grounds rather than one: the week strip on the warm
-band, the packages on the brand-wash band, and the stats row and testimonials
-on paper so the two tinted blocks never butt together.
+The home body runs on three grounds rather than one: the week strip on the
+**fresh band** (a pale citrus, `--band-fresh`), the packages on the brand-wash
+band, and the stats row and testimonials on paper so the two tinted blocks
+never butt together.
+
+`--band-fresh` is its own token rather than `--accent-wash` because that token's
+dark value (`#2A3318`) is too light: the `+N` link on a glass day card measures
+**4.34** over it. The band's dark value is `#1A1F13`, where the same link
+measures 4.60.
 
 A band changes what every translucent surface above it composites onto, so each
 one is measured again rather than inherited. The grounds below are the ribbon at
 its darkest **on that band**, seen through the relevant card.
 
 **The dark theme decided the layout.** `--brand` — the `+N` link on a day card —
-measures **4.39** on glass over a green band and fails, but **4.58** over the
-warm one. That is why the week strip is warm and the packages are green, and not
-the other way round.
+measures **4.39** on glass over a green band and fails, and 4.34 over a citrus
+band built from `--accent-wash`. It clears at **4.60** over `--band-fresh`.
+That is why the week strip is citrus and the packages are green, and why the
+band needed a dark value of its own.
 
 | Pairing | Ratio | Verdict |
 |---|---|---|
 | ink on the brand-wash band | **15.70** | AAA |
 | ink-soft on the brand-wash band | **5.84** | AA |
 | ink-faint on the brand-wash band | **4.69** | AA |
-| ink-on-glass under glass over the warm band | **5.03** | AA |
-| brand under glass over the warm band | **5.06** | AA |
-| ink-on-glass on the day-card head over the warm band | **4.66** | AA |
+| ink on the fresh band | **16.95** | AAA |
+| ink-soft on the fresh band | **6.30** | AA |
+| ink-faint on the fresh band | **5.06** | AA |
+| ink-on-glass under glass over the fresh band | **5.20** | AA |
+| brand under glass over the fresh band | **5.23** | AA |
+| ink-on-glass on the day-card head over the fresh band | **4.82** | AA |
 | ink-on-glass under tinted glass over the brand-wash band | **4.69** | AA |
 | ink-faint on the dark brand-wash band | **4.65** | AA |
-| ink-on-glass under glass over the dark warm band | **5.13** | AA |
-| brand-lt under glass over the dark warm band | **4.58** | AA |
-| ink-on-glass on the dark day-card head over the warm band | **4.76** | AA |
+| ink-faint on the dark fresh band | **5.54** | AA |
+| ink-on-glass under glass over the dark fresh band | **5.15** | AA |
+| brand-lt under glass over the dark fresh band | **4.60** | AA |
+| ink-on-glass on the dark day-card head over the fresh band | **4.78** | AA |
+| brand-lt under glass over the dark citrus-wash band (REJECTED) | **4.34** | FAIL |
 | ink-on-glass under tinted glass over the dark brand-wash band | **4.66** | AA |
 
 ### 2.10 The WhatsApp float

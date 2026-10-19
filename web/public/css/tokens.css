@@ -37,6 +37,10 @@
   --glass:      rgba(255, 255, 255, .50);
   --glass-tint: rgba(234, 241, 236, .50);
   --card-quiet: rgba(240, 241, 237, .50);  /* resting day-card header: soft, not disabled, and still glass */
+  /* The home body's bands. --band-fresh is a pale citrus rather than a tint of
+   * --accent-wash: that token's dark value (#2A3318) is too light, and the
+   * `+N` link on a glass day card measured 4.33 over it (D66). */
+  --band-fresh: #F3FADA;
 
   /* ---- Brand ---- */
   --brand:     #13543E;  /* 8.42 as text; white on it 8.88 */
@@ -139,6 +143,7 @@
     --glass:      rgba(24, 28, 25, .50);
     --glass-tint: rgba(30, 36, 32, .50);
     --card-quiet: rgba(32, 38, 34, .50);
+    --band-fresh: #1A1F13;
     --brand:     #5FD1A4;  /*  9.92 */
     --brand-hi:  #8FE3C1;
     --brand-wash:#173026;
@@ -166,6 +171,7 @@
   --glass:      rgba(24, 28, 25, .50);
   --glass-tint: rgba(30, 36, 32, .50);
   --card-quiet: rgba(32, 38, 34, .50);
+  --band-fresh: #1A1F13;
   --brand:     #5FD1A4;
   --brand-hi:  #8FE3C1;
   --brand-wash:#173026;
