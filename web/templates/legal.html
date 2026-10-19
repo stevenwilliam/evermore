@@ -1,0 +1,10 @@
+{{define "content"}}
+<section class="section">
+  <div class="container container-narrow">
+    <h1>{{.Heading}}</h1>
+    {{/* Escaped text, never HTML: the source is a sys_parameter, and treating
+         it as markup would make an unreviewed field an injection point. */}}
+    {{range .Paragraphs}}<p>{{.}}</p>{{end}}
+  </div>
+</section>
+{{end}}

@@ -250,7 +250,7 @@ func photo(id uuid.UUID) string {
 // later one fail — the exact failure recorded as D18(c) in the decision log.
 func NewPublicHandler(repo *postgres.PublicRepo, cfg *config.Config, fsys fs.FS) (*PublicHandler, error) {
 	r, err := newRenderer(cfg, fsys, []string{
-		"home", "menu", "meal", "packages", "coverage", "how", "corporate", "error",
+		"home", "menu", "meal", "packages", "coverage", "how", "corporate", "legal", "error",
 	})
 	if err != nil {
 		return nil, err
@@ -329,6 +329,7 @@ type pageData struct {
 	DateLabel       string
 	PublishedUntil  string
 	SignedIn        bool
+	Paragraphs      []string
 	Certs           []certBadge
 	CutOff          string
 	CutOffCountdown string
@@ -869,6 +870,37 @@ func (h *PublicHandler) NotFound(c *gin.Context) {
 		d.TraceID, _ = id.(string)
 	}
 	h.render(c, "error", http.StatusNotFound, d)
+}
+
+// Legal renders the privacy policy or the terms from editable content.
+//
+// A 404 when the parameter is empty, rather than an empty page: the document
+// genuinely does not exist yet, and saying so is the honest answer. The text
+// is escaped and split into paragraphs, never treated as HTML (D84).
+func (h *PublicHandler) Legal(key, navKey string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx := c.Request.Context()
+		params, err := h.repo.Params(ctx)
+		if err != nil {
+			Fail(c, apierror.Internal(err))
+			return
+		}
+		body := strings.TrimSpace(params["legal."+key])
+		if body == "" {
+			h.NotFound(c)
+			return
+		}
+		d := h.base(c, params, "", "", "")
+		h.seo(&d, params, "legal."+key)
+		d.Public = true
+		for _, para := range strings.Split(strings.ReplaceAll(body, "\r\n", "\n"), "\n\n") {
+			if p := strings.TrimSpace(para); p != "" {
+				d.Paragraphs = append(d.Paragraphs, p)
+			}
+		}
+		d.Heading = messages.T(d.L, navKey)
+		h.render(c, "legal", http.StatusOK, d)
+	}
 }
 
 // Forbidden renders the error PAGE for a signed-in user who lacks the

@@ -61,7 +61,14 @@
               {{if .Meal.PriceIDR}}
               <span class="price">{{rupiah .Meal.PriceIDR}}<small>{{t .L "price.per.incl"}}</small></span>
               {{end}}
-              <a class="btn btn-solid" href="/app/pesan?meal={{.Meal.ID}}">{{t .L "meal.add"}}</a>
+              {{/* A POST, not a link. /app/pesan was never a registered route, so this
+                   button had always 404'd; AddToCart takes meal_id as form data and
+                   redirects to the cart (D84). */}}
+              <form method="post" action="/app/cart/add" style="margin:0">
+                <input type="hidden" name="meal_id" value="{{.Meal.ID}}">
+                <input type="hidden" name="qty" value="1">
+                <button class="btn btn-solid" type="submit">{{t .L "meal.add"}}</button>
+              </form>
             </div>
             <p class="btn-reason">{{t .L "meal.cutoff.pre"}} <strong>{{.CutOff}} WIB</strong> {{t .L "meal.cutoff.post"}}</p>
           </div>

@@ -224,6 +224,15 @@ func (s *seeder) sysParameters() error {
 		{"cert.haccp.note", "", "string", "public", "Nomor sertifikat HACCP"},
 		{"cert.iso.note", "", "string", "public", "Nomor sertifikat ISO 22000"},
 
+		// D84 — the privacy policy and terms. EMPTY by default and the footer
+		// link stays hidden until there is text, because these are legal
+		// documents: inventing a privacy policy is worse than not having one,
+		// and a dead link in the footer is worse than no link. Plain text,
+		// rendered as escaped paragraphs — never HTML, which a parameter
+		// nobody reviews would make an injection point.
+		{"legal.privacy", "", "string", "public", "Isi halaman kebijakan privasi"},
+		{"legal.terms", "", "string", "public", "Isi halaman syarat & ketentuan"},
+
 		{"seo.site_name", "Evermore", "string", "seo", "Nama situs untuk Open Graph"},
 		// The home page's title and description are editable per language. A
 		// single row could only ever be in one of them, which is what left the

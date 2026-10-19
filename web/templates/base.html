@@ -188,8 +188,8 @@
     <div class="container">
       <p style="margin:0">
         &copy; {{.Year}} {{.Params.company_name}} &middot; {{.Params.company_address}}
-        &middot; <a href="/privacy-policy">Kebijakan privasi</a>
-        &middot; <a href="/terms">Syarat &amp; ketentuan</a>
+        {{if .Params.legal_privacy}}&middot; <a href="/privacy-policy">{{t .L "nav.privacy"}}</a>{{end}}
+        {{if .Params.legal_terms}}&middot; <a href="/terms">{{t .L "nav.terms"}}</a>{{end}}
       </p>
     </div>
   </div>

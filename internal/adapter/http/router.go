@@ -175,6 +175,8 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	pub.GET("/how-it-works", ph.HowItWorks)
 	pub.GET("/corporate", ph.Corporate)
 	pub.GET("/delivery-area", ph.Coverage)
+	pub.GET("/privacy-policy", ph.Legal("privacy", "nav.privacy"))
+	pub.GET("/terms", ph.Legal("terms", "nav.terms"))
 
 	// --- signed-in surface ---
 	//
