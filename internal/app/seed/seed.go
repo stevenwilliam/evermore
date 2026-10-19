@@ -901,7 +901,7 @@ var week = []mealPlan{
 	{2, "11:30:00", "balanced", "Dori panggang & kentang herba",
 		[]string{"dori-panggang", "kentang-herba", "brokoli-kukus", "infused-water-timun"}, true},
 	{2, "18:00:00", "balanced", "Sop iga bening & ubi",
-		[]string{"sop-iga-bening", "ubi-kukus", "brokoli-kukus", "infused-water-timun"}, false},
+		[]string{"sop-iga-bening", "ubi-kukus", "brokoli-kukus", "infused-water-timun"}, true},
 
 	// Thursday is the DRAFT the dashboard flags as "masih DRAFT".
 	{3, "11:30:00", "balanced", "Ayam kari hijau & brown rice",
@@ -927,6 +927,16 @@ var week = []mealPlan{
 
 	{6, "11:30:00", "balanced", "Ayam kari hijau & quinoa",
 		[]string{"ayam-kari-hijau", "quinoa-herba", "brokoli-kukus", "infused-water-timun"}, true},
+
+	// D69 — the week strip now shows a lunch set and a dinner set side by side
+	// on every card, so every day needs a PUBLISHED one of each. Thursday and
+	// Sunday had no dinner at all, and Wednesday's was still a draft (now
+	// published above). Thursday's DRAFT balanced lunch stays: the back-office
+	// dashboard demo depends on exactly one draft existing.
+	{3, "18:00:00", "balanced", "Salmon teriyaki & ubi kukus",
+		[]string{"salmon-teriyaki", "ubi-kukus", "brokoli-kukus", "infused-water-timun"}, true},
+	{6, "18:00:00", "balanced", "Dori panggang & quinoa",
+		[]string{"dori-panggang", "quinoa-herba", "brokoli-kukus", "infused-water-timun"}, true},
 }
 
 // mondayOf returns the Monday of the week containing t, in the operating zone.
@@ -958,7 +968,19 @@ func (s *seeder) menu() error {
 			if err := s.exec("scheduled_meal", `
 				INSERT INTO scheduled_meal (id, service_date, diet_type_id, slot_id, name, status, published_at, qty_capacity)
 				VALUES ($1, $2::date, $3, $4, $5, $6, $7, 40)
-				ON CONFLICT (service_date, diet_type_id, slot_id) DO NOTHING`,
+				-- Converges on the fixture instead of DO NOTHING. Flipping a
+				-- plan from draft to published used to be a silent no-op on any
+				-- database that had already been seeded, which is exactly the
+				-- "assume every edit did nothing" failure (D69).
+				--
+				-- The WHERE clause keeps it safe: seeded rows carry a
+				-- deterministic id, so a meal somebody created or edited in the
+				-- back office has a different id and is left alone.
+				ON CONFLICT (service_date, diet_type_id, slot_id) DO UPDATE
+				   SET name = EXCLUDED.name,
+				       status = EXCLUDED.status,
+				       published_at = EXCLUDED.published_at
+				 WHERE scheduled_meal.id = EXCLUDED.id`,
 				idFor("meal", key), date.Format("2006-01-02"), did, sid,
 				m.name, status, published); err != nil {
 				return err

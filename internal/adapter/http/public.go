@@ -206,9 +206,13 @@ func photo(id uuid.UUID) string {
 	// and pricing — every meal card would have published them as Evermore's
 	// own the moment a menu went live. Those files are out of web/ entirely
 	// now, under docs/design_reference/thenie-marketing-cards/.
+	// Widened from five to eight for the week strip, which now shows two
+	// photographs per day instead of one. Each addition was opened and
+	// confirmed to be food with no third-party branding in it, same rule.
 	shots := []string{
 		"page-hero-1.jpg", "box-ayam.jpg", "page-hero-2.jpg",
-		"box-daging.jpg", "hero-bg.jpg",
+		"box-daging.jpg", "hero-bg.jpg", "buffet.jpg",
+		"testimonial.jpg", "tilt-frame.jpg",
 	}
 	return "/images/food/" + shots[int(id[len(id)-1])%len(shots)]
 }

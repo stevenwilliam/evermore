@@ -400,6 +400,10 @@ var messages = i18n.Bundle{
 			"e404.heading":               "Page not found",
 			"e404.message":               "The page you are looking for does not exist, or it has moved.",
 			"seo.meal.desc":              "%s — %d kcal and %s g protein per portion. %s, delivered %s at %s.",
+			"slot.breakfast":             "Breakfast",
+			"slot.lunch":                 "Lunch",
+			"slot.dinner":                "Dinner",
+			"week.sets":                  "Lunch and dinner, every day",
 		},
 		"id": {
 			"skip":          "Lewati ke konten utama",
@@ -774,6 +778,10 @@ var messages = i18n.Bundle{
 			"e404.heading":               "Halaman tidak ditemukan",
 			"e404.message":               "Halaman yang kamu cari tidak ada atau sudah dipindahkan.",
 			"seo.meal.desc":              "%s — %d kkal, %s g protein per porsi. %s, diantar %s pukul %s.",
+			"slot.breakfast":             "Sarapan",
+			"slot.lunch":                 "Makan siang",
+			"slot.dinner":                "Makan malam",
+			"week.sets":                  "Makan siang dan makan malam, tiap hari",
 		},
 	},
 }

@@ -146,18 +146,28 @@
           {{if .IsToday}}<span class="daycard-now">{{t $.L "week.today"}}</span>{{end}}
         </header>
 
-        {{if .Meals}}
-        {{$m := index .Meals 0}}
-        <a class="daycard-media" href="/menu/{{$m.ID}}">
-          <img src="{{photo $m.ID}}" alt="" loading="lazy" width="320" height="240">
+        {{if or .Lunch .Dinner}}
+        {{/* D69 — a lunch set and a dinner set, each with its own photograph.
+             People eat by eyes first, and one picture per day could only ever
+             show half of what that day offers. */}}
+        {{with .Lunch}}
+        <a class="daycard-set" href="/menu/{{.ID}}">
+          <span class="daycard-media"><img src="{{photo .ID}}" alt="" loading="lazy" width="320" height="213"></span>
+          <span class="daycard-set-body">
+            <span class="daycard-set-label">{{t $.L "slot.lunch"}}</span>
+            <span class="daycard-set-name">{{.Name}}</span>
+          </span>
         </a>
-        <div class="daycard-body">
-          <h3><a href="/menu/{{$m.ID}}">{{$m.Name}}</a></h3>
-          <p class="meta">{{$m.DietName}} &middot; {{$m.SlotAlias}}</p>
-          {{if gt (len .Meals) 1}}
-          <p class="meta daycard-more">+{{len (slice .Meals 1)}}</p>
-          {{end}}
-        </div>
+        {{end}}
+        {{with .Dinner}}
+        <a class="daycard-set" href="/menu/{{.ID}}">
+          <span class="daycard-media"><img src="{{photo .ID}}" alt="" loading="lazy" width="320" height="213"></span>
+          <span class="daycard-set-body">
+            <span class="daycard-set-label">{{t $.L "slot.dinner"}}</span>
+            <span class="daycard-set-name">{{.Name}}</span>
+          </span>
+        </a>
+        {{end}}
         {{else}}
         <div class="daycard-media daycard-empty" aria-hidden="true"></div>
         <div class="daycard-body">

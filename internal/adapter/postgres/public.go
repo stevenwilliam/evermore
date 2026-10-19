@@ -46,6 +46,7 @@ type MealCard struct {
 	DietName    string
 	SlotTime    string
 	SlotAlias   string
+	SlotPeriod  string // breakfast | lunch | dinner, from the slot row
 	Components  int
 	Panel       nutrition.Panel
 	PriceIDR    money.IDR
@@ -145,6 +146,7 @@ SELECT sm.id,
        dt.name,
        to_char(sl.slot_time, 'HH24.MI'),
        sl.alias,
+       sl.meal_period,
        count(smi.id)::int                                AS components,
        COALESCE(sum(n.calories_kcal), 0)::int            AS kcal,
        COALESCE(sum(n.protein_mg), 0)::int               AS protein_mg,
@@ -176,7 +178,7 @@ func (r *PublicRepo) PublishedMeals(ctx context.Context, date time.Time, dietSlu
          LEFT JOIN food f2 ON f2.id = i2.food_id
          WHERE sm2.id = sm.id
            AND (sm2.name ILIKE '%' || $3 || '%' OR f2.name ILIKE '%' || $3 || '%')))
- GROUP BY sm.id, sm.name, sm.service_date, dt.slug, dt.name, sl.slot_time, sl.alias, sl.sort_order
+ GROUP BY sm.id, sm.name, sm.service_date, dt.slug, dt.name, sl.slot_time, sl.alias, sl.meal_period, sl.sort_order
  ORDER BY sl.sort_order, sm.name`
 
 	rows, err := r.db.QueryContext(ctx, q, date.Format("2006-01-02"), dietSlug, search)
@@ -194,7 +196,7 @@ func scanMealCards(rows *sql.Rows) ([]MealCard, error) {
 		var capacity int
 		if err := rows.Scan(
 			&m.ID, &m.Name, &m.ServiceDate, &m.DietSlug, &m.DietName,
-			&m.SlotTime, &m.SlotAlias, &m.Components,
+			&m.SlotTime, &m.SlotAlias, &m.SlotPeriod, &m.Components,
 			&m.Panel.CaloriesKcal, &m.Panel.ProteinMG, &m.Panel.FatMG,
 			&m.Panel.CarbohydrateMG, &m.Panel.FibreMG, &m.Panel.SodiumMG,
 			&m.Panel.Complete, &capacity,
@@ -226,7 +228,7 @@ type MealItem struct {
 func (r *PublicRepo) Meal(ctx context.Context, mealID uuid.UUID) (*MealDetail, error) {
 	q := mealSelect + `
    AND sm.id = $1
- GROUP BY sm.id, sm.name, sm.service_date, dt.slug, dt.name, sl.slot_time, sl.alias`
+ GROUP BY sm.id, sm.name, sm.service_date, dt.slug, dt.name, sl.slot_time, sl.alias, sl.meal_period`
 
 	rows, err := r.db.QueryContext(ctx, q, mealID)
 	if err != nil {
@@ -484,6 +486,10 @@ type DayMenu struct {
 	Date    time.Time
 	IsToday bool
 	Meals   []MealCard
+	// The two sets the week strip shows side by side. Picked here rather than
+	// in the template so the choice is one rule, not seven copies of a range.
+	Lunch  *MealCard
+	Dinner *MealCard
 }
 
 // MenuWeek returns `days` consecutive days beginning at `from`.
@@ -498,7 +504,7 @@ func (r *PublicRepo) MenuWeek(ctx context.Context, from time.Time, days int, tod
 	q := mealSelect + `
    AND sm.service_date >= $1::date
    AND sm.service_date <  ($1::date + $2::int)
- GROUP BY sm.id, sm.name, sm.service_date, dt.slug, dt.name, sl.slot_time, sl.alias, sl.sort_order
+ GROUP BY sm.id, sm.name, sm.service_date, dt.slug, dt.name, sl.slot_time, sl.alias, sl.meal_period, sl.sort_order
  ORDER BY sm.service_date, sl.sort_order, sm.name`
 	rows, err := r.db.QueryContext(ctx, q, from.Format("2006-01-02"), days)
 	if err != nil {
@@ -520,7 +526,20 @@ func (r *PublicRepo) MenuWeek(ctx context.Context, from time.Time, days int, tod
 	for i := 0; i < days; i++ {
 		d := from.AddDate(0, 0, i)
 		k := d.Format("2006-01-02")
-		out = append(out, DayMenu{Date: d, IsToday: k == t, Meals: byDate[k]})
+		day := DayMenu{Date: d, IsToday: k == t, Meals: byDate[k]}
+		for i := range day.Meals {
+			switch day.Meals[i].SlotPeriod {
+			case "lunch":
+				if day.Lunch == nil {
+					day.Lunch = &day.Meals[i]
+				}
+			case "dinner":
+				if day.Dinner == nil {
+					day.Dinner = &day.Meals[i]
+				}
+			}
+		}
+		out = append(out, day)
 	}
 	return out, nil
 }
