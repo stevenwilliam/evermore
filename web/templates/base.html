@@ -117,6 +117,31 @@
 {{template "content" .}}
 </main>
 
+{{if and .Public .Certs}}
+{{/* D79 — the certification band.
+     The badge IS the information, so its alt text is the standard's name and
+     never alt="". The artwork is OUR OWN seal, not the certifying body's mark:
+     those are trademarks issued with usage rules and have to come from the
+     issuer — the image path is a sys_parameter so the real file replaces ours
+     without a deploy. The caption under each is where the certificate number
+     goes, and it is empty until somebody puts a real one there. */}}
+<section class="certs">
+  <div class="container">
+    <h2 class="certs-title">{{t .L "cert.heading"}}</h2>
+    <p class="certs-sub">{{t .L "cert.sub"}}</p>
+    <ul class="cert-badges">
+      {{range .Certs}}
+      <li class="cert">
+        <img class="cert-seal" src="{{.Image}}" alt="{{.Label}}" loading="lazy" width="300" height="300">
+        <span class="cert-label">{{.Label}}</span>
+        {{if .Note}}<span class="cert-note">{{.Note}}</span>{{end}}
+      </li>
+      {{end}}
+    </ul>
+  </div>
+</section>
+{{end}}
+
 <footer class="footer">
   <div class="container footer-grid">
     <div>

@@ -409,6 +409,34 @@ tbody tr:hover { background: var(--warm); }
 .stat-item .count { font-size: inherit; }
 .stat-item > span { display: block; font-size: var(--text-sm); color: var(--ink-faint); margin-top: var(--space-2); }
 
+/* ==========================================================================
+   D79 — the certification band, directly above the footer.
+
+   On --warm, which is otherwise unused since the week strip took the linen
+   band: it separates the seals from both the paper page above and the dark
+   footer below without introducing another colour.
+
+   The seals carry their meaning in their TEXT, which is --brand on the seal's
+   own pale face at 8.42. The gold rim is decoration and is measured as such.
+   ========================================================================== */
+.certs { background: var(--warm); padding-block: var(--space-7); text-align: center; }
+.certs-title { font-size: var(--text-xl); margin: 0; }
+/* A global readable measure caps every <p> at 630px, so the box has to be
+ * centred as well as its text — otherwise the line sits centred inside a box
+ * that is itself flush left. */
+.certs-sub { color: var(--ink-soft); font-size: var(--text-sm);
+             margin: var(--space-2) auto 0; }
+.cert-badges {
+  list-style: none; margin: var(--space-6) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-5); justify-items: center; align-items: start;
+}
+@media (max-width: 560px) { .cert-badges { grid-template-columns: 1fr; gap: var(--space-6); } }
+.cert { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); max-width: 22ch; }
+.cert-seal { width: clamp(96px, 11vw, 132px); height: auto; display: block; }
+.cert-label { font-weight: 600; font-size: var(--text-sm); color: var(--ink); line-height: 1.3; }
+.cert-note { font-size: var(--text-xs); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+
 /* -------------------------------------------------------------- footer */
 
 /* Compact: it was carrying 148px of margin and 96px of top padding, which

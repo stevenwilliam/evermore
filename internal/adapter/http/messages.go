@@ -413,6 +413,11 @@ var messages = i18n.Bundle{
 			"pkg.perk.fruit":             "Daily healthy fruit",
 			"pkg.perk.included":          "Included",
 			"pkg.perk.excluded":          "Not included",
+			"cert.heading":               "Our food-safety standards",
+			"cert.sub":                   "Certificates are held by PT Evermore Nutrisi Indonesia.",
+			"cert.halal":                 "Halal",
+			"cert.haccp":                 "HACCP — Hazard Analysis and Critical Control Points",
+			"cert.iso":                   "ISO 22000 food safety management",
 		},
 		"id": {
 			"skip":          "Lewati ke konten utama",
@@ -800,6 +805,11 @@ var messages = i18n.Bundle{
 			"pkg.perk.fruit":             "Buah sehat tiap hari",
 			"pkg.perk.included":          "Termasuk",
 			"pkg.perk.excluded":          "Tidak termasuk",
+			"cert.heading":               "Standar keamanan pangan kami",
+			"cert.sub":                   "Sertifikat atas nama PT Evermore Nutrisi Indonesia.",
+			"cert.halal":                 "Halal",
+			"cert.haccp":                 "HACCP — Hazard Analysis and Critical Control Points",
+			"cert.iso":                   "Manajemen keamanan pangan ISO 22000",
 		},
 	},
 }

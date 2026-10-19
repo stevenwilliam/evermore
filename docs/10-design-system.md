@@ -260,7 +260,18 @@ and no single red clears 3:1 against both — the deep red that reads at 3.90 on
 the light card measures **1.07** on the dark one, which is invisible. It
 therefore flips with the theme, unlike every `--ctl-*` colour.
 
-### 2.12 The WhatsApp float
+### 2.12 The certification band (D79)
+
+| Pairing | Ratio | Verdict |
+|---|---|---|
+| seal text on the seal face | **8.42** | AAA |
+
+The band sits on `--warm`, where the heading (`--ink`, 15.18) and the caption
+(`--ink-soft`, 5.65) are already recorded. The seal's gold rim is decoration —
+the badge's meaning is its text and its `alt` attribute, so the rim is not a
+graphical object anyone has to perceive, any more than a shadow is.
+
+### 2.13 The WhatsApp float
 
 | Pairing | Ratio | Verdict |
 |---|---|---|

@@ -204,6 +204,26 @@ func (s *seeder) sysParameters() error {
 		{"notify.whatsapp_enabled", "false", "bool", "notify", "Kirim notifikasi WhatsApp"},
 		{"notify.email_enabled", "true", "bool", "notify", "Kirim notifikasi email"},
 
+		// D79 — the certification band above the footer.
+		//
+		// These are FORMAL CERTIFICATION CLAIMS, not marketing copy. Halal
+		// labelling in Indonesia is regulated (UU 33/2014, BPJPH/MUI) and
+		// displaying it without a current certificate is an offence; HACCP and
+		// ISO 22000 are audited certifications held by a named legal entity
+		// with a number and an expiry. So the whole band is one switch that can
+		// be turned off the moment a certificate lapses, each badge's image is
+		// a path (the issuer's own mark replaces ours without a deploy — those
+		// marks are trademarks and must come from the issuer), and each caption
+		// is EMPTY by default, because an invented certificate number would be
+		// worse than none at all.
+		{"public.certifications_enabled", "true", "bool", "public", "Tampilkan badge sertifikasi"},
+		{"cert.halal.image", "/images/certs/seal-halal.svg", "string", "public", "Berkas badge Halal"},
+		{"cert.haccp.image", "/images/certs/seal-haccp.svg", "string", "public", "Berkas badge HACCP"},
+		{"cert.iso.image", "/images/certs/seal-iso-22000.svg", "string", "public", "Berkas badge ISO 22000"},
+		{"cert.halal.note", "", "string", "public", "Nomor sertifikat Halal"},
+		{"cert.haccp.note", "", "string", "public", "Nomor sertifikat HACCP"},
+		{"cert.iso.note", "", "string", "public", "Nomor sertifikat ISO 22000"},
+
 		{"seo.site_name", "Evermore", "string", "seo", "Nama situs untuk Open Graph"},
 		// The home page's title and description are editable per language. A
 		// single row could only ever be in one of them, which is what left the

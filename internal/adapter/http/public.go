@@ -302,6 +302,7 @@ type pageData struct {
 	TodayLabel      string
 	DateLabel       string
 	PublishedUntil  string
+	Certs           []certBadge
 	CutOff          string
 	CutOffCountdown string
 	Search          string
@@ -362,6 +363,41 @@ type dayLink struct {
 }
 
 // base fills the fields every page shares.
+// certBadge is one certification badge in the band above the footer. The
+// image is a PATH so the certifying body's own mark — which is a trademark and
+// arrives from the issuer — can replace ours without a deploy, and the note is
+// where the certificate number goes (D79).
+type certBadge struct {
+	Key   string
+	Image string
+	Label string
+	Note  string
+}
+
+// certs builds the band, or returns nothing at all when the switch is off.
+// The switch exists because these are formal certification claims: halal
+// labelling in Indonesia is regulated under UU 33/2014 and displaying it
+// without a current certificate is an offence, not an exaggeration.
+func certsFor(params map[string]string, l i18n.Locale) []certBadge {
+	if params["public.certifications_enabled"] != "true" {
+		return nil
+	}
+	out := make([]certBadge, 0, 3)
+	for _, k := range []string{"halal", "haccp", "iso"} {
+		img := params["cert."+k+".image"]
+		if img == "" {
+			continue
+		}
+		out = append(out, certBadge{
+			Key:   k,
+			Image: img,
+			Label: messages.T(l, "cert."+k),
+			Note:  params["cert."+k+".note"],
+		})
+	}
+	return out
+}
+
 // param reads a sys_parameter that may be set per locale: `key.<locale>` wins
 // over the unsuffixed `key`, so an operator can translate a value without one
 // language's copy overwriting the other's.
@@ -433,6 +469,7 @@ func (h *renderer) base(c *gin.Context, params map[string]string, nav, title, de
 		Nav:          nav,
 		Year:         time.Now().In(h.cfg.Location).Year(),
 		Params:       tplParams,
+		Certs:        certsFor(params, loc),
 		CutOff:       params["order.cutoff_time"],
 		// Passed RAW. html/template percent-encodes it for the URL attribute
 		// context on its own; pre-encoding here produced a double-encoded

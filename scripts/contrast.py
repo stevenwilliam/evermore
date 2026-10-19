@@ -248,6 +248,11 @@ CHECKS: list[tuple[str, str, str, dict]] = [
     ("white on the popular flag", WHITE, "#C2410C", {}),
     ("the thumb's darkest stop on the popular flag", "#FFC933", "#C2410C", {"non_text": True}),
 
+    # --- the certification band (D79). The seal's meaning is its TEXT and its
+    # alt attribute; the gold rim is decoration, like a shadow, and is not a
+    # graphical object anyone has to perceive to read the badge.
+    ("seal text on the seal face", BRAND, "#F9F9F6", {}),
+
     # --- the WhatsApp float
     ("WA teal on paper", "#128C7E", PAPER, {"non_text": True}),
     ("WA white glyph on the teal", WHITE, "#128C7E", {"non_text": True}),
@@ -340,6 +345,7 @@ RECORDED: dict[str, float] = {
     "one red cross for both themes (REJECTED)": 1.07,
     "white on the popular flag": 5.18,
     "the thumb's darkest stop on the popular flag": 3.37,
+    "seal text on the seal face": 8.42,
     "WA teal on paper": 3.92,
     "WA white glyph on the teal": 4.14,
 }
