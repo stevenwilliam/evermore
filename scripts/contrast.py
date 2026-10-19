@@ -232,6 +232,12 @@ CHECKS: list[tuple[str, str, str, dict]] = [
     ("ink-faint on a clay-rose band (REJECTED)", INK_FAINT, "#F4E6E1", {}),
     ("ink-on-glass under tinted glass over the dark brand-wash band", "#C3C9C5", "#35594A", {}),
 
+    # --- the week strip's period badges (D71). Pinned, so these two rows are
+    # the whole story in both themes.
+    ("white on the sun badge", WHITE, "#C2410C", {}),
+    ("white on the moon badge", WHITE, "#2F6690", {}),
+    ("info as a badge fill, dark theme (REJECTED)", WHITE, "#8FB8DC", {}),
+
     # --- the WhatsApp float
     ("WA teal on paper", "#128C7E", PAPER, {"non_text": True}),
     ("WA white glyph on the teal", WHITE, "#128C7E", {"non_text": True}),
@@ -318,6 +324,9 @@ RECORDED: dict[str, float] = {
     "brand-lt under glass over the dark linen band": 4.63,
     "ink-on-glass on the dark day-card head over the linen band": 4.81,
     "ink-faint on a clay-rose band (REJECTED)": 4.48,
+    "white on the sun badge": 5.18,
+    "white on the moon badge": 6.13,
+    "info as a badge fill, dark theme (REJECTED)": 2.09,
     "WA teal on paper": 3.92,
     "WA white glyph on the teal": 4.14,
 }

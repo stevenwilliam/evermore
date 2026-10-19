@@ -227,7 +227,23 @@ and the packages are green.
 | ink-faint on a clay-rose band (REJECTED) | **4.48** | FAIL |
 | ink-on-glass under tinted glass over the dark brand-wash band | **4.66** | AA |
 
-### 2.10 The WhatsApp float
+### 2.10 The week strip's period badges (D71)
+
+A sun and a moon sit on each photograph in place of the words "lunch" and
+"dinner". Both are **pinned** fills with a white glyph, so the glyph is measured
+against the badge and never against the photograph behind it.
+
+Pinning is not decoration here. `--info` lightens to `#8FB8DC` in the dark
+theme, and a white glyph on that measures **2.09** — the badge would simply
+stop reading. `--ctl-moon` is a fixed `#2F6690` and is never redefined.
+
+| Pairing | Ratio | Verdict |
+|---|---|---|
+| white on the sun badge | **5.18** | AA |
+| white on the moon badge | **6.13** | AA |
+| info as a badge fill, dark theme (REJECTED) | **2.09** | FAIL |
+
+### 2.11 The WhatsApp float
 
 | Pairing | Ratio | Verdict |
 |---|---|---|

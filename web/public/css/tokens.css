@@ -62,6 +62,12 @@
   --ctl-brand:    #13543E;  /* white on it 8.88 */
   --ctl-brand-hi: #0D3C2C;  /* white on it 12.35 */
   --ctl-accent:   #D8F26B;  /* --on-brand on it 14.63 */
+  /* The week strip's period badges. PINNED like every other control colour
+   * (D42): --info lightens to #8FB8DC in the dark theme, and a white glyph on
+   * that measures 2.09 — so the moon takes its own fixed blue and is never
+   * redefined below. White on each is 5.18 and 6.13. */
+  --ctl-sun:  #C2410C;
+  --ctl-moon: #2F6690;
 
   /* ---- Lines and elevation ----
    * Hairlines, not outlines. Elevation is a soft layered shadow, which is what
