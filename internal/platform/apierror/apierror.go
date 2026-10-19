@@ -125,7 +125,7 @@ func Internal(cause error) *Error {
 	return (&Error{
 		Status:  http.StatusInternalServerError,
 		Code:    CodeInternal,
-		Message: "Terjadi kesalahan pada sistem. Silakan coba lagi.",
+		Message: "Something went wrong. Please try again.",
 	}).WithCause(cause)
 }
 

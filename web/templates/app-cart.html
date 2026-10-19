@@ -47,7 +47,7 @@
                 <thead><tr><th scope="col">{{t .L "cart.qty.col"}}</th><th scope="col" class="num">{{t .L "cart.price.col"}}</th></tr></thead>
                 <tbody>
                 {{range .Tiers}}
-                  <tr><td>{{tierRange .MinQty .MaxQty}}</td><td class="num">{{rupiah .PriceIDR}}</td></tr>
+                  <tr><td>{{tierRange $.L .MinQty .MaxQty}}</td><td class="num">{{rupiah .PriceIDR}}</td></tr>
                 {{end}}
                 </tbody>
               </table>

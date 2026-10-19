@@ -166,7 +166,7 @@
     </div>
     <div>
       <p>Hubungi</p>
-      <p><a href="tel:{{telDigits .Params.company_phone}}">{{.Params.company_phone}}</a></p>
+      {{if .Params.company_phone}}<p><a href="tel:{{telDigits .Params.company_phone}}">{{.Params.company_phone}}</a></p>{{end}}
       <p><a href="mailto:{{.Params.company_email}}">{{.Params.company_email}}</a></p>
 
       {{/* D51 — social links. Each is a sys_parameter, so a channel is added,

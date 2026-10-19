@@ -430,6 +430,7 @@ var messages = i18n.Bundle{
 			"seo.legal.privacy.desc":     "How Evermore collects, uses and protects your data.",
 			"seo.legal.terms.title":      "Terms \u0026 conditions",
 			"seo.legal.terms.desc":       "The terms that apply to ordering from Evermore.",
+			"bo.capacity.none":           "No kitchen capacity is configured for this date.",
 		},
 		"id": {
 			"skip":          "Lewati ke konten utama",
@@ -834,6 +835,7 @@ var messages = i18n.Bundle{
 			"seo.legal.privacy.desc":     "Bagaimana Evermore mengumpulkan, memakai dan melindungi data Anda.",
 			"seo.legal.terms.title":      "Syarat \u0026 ketentuan",
 			"seo.legal.terms.desc":       "Ketentuan yang berlaku untuk pemesanan di Evermore.",
+			"bo.capacity.none":           "Belum ada kuota dapur untuk tanggal ini.",
 		},
 	},
 }

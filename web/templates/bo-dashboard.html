@@ -30,6 +30,10 @@
     </div>
 
     <h2>{{t .L "bo.capacity"}} <span class="meta" style="font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--w-body)">{{t .L "bo.used"}}</span></h2>
+    {{/* The header row reads its columns from the FIRST kitchen, so with no
+         kitchens at all `index .Dash.Capacity 0` is an index out of range and
+         the whole dashboard 500s. A quiet day is not an error (D85). */}}
+    {{if .Dash.Capacity}}
     <div class="table-wrap">
       <table>
         <caption class="visually-hidden">{{t .L "bo.capacity.aria"}}</caption>
@@ -53,6 +57,9 @@
         </tbody>
       </table>
     </div>
+    {{else}}
+    <p class="meta">{{t .L "bo.capacity.none"}}</p>
+    {{end}}
 
     {{if .Dash.Actions}}
     <h2 style="margin-top:var(--space-7)">{{t .L "bo.needsaction"}}</h2>
