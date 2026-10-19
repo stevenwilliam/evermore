@@ -210,6 +210,22 @@ CHECKS: list[tuple[str, str, str, dict]] = [
     ("ink on the dark hero, over the map", "#F2F3EF", "#16201B", {}),
     ("ink-soft on the dark hero, over the map", "#B4BBB6", "#16201B", {}),
 
+    # --- the banded home body (D65). Each band changes what the glass cards
+    # composite onto, so every surface over a band is measured again. The
+    # "over the ... band" grounds are the ribbon at its darkest ON that band.
+    ("ink on the brand-wash band", INK, "#E7F0EB", {}),
+    ("ink-soft on the brand-wash band", INK_SOFT, "#E7F0EB", {}),
+    ("ink-faint on the brand-wash band", INK_FAINT, "#E7F0EB", {}),
+    ("ink-on-glass under glass over the warm band", "#454C48", "#B8C7C0", {}),
+    ("brand under glass over the warm band", BRAND, "#B8C7C0", {}),
+    ("ink-on-glass on the day-card head over the warm band", "#454C48", "#B1C0B7", {}),
+    ("ink-on-glass under tinted glass over the brand-wash band", "#454C48", "#ACC2B9", {}),
+    ("ink-faint on the dark brand-wash band", "#8E9691", "#173026", {}),
+    ("ink-on-glass under glass over the dark warm band", "#C3C9C5", "#335245", {}),
+    ("brand-lt under glass over the dark warm band", BRAND_LT, "#335245", {}),
+    ("ink-on-glass on the dark day-card head over the warm band", "#C3C9C5", "#375749", {}),
+    ("ink-on-glass under tinted glass over the dark brand-wash band", "#C3C9C5", "#35594A", {}),
+
     # --- the WhatsApp float
     ("WA teal on paper", "#128C7E", PAPER, {"non_text": True}),
     ("WA white glyph on the teal", WHITE, "#128C7E", {"non_text": True}),
@@ -278,6 +294,18 @@ RECORDED: dict[str, float] = {
     "brand script on the hero, over the map": 7.51,
     "ink on the dark hero, over the map": 15.00,
     "ink-soft on the dark hero, over the map": 8.53,
+    "ink on the brand-wash band": 15.70,
+    "ink-soft on the brand-wash band": 5.84,
+    "ink-faint on the brand-wash band": 4.69,
+    "ink-on-glass under glass over the warm band": 5.03,
+    "brand under glass over the warm band": 5.06,
+    "ink-on-glass on the day-card head over the warm band": 4.66,
+    "ink-on-glass under tinted glass over the brand-wash band": 4.69,
+    "ink-faint on the dark brand-wash band": 4.65,
+    "ink-on-glass under glass over the dark warm band": 5.13,
+    "brand-lt under glass over the dark warm band": 4.58,
+    "ink-on-glass on the dark day-card head over the warm band": 4.76,
+    "ink-on-glass under tinted glass over the dark brand-wash band": 4.66,
     "WA teal on paper": 3.92,
     "WA white glyph on the teal": 4.14,
 }

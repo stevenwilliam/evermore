@@ -183,7 +183,37 @@ sitting directly behind the type.
 | ink on the dark hero, over the map | **15.00** | AAA |
 | ink-soft on the dark hero, over the map | **8.53** | AAA |
 
-### 2.8 The WhatsApp float
+### 2.9 The banded home body (D65)
+
+The home body runs on three grounds rather than one: the week strip on the warm
+band, the packages on the brand-wash band, and the stats row and testimonials
+on paper so the two tinted blocks never butt together.
+
+A band changes what every translucent surface above it composites onto, so each
+one is measured again rather than inherited. The grounds below are the ribbon at
+its darkest **on that band**, seen through the relevant card.
+
+**The dark theme decided the layout.** `--brand` — the `+N` link on a day card —
+measures **4.39** on glass over a green band and fails, but **4.58** over the
+warm one. That is why the week strip is warm and the packages are green, and not
+the other way round.
+
+| Pairing | Ratio | Verdict |
+|---|---|---|
+| ink on the brand-wash band | **15.70** | AAA |
+| ink-soft on the brand-wash band | **5.84** | AA |
+| ink-faint on the brand-wash band | **4.69** | AA |
+| ink-on-glass under glass over the warm band | **5.03** | AA |
+| brand under glass over the warm band | **5.06** | AA |
+| ink-on-glass on the day-card head over the warm band | **4.66** | AA |
+| ink-on-glass under tinted glass over the brand-wash band | **4.69** | AA |
+| ink-faint on the dark brand-wash band | **4.65** | AA |
+| ink-on-glass under glass over the dark warm band | **5.13** | AA |
+| brand-lt under glass over the dark warm band | **4.58** | AA |
+| ink-on-glass on the dark day-card head over the warm band | **4.76** | AA |
+| ink-on-glass under tinted glass over the dark brand-wash band | **4.66** | AA |
+
+### 2.10 The WhatsApp float
 
 | Pairing | Ratio | Verdict |
 |---|---|---|

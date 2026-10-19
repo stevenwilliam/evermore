@@ -1,0 +1,12 @@
+const { chromium } = require('playwright')
+;(async () => {
+  const b = await chromium.launch()
+  const p = await (await b.newContext({viewport:{width:1366,height:1000}, deviceScaleFactor:1})).newPage()
+  await p.goto('http://127.0.0.1:8082/', {waitUntil:'domcontentloaded', timeout:20000})
+  await p.waitForTimeout(2200)
+  await p.evaluate(()=>window.scrollTo(0,document.body.scrollHeight)); await p.waitForTimeout(1200)
+  await p.evaluate(()=>window.scrollTo(0,0)); await p.waitForTimeout(900)
+  await p.screenshot({path:process.argv[2]+'/home-bands.png', fullPage:true})
+  console.log('ok')
+  await b.close()
+})()

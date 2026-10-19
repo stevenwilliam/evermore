@@ -66,6 +66,10 @@ main { flex: 1 0 auto; }
  * and neither does the section after it — that pair was the "biggggg white
  * space" left once the button went. */
 #week { padding-bottom: 0; }
+/* Unless it is a band. Zero trailing padding was right when the section was
+ * the same colour as everything around it; on a block of colour it cuts the
+ * band off flush against the cards (D65). */
+#week.band-raised { padding-bottom: var(--space-8); }
 #week + .section { padding-top: var(--space-6); }
 
 /* The hero already supplies the space above whatever follows it. */
@@ -75,7 +79,24 @@ main { flex: 1 0 auto; }
 .section + .section { padding-top: var(--space-6); }
 .section.tight { padding-block: var(--space-5); }
 .section.tight { padding-block: var(--space-6); }
+/* D65 — the body is banded, not one flat sheet.
+ *
+ * Three grounds down the page instead of one, each carrying a bit of meaning:
+ * the week strip sits on the WARM band (food), the packages on the BRAND-WASH
+ * band (the plan), and the stats row and testimonials stay on paper so the two
+ * tinted blocks are separated by a breather rather than butting together.
+ *
+ * Every band changes what the glass cards composite onto, so each one was
+ * re-measured rather than assumed — see 10-design-system.md §2.9. The dark
+ * theme is what decided which band goes where: `--brand` (the "+N" link on a
+ * day card) lands at 4.39 on glass over a green band and fails, but 4.58 over
+ * the warm one, so the week strip gets warm and packages get green. */
 .band-raised { background: var(--warm); }
+.band-wash   { background: var(--brand-wash); }
+/* A band is a block of colour, so it keeps even padding — `.section + .section`
+ * trims the top of a run of plain sections, which would leave it lopsided. */
+.section.band-raised,
+.section.band-wash { padding-block: var(--space-8); }
 
 /* Editorial, not centred. The head sits in a narrow measure on the left and
  * the content runs wider beneath it — asymmetry is what keeps a page from
