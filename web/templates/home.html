@@ -139,13 +139,13 @@
 
     <div class="weekstrip">
       {{range .Week}}
-      <article class="daycard{{if .IsToday}} is-today{{end}}">
-        <header class="daycard-head">
-          <span class="daycard-day">{{weekday $.L .Date}}</span>
-          <span class="daycard-date">{{daynum .Date}} {{monthShort $.L .Date}}</span>
-          {{if .IsToday}}<span class="daycard-now">{{t $.L "week.today"}}</span>{{end}}
-        </header>
-
+      {{/* D75 — a polaroid, not a card: the photographs sit inside a white
+           frame and the day is written on the strip BELOW them, where a
+           polaroid caption goes. They are deliberately NOT tilted — the
+           photographs were asked to line up across the row (D70), and a stack
+           of tilted frames cannot do both. */}}
+      <figure class="polaroid{{if .IsToday}} is-today{{end}}">
+        <div class="polaroid-film">
         {{if or .Lunch .Dinner}}
         {{/* D69 — a lunch set and a dinner set, each with its own photograph.
              People eat by eyes first, and one picture per day could only ever
@@ -180,7 +180,13 @@
           <p class="meta">{{t $.L "week.empty"}}</p>
         </div>
         {{end}}
-      </article>
+        </div>
+        <figcaption class="polaroid-caption">
+          <span class="polaroid-day">{{weekday $.L .Date}}</span>
+          <span class="polaroid-date">{{daynum .Date}} {{monthShort $.L .Date}}</span>
+          {{if .IsToday}}<span class="daycard-now">{{t $.L "week.today"}}</span>{{end}}
+        </figcaption>
+      </figure>
       {{end}}
     </div>
   </div>

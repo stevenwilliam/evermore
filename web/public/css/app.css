@@ -756,6 +756,14 @@ tbody tr:hover { background: var(--warm); }
 
 .weekstrip {
   display: grid; gap: var(--space-4);
+  /* The ribbon. `local` is what makes it scroll with the photographs. */
+  background-image: linear-gradient(90deg,
+      transparent 0, var(--brand) 3%, var(--accent) 50%, var(--brand) 97%, transparent 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 6px;
+  background-position: 0 30px;
+  background-attachment: local;
+  padding-top: 24px;
   grid-auto-flow: column; grid-auto-columns: minmax(208px, 1fr);
   overflow-x: auto; overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
@@ -764,7 +772,7 @@ tbody tr:hover { background: var(--warm); }
    * container would otherwise clip. */
   padding-inline: 2px;
 }
-.weekstrip > .daycard { scroll-snap-align: start; }
+.weekstrip > .polaroid { scroll-snap-align: start; }
 
 /* A real scrollbar, styled rather than hidden: hiding it leaves no signal
  * that there is more to the right. */
@@ -782,38 +790,65 @@ tbody tr:hover { background: var(--warm); }
 /* On a wide screen seven cards fit, so the scroller simply never scrolls. */
 @media (min-width: 1180px) { .weekstrip { grid-auto-columns: 1fr; overflow-x: visible; } }
 
-.daycard {
-  position: relative;
-  background: var(--card); border: 1px solid var(--line);
-  border-radius: var(--radius-lg); overflow: hidden;
+/* ==========================================================================
+   D75 — the week is a row of polaroids strung on a ribbon.
+
+   The frame is the whole idea: an even white border on three sides and a
+   deeper strip at the bottom, with the day written on that strip the way a
+   caption goes on a polaroid. No tilt — a scatter of tilted frames is the
+   obvious move and it directly contradicts D70, where the photographs were
+   asked to line up across the row. Shape and proportion carry the reference
+   instead.
+
+   The ribbon is a BACKGROUND on the scroller with `background-attachment:
+   local`, so it scrolls with the photographs instead of staying pinned to the
+   viewport while they slide past it. Each polaroid paints over it, which is
+   what makes them read as threaded on it rather than sitting beside it.
+   ========================================================================== */
+.polaroid {
+  position: relative; z-index: 1;
+  /* A <figure> carries `margin: 1em 40px` by default, which inside a grid
+   * column shrinks every frame by 80px and opens a false gutter between them. */
+  margin: 0;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 3px;              /* polaroid stock is nearly square-cornered */
+  padding: 10px 10px 0;
   display: flex; flex-direction: column;
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
-              border-color var(--dur) var(--ease);
+  box-shadow: 0 1px 2px rgba(18, 22, 20, .10), 0 10px 20px rgba(18, 22, 20, .09);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
-.daycard:hover { transform: translateY(var(--lift)) scale(1.04); box-shadow: var(--shadow-3); border-color: var(--ctl-brand); z-index: 2; }
+.polaroid:hover { transform: translateY(var(--lift)); box-shadow: var(--shadow-3); z-index: 3; }
 
-.daycard-head {
-  /* Two rows, not one. Squeezed onto a single line the day name truncated to
-   * "Wedn…" and the today card lost its day name altogether — the one card
-   * that most needs to say which day it is. */
-  display: grid; grid-template-columns: 1fr auto; gap: 2px var(--space-2);
-  align-items: center;
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--line);
+/* The clip that holds the photograph to the ribbon. */
+.polaroid::before {
+  content: ""; position: absolute; top: -7px; left: 50%; translate: -50% 0;
+  width: 34px; height: 13px; border-radius: 3px;
+  background: var(--ctl-accent);
+  box-shadow: 0 1px 2px rgba(18, 22, 20, .22);
 }
-.daycard-day  { grid-column: 1 / -1; white-space: nowrap; }
-.daycard-date { white-space: nowrap; }
-.daycard-now  { justify-self: end; }
-.daycard-day  { font-weight: 600; font-size: var(--text-sm); }
-.daycard-date { font-size: var(--text-xs); color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.polaroid-film { display: flex; flex-direction: column; flex: 1; }
 
-/* TODAY. Three signals, not one: a filled header, a ring around the whole
- * card, and a worded badge — colour is never the only signal (CLAUDE.md §7),
- * and "today" is exactly the thing someone scanning needs to find first. */
-.daycard.is-today { border-color: var(--ctl-brand); box-shadow: 0 0 0 3px var(--brand-wash); }
-.daycard.is-today .daycard-head { background: var(--ctl-brand); border-bottom-color: var(--ctl-brand); }
-.daycard.is-today .daycard-day,
-.daycard.is-today .daycard-date { color: #FFFFFF; }
+/* The caption strip — deeper than the other three borders, as on real stock. */
+.polaroid-caption {
+  display: grid; grid-template-columns: auto 1fr; gap: 2px var(--space-2);
+  align-items: baseline;
+  padding: var(--space-3) 2px var(--space-4);
+}
+.polaroid-day {
+  grid-column: 1 / -1;
+  font-family: var(--font-display); font-style: italic;
+  font-size: var(--text-base); line-height: 1.1; color: var(--ink);
+}
+.polaroid-date { font-size: var(--text-xs); color: var(--ink-on-glass);
+                 font-variant-numeric: tabular-nums; white-space: nowrap; }
+.daycard-now { justify-self: end; }
+
+/* TODAY. Three signals, not one: the clip turns brand green, the frame gains a
+ * ring, and the caption carries a worded badge — colour is never the only
+ * signal (CLAUDE.md §7). */
+.polaroid.is-today { border-color: var(--ctl-brand); box-shadow: 0 0 0 3px var(--brand-wash), 0 10px 20px rgba(18, 22, 20, .10); }
+.polaroid.is-today::before { background: var(--ctl-brand); }
 .daycard-now {
   font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
   background: var(--ctl-accent); color: var(--on-brand);
@@ -839,17 +874,17 @@ tbody tr:hover { background: var(--warm); }
   display: block; color: inherit; text-decoration: none;
   transition: background var(--dur) var(--ease);
 }
-.daycard-set + .daycard-set { border-top: 1px solid var(--line); }
+.daycard-set + .daycard-set { margin-top: var(--space-3); }
 .daycard-set:hover { background: var(--glass); }
 .daycard-set:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
-.daycard-set .daycard-media { aspect-ratio: 3 / 2; position: relative; }
+.daycard-set .daycard-media { aspect-ratio: 3 / 2; position: relative; border-radius: 2px; }
 .daycard-set-body {
   display: flex; flex-direction: column; gap: 2px;
   /* 12px sides, not 16: at seven columns that is 8 more pixels of text column,
    * which is the difference between the longest dish name taking three lines
    * and taking four — and a four-line name on one card pushed that card's
    * dinner photograph 20px below everybody else's. */
-  padding: var(--space-3) var(--space-3) var(--space-4);
+  padding: var(--space-3) 2px var(--space-2);
 }
 /* The period is a sun or a moon on the photograph, not a word under it. Both
  * badges are PINNED colours (D42) with a white glyph — orange 5.18, blue 6.13
@@ -1133,14 +1168,9 @@ tbody tr:hover { background: var(--warm); }
  * its soft grey, just at half strength; today's stays a SOLID brand fill —
  * it is a pinned control (D42) and its white text is measured against that
  * exact colour. */
-.daycard { background: var(--glass); }
-.daycard-head { background: var(--card-quiet); }
-.daycard.is-today .daycard-head { background: var(--ctl-brand); }
 /* Same reason as the cards: --ink-faint drops to 3.23 in the body and 2.99 in
  * the header where the ribbon's core stroke shows through. */
-.daycard .meta,
-.daycard-date { color: var(--ink-on-glass); }
-.daycard.is-today .daycard-date { color: #FFFFFF; }
+.polaroid .meta { color: var(--ink-on-glass); }
 
 /* The "most popular" flag sits in the card's corner instead of in the flow.
  * In the flow it pushed the featured card's heading and whole perk list down
