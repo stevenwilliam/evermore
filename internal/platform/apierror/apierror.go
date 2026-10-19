@@ -92,25 +92,25 @@ func New(status int, code Code, msg string) *Error {
 // locale; the handler layer localises where a catalogue key exists.
 func Validation(msg string) *Error {
 	if msg == "" {
-		msg = "Data yang dikirim tidak valid."
+		msg = "The data sent is not valid."
 	}
 	return New(http.StatusBadRequest, CodeValidation, msg)
 }
 func Unauthenticated(msg string) *Error {
 	if msg == "" {
-		msg = "Silakan masuk terlebih dahulu."
+		msg = "Please sign in first."
 	}
 	return New(http.StatusUnauthorized, CodeUnauthenticated, msg)
 }
 func Forbidden(msg string) *Error {
 	if msg == "" {
-		msg = "Anda tidak punya akses ke sumber daya ini."
+		msg = "You do not have access to this resource."
 	}
 	return New(http.StatusForbidden, CodeForbidden, msg)
 }
 func NotFound(msg string) *Error {
 	if msg == "" {
-		msg = "Data tidak ditemukan."
+		msg = "Not found."
 	}
 	return New(http.StatusNotFound, CodeNotFound, msg)
 }

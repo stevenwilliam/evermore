@@ -119,12 +119,12 @@ func (h *AppHandler) items(c *gin.Context) []ordering.CartItem {
 func (h *AppHandler) AddToCart(c *gin.Context) {
 	mealID, err := uuid.Parse(c.PostForm("meal_id"))
 	if err != nil {
-		Fail(c, apierror.Validation("Menu tidak dikenali."))
+		Fail(c, apierror.Validation("Unknown meal."))
 		return
 	}
 	qty, err := strconv.Atoi(c.DefaultPostForm("qty", "1"))
 	if err != nil || qty < 0 || qty > 999 {
-		Fail(c, apierror.Validation("Jumlah porsi harus antara 0 dan 999."))
+		Fail(c, apierror.Validation("Quantity must be between 0 and 999."))
 		return
 	}
 
@@ -236,7 +236,7 @@ func (h *AppHandler) PlaceOrder(c *gin.Context) {
 	}
 	addressID, err := uuid.Parse(c.PostForm("address_id"))
 	if err != nil {
-		Fail(c, apierror.Validation("Pilih alamat pengantaran."))
+		Fail(c, apierror.Validation("Choose a delivery address."))
 		return
 	}
 	note, err := sanitize.Text("courier_note", c.PostForm("courier_note"), 0, 240)
@@ -289,7 +289,7 @@ func (h *AppHandler) BuyPackage(c *gin.Context) {
 	}
 	packageID, err := uuid.Parse(c.PostForm("package_id"))
 	if err != nil {
-		Fail(c, apierror.Validation("Paket tidak dikenali."))
+		Fail(c, apierror.Validation("Unknown package."))
 		return
 	}
 
@@ -360,7 +360,7 @@ func (h *AppHandler) UploadProof(c *gin.Context) {
 
 	file, err := c.FormFile("proof")
 	if err != nil {
-		Fail(c, apierror.Validation("Pilih berkas bukti transfer."))
+		Fail(c, apierror.Validation("Choose a transfer receipt file."))
 		return
 	}
 	if file.Size > payments.MaxProofBytes {
@@ -370,13 +370,13 @@ func (h *AppHandler) UploadProof(c *gin.Context) {
 	}
 	f, err := file.Open()
 	if err != nil {
-		Fail(c, apierror.Validation("Berkas tidak bisa dibaca."))
+		Fail(c, apierror.Validation("The file could not be read."))
 		return
 	}
 	defer f.Close()
 	buf := make([]byte, file.Size)
 	if _, err := readFull(f, buf); err != nil {
-		Fail(c, apierror.Validation("Berkas tidak bisa dibaca."))
+		Fail(c, apierror.Validation("The file could not be read."))
 		return
 	}
 
@@ -384,7 +384,7 @@ func (h *AppHandler) UploadProof(c *gin.Context) {
 	if v := strings.TrimSpace(c.PostForm("declared_amount")); v != "" {
 		n, err := strconv.ParseInt(strings.NewReplacer(".", "", ",", "", " ", "").Replace(v), 10, 64)
 		if err != nil || n < 0 {
-			Fail(c, apierror.Validation("Nominal tidak valid."))
+			Fail(c, apierror.Validation("Invalid amount."))
 			return
 		}
 		declared = money.IDR(n)
@@ -399,7 +399,7 @@ func (h *AppHandler) UploadProof(c *gin.Context) {
 	switch {
 	case errors.Is(err, payments.ErrProofWrongType):
 		Fail(c, apierror.New(http.StatusUnsupportedMediaType, apierror.CodeUnsupportedMedia,
-			"Bukti transfer harus berupa JPG atau PNG."))
+			"The transfer receipt must be a JPG or PNG."))
 		return
 	case errors.Is(err, payments.ErrProofTooLarge):
 		Fail(c, apierror.New(http.StatusRequestEntityTooLarge, apierror.CodePayloadTooLarge,
@@ -407,7 +407,7 @@ func (h *AppHandler) UploadProof(c *gin.Context) {
 		return
 	case errors.Is(err, payments.ErrDeadlinePassed):
 		Fail(c, apierror.Conflict("PAYMENT_DEADLINE_PASSED",
-			"Batas waktu pembayaran sudah lewat dan slot dilepas."))
+			"The payment deadline passed and the slot was released."))
 		return
 	case errors.Is(err, payments.ErrPaymentNotFound):
 		h.NotFoundApp(c)
@@ -435,7 +435,7 @@ func (h *AppHandler) Orders(c *gin.Context) {
 	search := c.Query("q")
 	if search != "" {
 		if search, err = sanitize.Text("q", search, 0, 60); err != nil {
-			Fail(c, apierror.Validation("Kata kunci terlalu panjang."))
+			Fail(c, apierror.Validation("Search term is too long."))
 			return
 		}
 	}
@@ -517,11 +517,12 @@ func (h *AppHandler) NotFoundApp(c *gin.Context) {
 	if params == nil {
 		params = map[string]string{}
 	}
-	d := h.base(c, params, "", "Tidak ditemukan — Evermore", "")
+	d := h.base(c, params, "", "", "")
+	h.seo(&d, params, "404")
 	d.NoIndex = true
 	d.Code = "404"
-	d.Heading = "Tidak ditemukan"
-	d.Message = "Halaman atau data yang kamu cari tidak ada."
+	d.Heading = messages.T(d.L, "e404.heading")
+	d.Message = messages.T(d.L, "e404.message")
 	h.render(c, "error", http.StatusNotFound, d)
 }
 
@@ -544,12 +545,12 @@ func checkoutError(err error) error {
 	switch {
 	case errors.Is(err, ordering.ErrPastCutOff):
 		return apierror.Conflict(apierror.CodePastCutOff,
-			"Batas pesan untuk salah satu tanggal sudah lewat.")
+			"The cut-off for one of those dates has passed.")
 	case errors.Is(err, ordering.ErrCapacityFull):
 		return apierror.Conflict(apierror.CodeCapacityFull,
-			"Kapasitas untuk tanggal dan jam itu sudah penuh.")
+			"That date and time slot is full.")
 	case errors.Is(err, ordering.ErrAddressNotOwned):
-		return apierror.NotFound("Alamat tidak ditemukan.")
+		return apierror.NotFound("Address not found.")
 	case errors.Is(err, ordering.ErrPackageNotForSale):
 		return apierror.Conflict(apierror.CodeMenuNotPublished,
 			"Paket itu sudah tidak dijual.")
@@ -557,7 +558,7 @@ func checkoutError(err error) error {
 		// Never guess a price (02-business-rules §5.1): the purchase is
 		// blocked and the customer is told, rather than charged a default.
 		return apierror.Conflict(apierror.CodeMenuNotPublished,
-			"Harga paket belum tersedia untuk akun Anda. Hubungi kami lewat WhatsApp.")
+			"Package pricing is not available for your account yet. Message us on WhatsApp.")
 	case errors.Is(err, ordering.ErrMealNotPublished):
 		return apierror.Conflict(apierror.CodeMenuNotPublished,
 			"Menu itu belum terbit atau sudah ditarik.")
@@ -568,7 +569,7 @@ func checkoutError(err error) error {
 		// Never guess a price (02-business-rules §5.1): the purchase is
 		// blocked and the customer is told, rather than charged a default.
 		return apierror.Conflict(apierror.CodeMenuNotPublished,
-			"Harga paket belum tersedia untuk akun Anda. Hubungi kami lewat WhatsApp.")
+			"Package pricing is not available for your account yet. Message us on WhatsApp.")
 	case strings.Contains(err.Error(), "ADDRESS_NOT_SERVICEABLE"):
 		return apierror.Conflict(apierror.CodeNotServiceable,
 			"Alamat ini di luar wilayah antar kami.")

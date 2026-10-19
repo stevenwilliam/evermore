@@ -73,14 +73,14 @@ func Required(field, value string, maxLen int) (string, error) {
 func Email(field, value string) (string, error) {
 	v := strings.TrimSpace(norm.NFC.String(value))
 	if v == "" {
-		return "", fail(field, "REQUIRED", "Email wajib diisi.")
+		return "", fail(field, "REQUIRED", "Email is required.")
 	}
 	if len(v) > 254 {
-		return "", fail(field, "TOO_LONG", "Email terlalu panjang.")
+		return "", fail(field, "TOO_LONG", "Email is too long.")
 	}
 	addr, err := mail.ParseAddress(v)
 	if err != nil || addr.Address != v {
-		return "", fail(field, "INVALID", "Format email tidak valid.")
+		return "", fail(field, "INVALID", "Invalid email format.")
 	}
 	at := strings.LastIndex(v, "@")
 	// RFC 5322 permits a dotless domain, so mail.ParseAddress accepts "a@b".
@@ -89,7 +89,7 @@ func Email(field, value string) (string, error) {
 	// error. The two rules are kept deliberately identical.
 	domain := v[at+1:]
 	if i := strings.Index(domain, "."); i <= 0 || i == len(domain)-1 {
-		return "", fail(field, "INVALID", "Format email tidak valid.")
+		return "", fail(field, "INVALID", "Invalid email format.")
 	}
 	return v[:at] + strings.ToLower(v[at:]), nil
 }
@@ -104,7 +104,7 @@ var nonDigit = regexp.MustCompile(`[^0-9+]`)
 func Phone(field, value string) (string, error) {
 	v := nonDigit.ReplaceAllString(strings.TrimSpace(value), "")
 	if v == "" {
-		return "", fail(field, "REQUIRED", "Nomor telepon wajib diisi.")
+		return "", fail(field, "REQUIRED", "Nomor telepon is required.")
 	}
 	switch {
 	case strings.HasPrefix(v, "+62"):
@@ -115,7 +115,7 @@ func Phone(field, value string) (string, error) {
 		v = v[1:]
 	}
 	if strings.ContainsRune(v, '+') {
-		return "", fail(field, "INVALID", "Nomor telepon tidak valid.")
+		return "", fail(field, "INVALID", "Invalid phone number.")
 	}
 	if len(v) < 8 || len(v) > 13 {
 		return "", fail(field, "INVALID", "Nomor telepon Indonesia terdiri dari 9–14 digit.")
@@ -161,10 +161,10 @@ func IntRange(field string, value, min, max int) (int, error) {
 // LatLng validates a coordinate pair.
 func LatLng(field string, lat, lng float64) error {
 	if lat < -90 || lat > 90 {
-		return fail(field, "OUT_OF_RANGE", "Lintang harus antara -90 dan 90.")
+		return fail(field, "OUT_OF_RANGE", "Latitude must be between -90 and 90.")
 	}
 	if lng < -180 || lng > 180 {
-		return fail(field, "OUT_OF_RANGE", "Bujur harus antara -180 dan 180.")
+		return fail(field, "OUT_OF_RANGE", "Longitude must be between -180 and 180.")
 	}
 	return nil
 }
@@ -207,7 +207,7 @@ func Filename(field, value string) (string, error) {
 		return "", fail(field, "INVALID", "Nama berkas tidak valid.")
 	}
 	if len(v) > 255 {
-		return "", fail(field, "TOO_LONG", "Nama berkas terlalu panjang.")
+		return "", fail(field, "TOO_LONG", "Nama berkas is too long.")
 	}
 	return v, nil
 }

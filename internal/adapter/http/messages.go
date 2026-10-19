@@ -420,6 +420,10 @@ var messages = i18n.Bundle{
 			"cert.iso":                   "ISO 22000 food safety management",
 			"nav.account":                "My account",
 			"nav.signout":                "Sign out",
+			"seo.403.title":              "Not allowed",
+			"seo.403.desc":               "You do not have access to this page.",
+			"e403.heading":               "You do not have access to this page",
+			"e403.message":               "This screen is part of the back office. If you think you should have access, ask an administrator to check your role.",
 		},
 		"id": {
 			"skip":          "Lewati ke konten utama",
@@ -814,6 +818,10 @@ var messages = i18n.Bundle{
 			"cert.iso":                   "Manajemen keamanan pangan ISO 22000",
 			"nav.account":                "Akun saya",
 			"nav.signout":                "Keluar",
+			"seo.403.title":              "Tidak diizinkan",
+			"seo.403.desc":               "Anda tidak punya akses ke halaman ini.",
+			"e403.heading":               "Anda tidak punya akses ke halaman ini",
+			"e403.message":               "Layar ini bagian dari back office. Kalau seharusnya punya akses, minta administrator memeriksa peran Anda.",
 		},
 	},
 }

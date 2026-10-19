@@ -212,13 +212,13 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	appGroup.POST("/packages/buy", RateLimit(limiter, rlWrite), app.BuyPackage)
 
 	// --- back office ---
-	bo := r.Group("/bo", Authenticate(tokens, authSvc), RequireAuth())
-	bo.GET("", RequirePermission("dashboard.view"), app.Dashboard)
-	bo.GET("/menu", RequirePermission("menu.view"), app.MenuCalendar)
-	bo.POST("/menu/publish", RequirePermission("menu.manage"), RateLimit(limiter, rlWrite), app.PublishMeal)
-	bo.GET("/payments", RequirePermission("payment.view"), app.PaymentQueue)
-	bo.POST("/payments/verify", RequirePermission("payment.verify"), RateLimit(limiter, rlWrite), app.VerifyPayment)
-	bo.POST("/payments/reject", RequirePermission("payment.verify"), RateLimit(limiter, rlWrite), app.RejectPayment)
+	bo := r.Group("/bo", Authenticate(tokens, authSvc), RequireAuthPage())
+	bo.GET("", RequirePermissionPage("dashboard.view", ph.Forbidden), app.Dashboard)
+	bo.GET("/menu", RequirePermissionPage("menu.view", ph.Forbidden), app.MenuCalendar)
+	bo.POST("/menu/publish", RequirePermissionPage("menu.manage", ph.Forbidden), RateLimit(limiter, rlWrite), app.PublishMeal)
+	bo.GET("/payments", RequirePermissionPage("payment.view", ph.Forbidden), app.PaymentQueue)
+	bo.POST("/payments/verify", RequirePermissionPage("payment.verify", ph.Forbidden), RateLimit(limiter, rlWrite), app.VerifyPayment)
+	bo.POST("/payments/reject", RequirePermissionPage("payment.verify", ph.Forbidden), RateLimit(limiter, rlWrite), app.RejectPayment)
 
 	r.NoRoute(ph.NotFound)
 	r.NoMethod(func(c *gin.Context) {

@@ -645,14 +645,14 @@ func (h *PublicHandler) Menu(c *gin.Context) {
 	if search != "" {
 		search, err = sanitize.Text("q", search, 0, 80)
 		if err != nil {
-			Fail(c, apierror.Validation("Kata kunci pencarian terlalu panjang."))
+			Fail(c, apierror.Validation("Search term is too long."))
 			return
 		}
 	}
 	dietSlug := c.Query("diet")
 	if dietSlug != "" {
 		if dietSlug, err = sanitize.Slug("diet", dietSlug); err != nil {
-			Fail(c, apierror.Validation("Filter diet tidak valid."))
+			Fail(c, apierror.Validation("Invalid diet filter."))
 			return
 		}
 	}
@@ -662,7 +662,7 @@ func (h *PublicHandler) Menu(c *gin.Context) {
 	if raw := c.Query("date"); raw != "" {
 		parsed, perr := time.ParseInLocation("2006-01-02", raw, h.cfg.Location)
 		if perr != nil {
-			Fail(c, apierror.Validation("Format tanggal tidak valid."))
+			Fail(c, apierror.Validation("Invalid date format."))
 			return
 		}
 		selected = parsed
@@ -869,6 +869,28 @@ func (h *PublicHandler) NotFound(c *gin.Context) {
 		d.TraceID, _ = id.(string)
 	}
 	h.render(c, "error", http.StatusNotFound, d)
+}
+
+// Forbidden renders the error PAGE for a signed-in user who lacks the
+// permission a back-office screen needs. The same event on the API is a JSON
+// 403; here it is a page, because the person is looking at a browser (D83).
+func (h *PublicHandler) Forbidden(c *gin.Context) {
+	ctx := c.Request.Context()
+	params, _ := h.repo.Params(ctx)
+	if params == nil {
+		params = map[string]string{}
+	}
+	d := h.base(c, params, "", "", "")
+	h.seo(&d, params, "403")
+	d.Public = true
+	d.NoIndex = true
+	d.Code = "403"
+	d.Heading = messages.T(d.L, "e403.heading")
+	d.Message = messages.T(d.L, "e403.message")
+	if id, ok := c.Get("trace_id"); ok {
+		d.TraceID, _ = id.(string)
+	}
+	h.render(c, "error", http.StatusForbidden, d)
 }
 
 // attachPrices fills in each card's price with one query per distinct diet,

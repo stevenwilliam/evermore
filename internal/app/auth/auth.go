@@ -551,7 +551,7 @@ func knownAllergens(ctx context.Context, tx *sql.Tx, want []string) ([]string, e
 	seen := map[string]bool{}
 	for _, s := range want {
 		if !known[s] {
-			return nil, apierror.Validation("Alergi tidak dikenali: " + s)
+			return nil, apierror.Validation("Unknown allergen: " + s)
 		}
 		if seen[s] {
 			continue

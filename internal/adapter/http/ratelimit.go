@@ -82,7 +82,7 @@ func RateLimit(l *Limiter, lim Limit) gin.HandlerFunc {
 		ok, retry := l.allow(key, lim, time.Now())
 		if !ok {
 			c.Header("Retry-After", itoa(int(retry.Seconds())+1))
-			Fail(c, apierror.RateLimited("Terlalu banyak permintaan. Coba lagi sebentar."))
+			Fail(c, apierror.RateLimited("Too many requests. Try again shortly."))
 			return
 		}
 		c.Next()

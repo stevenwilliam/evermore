@@ -3,6 +3,7 @@ package http
 import (
 	"errors"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -48,7 +49,7 @@ func Authenticate(tokens *security.TokenIssuer, svc *auth.Service) gin.HandlerFu
 			// An invalid token is not "anonymous": it is a request that tried
 			// to authenticate and failed, and letting it fall through as
 			// anonymous would silently downgrade rather than refuse.
-			Fail(c, apierror.Unauthenticated("Sesi tidak valid atau sudah berakhir."))
+			Fail(c, apierror.Unauthenticated("Your session is invalid or has expired."))
 			return
 		}
 		// Permissions are re-read from the database rather than trusted from
@@ -56,7 +57,7 @@ func Authenticate(tokens *security.TokenIssuer, svc *auth.Service) gin.HandlerFu
 		// the remaining life of an access token.
 		p, err := svc.LoadPrincipal(c.Request.Context(), claims.UserID)
 		if err != nil {
-			Fail(c, apierror.Unauthenticated("Sesi tidak valid atau sudah berakhir."))
+			Fail(c, apierror.Unauthenticated("Your session is invalid or has expired."))
 			return
 		}
 		c.Set(principalKey, p)
@@ -118,6 +119,36 @@ func RequireAuth() gin.HandlerFunc {
 	}
 }
 
+// RequireAuthPage is RequireAuth for an HTML surface.
+//
+// The back office is a set of pages, not an API, so an anonymous visitor who
+// types /bo should be sent to the sign-in page carrying where they were going
+// — not handed a JSON 401 they cannot read and cannot act on (D83).
+func RequireAuthPage() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if PrincipalOf(c) == nil {
+			c.Redirect(http.StatusSeeOther, "/app/sign-in?next="+url.QueryEscape(c.Request.URL.RequestURI()))
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}
+
+// RequirePermissionPage is the same idea for a permission the signed-in user
+// does not hold: a customer who reaches /bo gets a readable page, not JSON.
+func RequirePermissionPage(perm string, deny gin.HandlerFunc) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		p := PrincipalOf(c)
+		if p == nil || !p.Can(perm) {
+			deny(c)
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}
+
 // RequirePermission is how every protected handler declares what it needs.
 // Deny by default: no permission, no access, and the check is here rather
 // than inside the handler so it cannot be forgotten.
@@ -129,7 +160,7 @@ func RequirePermission(perm string) gin.HandlerFunc {
 			return
 		}
 		if !p.Can(perm) {
-			Fail(c, apierror.Forbidden("Anda tidak punya izin "+perm+"."))
+			Fail(c, apierror.Forbidden("You do not have permission "+perm+"."))
 			return
 		}
 		c.Next()
@@ -201,7 +232,7 @@ const sessionCookie = "evermore_session"
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req loginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		Fail(c, apierror.Validation("Email dan kata sandi wajib diisi."))
+		Fail(c, apierror.Validation("Email and password are required."))
 		return
 	}
 
@@ -209,14 +240,14 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		c.Request.UserAgent(), c.ClientIP())
 	switch {
 	case errors.Is(err, auth.ErrInvalidCredentials):
-		Fail(c, apierror.Unauthenticated("Email atau kata sandi salah."))
+		Fail(c, apierror.Unauthenticated("Email or password is incorrect."))
 		return
 	case errors.Is(err, auth.ErrAccountLocked):
 		Fail(c, apierror.New(http.StatusTooManyRequests, "ACCOUNT_LOCKED",
 			"Terlalu banyak percobaan. Coba lagi dalam 15 menit."))
 		return
 	case errors.Is(err, auth.ErrAccountInactive):
-		Fail(c, apierror.Forbidden("Akun ini dinonaktifkan."))
+		Fail(c, apierror.Forbidden("This account has been deactivated."))
 		return
 	case err != nil:
 		Fail(c, apierror.Internal(err))
@@ -252,7 +283,7 @@ func (h *AuthHandler) Refresh(c *gin.Context) {
 		raw = body.RefreshToken
 	}
 	if raw == "" {
-		Fail(c, apierror.Unauthenticated("Tidak ada sesi untuk diperbarui."))
+		Fail(c, apierror.Unauthenticated("There is no session to refresh."))
 		return
 	}
 
@@ -260,7 +291,7 @@ func (h *AuthHandler) Refresh(c *gin.Context) {
 		c.Request.UserAgent(), c.ClientIP())
 	if err != nil {
 		h.clearRefreshCookie(c)
-		Fail(c, apierror.Unauthenticated("Sesi tidak valid. Silakan masuk lagi."))
+		Fail(c, apierror.Unauthenticated("Your session is invalid. Please sign in again."))
 		return
 	}
 
@@ -368,13 +399,13 @@ func toRegisterAddress(in *registerAddress) (*auth.RegisterAddress, error) {
 		return nil, err
 	}
 	if in.Lat == nil || in.Lng == nil {
-		return nil, apierror.Validation("Tandai lokasi di peta sebelum mendaftar.")
+		return nil, apierror.Validation("Mark your location on the map before registering.")
 	}
 	if err := sanitize.LatLng("latitude", *in.Lat, *in.Lng); err != nil {
 		return nil, apierror.From(err)
 	}
 	if *in.Lat < idnMinLat || *in.Lat > idnMaxLat || *in.Lng < idnMinLng || *in.Lng > idnMaxLng {
-		return nil, apierror.Validation("Titik peta berada di luar Indonesia.")
+		return nil, apierror.Validation("That map point is outside Indonesia.")
 	}
 	out.Lat, out.Lng = *in.Lat, *in.Lng
 	return out, nil
@@ -408,7 +439,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		// Registration cannot avoid revealing that an address is taken — the
 		// account either gets created or it does not. The mitigation is rate
 		// limiting on this endpoint, not a vague message.
-		Fail(c, apierror.Conflict("EMAIL_ALREADY_REGISTERED", "Email ini sudah terdaftar."))
+		Fail(c, apierror.Conflict("EMAIL_ALREADY_REGISTERED", "That email is already registered."))
 		return
 	case err != nil:
 		Fail(c, apierror.From(err))

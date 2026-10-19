@@ -263,7 +263,7 @@ func (h *AppHandler) PaymentQueue(c *gin.Context) {
 	search := c.Query("q")
 	if search != "" {
 		if search, err = sanitize.Text("q", search, 0, 60); err != nil {
-			Fail(c, apierror.Validation("Kata kunci terlalu panjang."))
+			Fail(c, apierror.Validation("Search term is too long."))
 			return
 		}
 	}
@@ -289,7 +289,7 @@ func (h *AppHandler) VerifyPayment(c *gin.Context) {
 	p := PrincipalOf(c)
 	paymentID, err := uuid.Parse(c.PostForm("payment_id"))
 	if err != nil {
-		Fail(c, apierror.Validation("Pembayaran tidak dikenali."))
+		Fail(c, apierror.Validation("Unknown payment."))
 		return
 	}
 	err = h.payments.Verify(c.Request.Context(), p.UserID, paymentID, actorFor(p))
@@ -305,17 +305,17 @@ func (h *AppHandler) RejectPayment(c *gin.Context) {
 	p := PrincipalOf(c)
 	paymentID, err := uuid.Parse(c.PostForm("payment_id"))
 	if err != nil {
-		Fail(c, apierror.Validation("Pembayaran tidak dikenali."))
+		Fail(c, apierror.Validation("Unknown payment."))
 		return
 	}
 	reason, err := sanitize.Required("reason", c.PostForm("reason"), 240)
 	if err != nil {
-		c.Redirect(http.StatusSeeOther, "/bo/payments?err="+urlSafe("Alasan penolakan wajib diisi."))
+		c.Redirect(http.StatusSeeOther, "/bo/payments?err="+urlSafe("Alasan penolakan is required."))
 		return
 	}
 	err = h.payments.Reject(c.Request.Context(), p.UserID, paymentID, actorFor(p), reason)
 	if errors.Is(err, payments.ErrReasonRequired) {
-		c.Redirect(http.StatusSeeOther, "/bo/payments?err="+urlSafe("Alasan penolakan wajib diisi."))
+		c.Redirect(http.StatusSeeOther, "/bo/payments?err="+urlSafe("Alasan penolakan is required."))
 		return
 	}
 	if err != nil {
@@ -338,7 +338,7 @@ func (h *AppHandler) MenuCalendar(c *gin.Context) {
 	if raw := c.Query("minggu"); raw != "" {
 		parsed, perr := time.ParseInLocation("2006-01-02", raw, h.cfg.Location)
 		if perr != nil {
-			Fail(c, apierror.Validation("Format tanggal tidak valid."))
+			Fail(c, apierror.Validation("Invalid date format."))
 			return
 		}
 		monday = mondayOf(parsed, h.cfg.Location)
@@ -366,7 +366,7 @@ func (h *AppHandler) MenuCalendar(c *gin.Context) {
 func (h *AppHandler) PublishMeal(c *gin.Context) {
 	mealID, err := uuid.Parse(c.PostForm("meal_id"))
 	if err != nil {
-		Fail(c, apierror.Validation("Menu tidak dikenali."))
+		Fail(c, apierror.Validation("Unknown meal."))
 		return
 	}
 	week := c.PostForm("minggu")

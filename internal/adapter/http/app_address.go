@@ -101,7 +101,7 @@ func (h *AppHandler) validSlugs(ctx context.Context, want []string) ([]string, e
 	out := []string{}
 	for _, s := range want {
 		if !known[s] {
-			return nil, apierror.Validation("Alergi tidak dikenali: " + s)
+			return nil, apierror.Validation("Unknown allergen: " + s)
 		}
 		if seen[s] {
 			continue // a duplicated checkbox is not an error, just a duplicate
@@ -196,13 +196,13 @@ func readAddressForm(c *gin.Context) (*addressForm, error) {
 	lat, laterr := strconv.ParseFloat(c.PostForm("latitude"), 64)
 	lng, lngerr := strconv.ParseFloat(c.PostForm("longitude"), 64)
 	if laterr != nil || lngerr != nil {
-		return nil, apierror.Validation("Tandai lokasi di peta sebelum menyimpan alamat.")
+		return nil, apierror.Validation("Mark your location on the map before saving the address.")
 	}
 	if err := sanitize.LatLng("latitude", lat, lng); err != nil {
 		return nil, apierror.From(err)
 	}
 	if lat < idnMinLat || lat > idnMaxLat || lng < idnMinLng || lng > idnMaxLng {
-		return nil, apierror.Validation("Titik peta berada di luar Indonesia.")
+		return nil, apierror.Validation("That map point is outside Indonesia.")
 	}
 	f.Lat, f.Lng = lat, lng
 	f.MakeDefault = c.PostForm("is_default") != ""
@@ -269,7 +269,7 @@ func (h *AppHandler) EditAddress(c *gin.Context) {
 	}
 	addrID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		Fail(c, apierror.NotFound("Alamat tidak ditemukan."))
+		Fail(c, apierror.NotFound("Address not found."))
 		return
 	}
 	f, err := readAddressForm(c)
@@ -295,7 +295,7 @@ func (h *AppHandler) EditAddress(c *gin.Context) {
 		return
 	}
 	if n, _ := res.RowsAffected(); n == 0 {
-		Fail(c, apierror.NotFound("Alamat tidak ditemukan."))
+		Fail(c, apierror.NotFound("Address not found."))
 		return
 	}
 	if f.MakeDefault {
@@ -316,7 +316,7 @@ func (h *AppHandler) setDefaultAddress(ctx context.Context, custID, addrID uuid.
 			return err
 		}
 		if n, _ := res.RowsAffected(); n == 0 {
-			return apierror.NotFound("Alamat tidak ditemukan.")
+			return apierror.NotFound("Address not found.")
 		}
 		_, err = tx.ExecContext(ctx,
 			`UPDATE customer_address SET is_default = false
@@ -334,7 +334,7 @@ func (h *AppHandler) DefaultAddress(c *gin.Context) {
 	}
 	addrID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		Fail(c, apierror.NotFound("Alamat tidak ditemukan."))
+		Fail(c, apierror.NotFound("Address not found."))
 		return
 	}
 	if err := h.setDefaultAddress(c.Request.Context(), custID, addrID); err != nil {
@@ -358,7 +358,7 @@ func (h *AppHandler) RemoveAddress(c *gin.Context) {
 	}
 	addrID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		Fail(c, apierror.NotFound("Alamat tidak ditemukan."))
+		Fail(c, apierror.NotFound("Address not found."))
 		return
 	}
 	err = database.InTx(ctx, h.db, nil, func(tx *sql.Tx) error {
@@ -368,7 +368,7 @@ func (h *AppHandler) RemoveAddress(c *gin.Context) {
 			  WHERE id = $1 AND customer_id = $2 AND is_active
 			  RETURNING is_default`, addrID, custID).Scan(&wasDefault)
 		if errors.Is(err, sql.ErrNoRows) {
-			return apierror.NotFound("Alamat tidak ditemukan.")
+			return apierror.NotFound("Address not found.")
 		}
 		if err != nil {
 			return err
