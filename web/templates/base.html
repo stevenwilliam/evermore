@@ -68,7 +68,11 @@
     <div class="masthead-actions">
       {{/* The account links live in the panel below, not here: ten items in
            one row wrapped to two lines and crushed the header (D48). */}}
+      {{if .SignedIn}}
+      <a href="/app/orders">{{t .L "nav.account"}}</a>
+      {{else}}
       <a href="/app/sign-in">{{t .L "nav.signin"}}</a>
+      {{end}}
       <a class="lang-switch" href="?lang={{if eq .L "en"}}id{{else}}en{{end}}"
          aria-label="{{t .L "nav.lang.aria"}}" rel="nofollow">
         {{if eq .L "en"}}
@@ -105,7 +109,13 @@
     <a href="/app/addresses">{{t .L "nav.addresses"}}</a>
     <a href="/app/allergies">{{t .L "nav.allergies"}}</a>
     <a href="/app/orders">{{t .L "nav.orders"}}</a>
+    {{if .SignedIn}}
+    {{/* A form, not a link: signing out changes state, and a GET would let
+         any page on the web do it with an <img src>. */}}
+    <form method="post" action="/app/sign-out" class="nav-signout"><button type="submit">{{t .L "nav.signout"}}</button></form>
+    {{else}}
     <a href="/app/sign-in">{{t .L "nav.signin"}}</a>
+    {{end}}
   </nav>
 </header>
 
@@ -156,7 +166,7 @@
     </div>
     <div>
       <p>Hubungi</p>
-      <p><a href="tel:{{.Params.company_phone}}">{{.Params.company_phone}}</a></p>
+      <p><a href="tel:{{telDigits .Params.company_phone}}">{{.Params.company_phone}}</a></p>
       <p><a href="mailto:{{.Params.company_email}}">{{.Params.company_email}}</a></p>
 
       {{/* D51 — social links. Each is a sys_parameter, so a channel is added,

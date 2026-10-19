@@ -33,8 +33,8 @@ var messages = i18n.Bundle{
 			"nav.allergies": "My allergies",
 			"nav.orders":    "My orders",
 			"nav.signin":    "Sign in",
-			"nav.lang":      "Bahasa Indonesia",
-			"nav.lang.aria": "Switch language to Bahasa Indonesia",
+			"nav.lang":      "Indonesia",
+			"nav.lang.aria": "Switch language to Indonesia",
 
 			// --- footer
 			"footer.explore": "Explore",
@@ -418,6 +418,8 @@ var messages = i18n.Bundle{
 			"cert.halal":                 "Halal",
 			"cert.haccp":                 "HACCP — Hazard Analysis and Critical Control Points",
 			"cert.iso":                   "ISO 22000 food safety management",
+			"nav.account":                "My account",
+			"nav.signout":                "Sign out",
 		},
 		"id": {
 			"skip":          "Lewati ke konten utama",
@@ -810,6 +812,8 @@ var messages = i18n.Bundle{
 			"cert.halal":                 "Halal",
 			"cert.haccp":                 "HACCP — Hazard Analysis and Critical Control Points",
 			"cert.iso":                   "Manajemen keamanan pangan ISO 22000",
+			"nav.account":                "Akun saya",
+			"nav.signout":                "Keluar",
 		},
 	},
 }

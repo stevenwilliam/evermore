@@ -64,6 +64,49 @@ func Authenticate(tokens *security.TokenIssuer, svc *auth.Service) gin.HandlerFu
 	}
 }
 
+// AuthenticateOptional is Authenticate for the PUBLIC pages.
+//
+// The difference is what happens to a bad token. On the app surface an invalid
+// token is a failed attempt to authenticate and must be refused — letting it
+// through as anonymous would silently downgrade. On a marketing page there is
+// nothing to downgrade to: refusing would replace the home page with a JSON
+// 401 because a cookie expired overnight. So it clears the stale cookie and
+// carries on anonymously, which is what the visitor actually wants (D82).
+func AuthenticateOptional(tokens *security.TokenIssuer, svc *auth.Service, secure bool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		raw := bearer(c)
+		if raw == "" {
+			c.Next()
+			return
+		}
+		claims, err := tokens.Verify(raw)
+		if err != nil {
+			expireSessionCookie(c, secure)
+			c.Next()
+			return
+		}
+		p, err := svc.LoadPrincipal(c.Request.Context(), claims.UserID)
+		if err != nil {
+			expireSessionCookie(c, secure)
+			c.Next()
+			return
+		}
+		c.Set(principalKey, p)
+		c.Next()
+	}
+}
+
+// SignOutPage ends a browser session and returns to the home page.
+//
+// POST, not GET: it changes state, and a GET would let any page on the web
+// sign a visitor out with an <img src>. The cookies are cleared whether or not
+// a session was there, so it is safe to hit twice (D82).
+func (h *AuthHandler) SignOutPage(c *gin.Context) {
+	h.clearSessionCookie(c)
+	h.clearRefreshCookie(c)
+	c.Redirect(http.StatusSeeOther, "/")
+}
+
 // RequireAuth refuses an unauthenticated request.
 func RequireAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -398,11 +441,18 @@ func (h *AuthHandler) setSessionCookie(c *gin.Context, token string) {
 	})
 }
 
-func (h *AuthHandler) clearSessionCookie(c *gin.Context) {
+// expireSessionCookie is package-level because the public middleware has to
+// clear a stale cookie too, and it has no AuthHandler to hand. `secure` is
+// passed rather than read from a handler for the same reason.
+func expireSessionCookie(c *gin.Context, secure bool) {
 	http.SetCookie(c.Writer, &http.Cookie{
 		Name: sessionCookie, Value: "", Path: "/",
-		MaxAge: -1, HttpOnly: true, Secure: h.secure, SameSite: http.SameSiteLaxMode,
+		MaxAge: -1, HttpOnly: true, Secure: secure, SameSite: http.SameSiteLaxMode,
 	})
+}
+
+func (h *AuthHandler) clearSessionCookie(c *gin.Context) {
+	expireSessionCookie(c, h.secure)
 }
 
 func (h *AuthHandler) clearRefreshCookie(c *gin.Context) {

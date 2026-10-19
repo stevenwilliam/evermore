@@ -157,6 +157,7 @@ var funcs = template.FuncMap{
 	"gram":      gram,
 	"role":      roleLabel,
 	"tierRange": tierRange,
+	"telDigits": telDigits,
 	"bps":       bps,
 	"duration":  duration,
 	"isodate":   isodate,
@@ -199,6 +200,31 @@ func newkey() string { return uuid.NewString() }
 // These are placeholders until real Evermore photography exists; the count is
 // asserted by the caller-side test so adding or removing a file cannot
 // silently start serving a 404.
+// telDigits reduces a human-readable phone number to what a dialler needs:
+// the digits, plus a leading "+" if it had one. It imposes no country logic —
+// the sys_parameter decides the format, so "0811-1055-1734" dials domestically
+// and "+62 811-1055-1734" dials internationally, and the page still shows
+// whichever was typed.
+//
+// It returns the NUMBER, not the whole URI, and the template keeps `tel:` as a
+// literal prefix. That is not a style choice: html/template's URL filter only
+// allows a handful of schemes, so returning "tel:0811..." as one string makes
+// it rewrite the href to "#ZgotmplZ" and the link silently stops dialling.
+// With the scheme written in the template the filter sees a safe constant
+// prefix and leaves it alone (D82).
+func telDigits(display string) string {
+	var b strings.Builder
+	for i, r := range display {
+		switch {
+		case r >= '0' && r <= '9':
+			b.WriteRune(r)
+		case r == '+' && i == 0:
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
 func photo(id uuid.UUID) string {
 	// Only photographs that have been LOOKED AT and confirmed to be food.
 	// This previously pointed at menu-1..11.jpg, which turned out to be
@@ -302,6 +328,7 @@ type pageData struct {
 	TodayLabel      string
 	DateLabel       string
 	PublishedUntil  string
+	SignedIn        bool
 	Certs           []certBadge
 	CutOff          string
 	CutOffCountdown string
@@ -469,6 +496,7 @@ func (h *renderer) base(c *gin.Context, params map[string]string, nav, title, de
 		Nav:          nav,
 		Year:         time.Now().In(h.cfg.Location).Year(),
 		Params:       tplParams,
+		SignedIn:     PrincipalOf(c) != nil,
 		Certs:        certsFor(params, loc),
 		CutOff:       params["order.cutoff_time"],
 		// Passed RAW. html/template percent-encodes it for the URL attribute

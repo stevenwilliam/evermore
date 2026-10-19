@@ -479,6 +479,15 @@ tbody tr:hover { background: var(--warm); }
 .social a svg { width: 18px; height: 18px; display: block; }
 .footer-fineprint a { color: var(--accent); }
 
+/* The sign-out control is a form button but belongs in a row of links, so it
+ * is styled as one — it inherits the panel's link rules rather than looking
+ * like a submit button parked in a nav. */
+.nav-signout { margin: 0; }
+.nav-signout button {
+  font: inherit; color: inherit; background: none; border: 0; padding: 0;
+  cursor: pointer; text-align: left; width: 100%;
+}
+
 /* ------------------------------------------------ floating nav + float */
 
 .float-nav { position: fixed; left: 50%; bottom: var(--space-5); transform: translateX(-50%);

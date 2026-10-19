@@ -163,11 +163,11 @@ func (s *seeder) sysParameters() error {
 	params := []p{
 		{"company.name", "PT Evermore Nutrisi Indonesia", "string", "company", "Nama perusahaan"},
 		{"company.brand", "Evermore", "string", "company", "Nama merek"},
-		{"company.phone", "+622129000123", "string", "company", "Telepon perusahaan"},
+		{"company.phone", "0811-1055-1734", "string", "company", "Telepon perusahaan"},
 		// The floating WhatsApp button reads this. Digits only, country code
 		// first, no plus — that is the wa.me format. A blank value hides the
 		// button rather than rendering a broken link.
-		{"company.whatsapp", "6281299900123", "string", "company", "Nomor WhatsApp (format wa.me, tanpa +)"},
+		{"company.whatsapp", "6281110551734", "string", "company", "Nomor WhatsApp (format wa.me, tanpa +)"},
 		{"company.whatsapp_greeting", "Halo Evermore, saya mau tanya soal menu.", "string", "company", "Pesan pembuka WhatsApp"},
 		{"company.email", "halo@evermore.co.id", "string", "company", "Email perusahaan"},
 		{"company.address", "Jl. Tebet Raya No. 88, Jakarta Selatan 12820", "string", "company", "Alamat perusahaan"},
@@ -237,6 +237,12 @@ func (s *seeder) sysParameters() error {
 		{"seo.default_description.en", "A new menu every week, built by nutritionists, cooked in the morning and delivered to your desk or your door in the window you choose.", "string", "seo", "Deskripsi bawaan (English)"},
 	}
 	for _, x := range params {
+		// DO NOTHING here, unlike scheduled_meal and package (D69, D74). These
+		// rows are OPERATOR-OWNED: the whole point of sys_parameters is that a
+		// phone number or a cut-off changes from the back office without a
+		// deploy, so re-seeding must never overwrite what somebody set. A
+		// changed default below therefore reaches an existing database by an
+		// UPDATE, the same way an operator would change it.
 		if err := s.exec("sys_parameters", `
 			INSERT INTO sys_parameters (id, key, value, value_type, category, label_id)
 			VALUES ($1, $2, $3, $4, $5, $6)

@@ -164,13 +164,17 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	r.GET("/sitemap.xml", ph.Sitemap)
 
 	// --- public pages ---
-	r.GET("/", ph.Home)
-	r.GET("/menu", ph.Menu)
-	r.GET("/menu/:id", ph.Meal)
-	r.GET("/packages", ph.Packages)
-	r.GET("/how-it-works", ph.HowItWorks)
-	r.GET("/corporate", ph.Corporate)
-	r.GET("/delivery-area", ph.Coverage)
+	// D82 — the public pages read the session too, so the masthead can show
+	// the signed-in state. Optional: an expired cookie must not turn the home
+	// page into a 401.
+	pub := r.Group("/", AuthenticateOptional(tokens, authSvc, d.Cfg.IsProduction()))
+	pub.GET("/", ph.Home)
+	pub.GET("/menu", ph.Menu)
+	pub.GET("/menu/:id", ph.Meal)
+	pub.GET("/packages", ph.Packages)
+	pub.GET("/how-it-works", ph.HowItWorks)
+	pub.GET("/corporate", ph.Corporate)
+	pub.GET("/delivery-area", ph.Coverage)
 
 	// --- signed-in surface ---
 	//
@@ -180,6 +184,7 @@ func NewRouter(d Deps) (*gin.Engine, error) {
 	// protected handler declares what it needs.
 	appGroup := r.Group("/app", Authenticate(tokens, authSvc))
 	appGroup.GET("/sign-in", app.LoginPage)
+	appGroup.POST("/sign-out", RateLimit(limiter, rlWrite), ah.SignOutPage)
 	appGroup.GET("/register", app.RegisterPage)
 	appGroup.GET("/cart", app.Cart)
 	appGroup.POST("/cart/add", RateLimit(limiter, rlWrite), app.AddToCart)
