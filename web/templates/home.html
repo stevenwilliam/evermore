@@ -152,18 +152,24 @@
              show half of what that day offers. */}}
         {{with .Lunch}}
         <a class="daycard-set" href="/menu/{{.ID}}">
-          <span class="daycard-media"><img src="{{photo .ID}}" alt="" loading="lazy" width="320" height="213"></span>
+          <span class="daycard-media">
+            <img src="{{photo .ID}}" alt="" loading="lazy" width="320" height="213">
+            <span class="set-ribbon set-ribbon-sun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.2v2.4M12 19.4v2.4M4.1 4.1l1.7 1.7M18.2 18.2l1.7 1.7M2.2 12h2.4M19.4 12h2.4M4.1 19.9l1.7-1.7M18.2 5.8l1.7-1.7"/></svg></span>
+          </span>
           <span class="daycard-set-body">
-            <span class="daycard-set-label">{{t $.L "slot.lunch"}}</span>
+            <span class="visually-hidden">{{t $.L "slot.lunch"}}</span>
             <span class="daycard-set-name">{{.Name}}</span>
           </span>
         </a>
         {{end}}
         {{with .Dinner}}
         <a class="daycard-set" href="/menu/{{.ID}}">
-          <span class="daycard-media"><img src="{{photo .ID}}" alt="" loading="lazy" width="320" height="213"></span>
+          <span class="daycard-media">
+            <img src="{{photo .ID}}" alt="" loading="lazy" width="320" height="213">
+            <span class="set-ribbon set-ribbon-moon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.6 14.3A8.6 8.6 0 0 1 9.7 3.4a.8.8 0 0 0-1.1-.9 10.2 10.2 0 1 0 12.9 12.9.8.8 0 0 0-.9-1.1Z"/></svg></span>
+          </span>
           <span class="daycard-set-body">
-            <span class="daycard-set-label">{{t $.L "slot.dinner"}}</span>
+            <span class="visually-hidden">{{t $.L "slot.dinner"}}</span>
             <span class="daycard-set-name">{{.Name}}</span>
           </span>
         </a>
