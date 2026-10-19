@@ -234,6 +234,11 @@ CHECKS: list[tuple[str, str, str, dict]] = [
     ("white on the moon badge", WHITE, "#2F6690", {}),
     ("info as a badge fill, dark theme (REJECTED)", WHITE, "#8FB8DC", {}),
 
+    # --- the package perk ticks (D74). Icons, so 1.4.11's 3:1 is the bar; the
+    # row's TEXT carries the meaning either way, the colour only reinforces it.
+    ("brand as the perk tick on tinted glass", BRAND, "#ACC2B9", {"non_text": True}),
+    ("brand-lt as the perk tick on dark tinted glass", BRAND_LT, "#35594A", {"non_text": True}),
+
     # --- the WhatsApp float
     ("WA teal on paper", "#128C7E", PAPER, {"non_text": True}),
     ("WA white glyph on the teal", WHITE, "#128C7E", {"non_text": True}),
@@ -319,6 +324,8 @@ RECORDED: dict[str, float] = {
     "white on the sun badge": 5.18,
     "white on the moon badge": 6.13,
     "info as a badge fill, dark theme (REJECTED)": 2.09,
+    "brand as the perk tick on tinted glass": 4.72,
+    "brand-lt as the perk tick on dark tinted glass": 4.16,
     "WA teal on paper": 3.92,
     "WA white glyph on the teal": 4.14,
 }

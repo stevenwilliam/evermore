@@ -74,6 +74,11 @@ type PackageCard struct {
 	PriceIDR     money.IDR
 	PerMealIDR   money.IDR
 	IsFeatured   bool
+	// D74 — what the tier includes, for the tick/cross list on /paket.
+	FreeDelivery       bool
+	FreeAllergenCustom bool
+	DieticianSessions  int
+	DailyFruit         bool
 }
 
 // DietTypes lists the active diets in display order.
@@ -389,7 +394,9 @@ func (r *PublicRepo) TierPrices(ctx context.Context, dietSlug string, on time.Ti
 func (r *PublicRepo) Packages(ctx context.Context, on time.Time) ([]PackageCard, error) {
 	rows, err := r.db.QueryContext(ctx, `
 		SELECT pk.id, pk.name, pk.slug, pk.meal_credits, pk.validity_days,
-		       pp.total_price_idr, pk.is_featured
+		       pp.total_price_idr, pk.is_featured,
+		       pk.free_delivery, pk.free_allergen_custom,
+		       pk.dietician_sessions, pk.daily_fruit
 		  FROM package pk
 		  JOIN package_price_normal pp ON pp.package_id = pk.id
 		 WHERE pk.is_active AND pp.is_active
@@ -405,7 +412,9 @@ func (r *PublicRepo) Packages(ctx context.Context, on time.Time) ([]PackageCard,
 	for rows.Next() {
 		var p PackageCard
 		var price int64
-		if err := rows.Scan(&p.ID, &p.Name, &p.Slug, &p.MealCredits, &p.ValidityDays, &price, &p.IsFeatured); err != nil {
+		if err := rows.Scan(&p.ID, &p.Name, &p.Slug, &p.MealCredits, &p.ValidityDays,
+			&price, &p.IsFeatured,
+			&p.FreeDelivery, &p.FreeAllergenCustom, &p.DieticianSessions, &p.DailyFruit); err != nil {
 			return nil, err
 		}
 		p.PriceIDR = money.IDR(price)

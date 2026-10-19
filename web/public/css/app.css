@@ -1142,6 +1142,26 @@ tbody tr:hover { background: var(--warm); }
 .daycard-date { color: var(--ink-on-glass); }
 .daycard.is-today .daycard-date { color: #FFFFFF; }
 
+/* The "most popular" flag sits in the card's corner instead of in the flow.
+ * In the flow it pushed the featured card's heading and whole perk list down
+ * by its own height, so one card in three was out of step with the others. */
+.card-flag { position: absolute; top: var(--space-4); right: var(--space-4); margin: 0; z-index: 1; }
+
+/* ---- package perks (D74) ------------------------------------------------
+ * A tick or a cross against each line. The ICON carries the meaning, not the
+ * colour — colour is never the only signal (CLAUDE.md §7) — so an excluded row
+ * is still perfectly legible, just quieter. No strikethrough: that would read
+ * as "withdrawn" rather than "not in this tier". */
+.perks { list-style: none; margin: var(--space-4) 0 0; padding: 0;
+         display: flex; flex-direction: column; gap: var(--space-2); }
+.perk { display: grid; grid-template-columns: 18px 1fr; gap: var(--space-2);
+        align-items: start; font-size: var(--text-sm); line-height: 1.4; }
+.perk-i { width: 16px; height: 16px; margin-top: 1px; }
+.perk.is-on  { color: var(--ink); }
+.perk.is-on  .perk-i { color: var(--brand); }
+.perk.is-off { color: var(--ink-on-glass); }
+.perk.is-off .perk-i { color: var(--ink-on-glass); }
+
 /* ---- testimonials (D53) -------------------------------------------------- */
 .testi-grid { display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 .testi {

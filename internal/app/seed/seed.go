@@ -713,18 +713,41 @@ func (s *seeder) packages() error {
 		price      int64
 		featured   bool
 		order      int
+		// D74 — the perks each tier includes. dietician is a count, not a
+		// flag: "0 consultations" and "2 consultations" are different rows on
+		// the card, and only the first of them gets a cross.
+		delivery  bool
+		allergen  bool
+		dietician int
+		fruit     bool
 	}{
-		{"paket-10", "Paket 10 porsi", 10, 60, 750000, false, 1},
-		{"paket-20", "Paket 20 porsi", 20, 90, 1420000, true, 2},
-		{"paket-40", "Paket 40 porsi", 40, 120, 2720000, false, 3},
+		{"paket-10", "Basic", 10, 60, 750000, false, 1, true, true, 0, false},
+		{"paket-20", "Reguler", 20, 90, 1420000, true, 2, true, true, 2, false},
+		{"paket-40", "Premium", 40, 90, 2720000, false, 3, true, true, 5, true},
 	}
 	for _, p := range list {
 		pid := idFor("package", p.slug)
 		if err := s.exec("package", `
-			INSERT INTO package (id, name, slug, meal_credits, validity_days, is_featured, sort_order, description)
-			VALUES ($1, $2, $3, $4, $5, $6, $7, '')
-			ON CONFLICT (slug) DO NOTHING`,
-			pid, p.name, p.slug, p.credits, p.days, p.featured, p.order); err != nil {
+			INSERT INTO package (id, name, slug, meal_credits, validity_days, is_featured, sort_order,
+			                     description, free_delivery, free_allergen_custom, dietician_sessions, daily_fruit)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, '', $8, $9, $10, $11)
+			-- Converges on the fixture, same reasoning as scheduled_meal (D69):
+			-- renaming a tier or changing a perk has to actually land on a
+			-- database that has been seeded before. Guarded by the deterministic
+			-- id so a package created in the back office is left alone.
+			ON CONFLICT (slug) DO UPDATE
+			   SET name = EXCLUDED.name,
+			       meal_credits = EXCLUDED.meal_credits,
+			       validity_days = EXCLUDED.validity_days,
+			       is_featured = EXCLUDED.is_featured,
+			       sort_order = EXCLUDED.sort_order,
+			       free_delivery = EXCLUDED.free_delivery,
+			       free_allergen_custom = EXCLUDED.free_allergen_custom,
+			       dietician_sessions = EXCLUDED.dietician_sessions,
+			       daily_fruit = EXCLUDED.daily_fruit
+			 WHERE package.id = EXCLUDED.id`,
+			pid, p.name, p.slug, p.credits, p.days, p.featured, p.order,
+			p.delivery, p.allergen, p.dietician, p.fruit); err != nil {
 			return err
 		}
 		realPID, err := s.packageID(p.slug)

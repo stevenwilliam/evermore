@@ -215,6 +215,8 @@ and the packages are green.
 | ink-soft on the brand-wash band | **5.84** | AA |
 | ink-faint on the brand-wash band | **4.69** | AA |
 | ink-on-glass under tinted glass over the brand-wash band | **4.69** | AA |
+| brand as the perk tick on tinted glass | **4.72** | PASS 1.4.11 |
+| brand-lt as the perk tick on dark tinted glass | **4.16** | PASS 1.4.11 |
 | ink-faint on the dark brand-wash band | **4.65** | AA |
 | ink on the linen band | **12.57** | AAA |
 | ink-soft on the linen band | **4.67** | AA |
