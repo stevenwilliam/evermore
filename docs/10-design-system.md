@@ -186,13 +186,16 @@ sitting directly behind the type.
 ### 2.9 The banded home body (D65)
 
 The home body runs on three grounds rather than one: the week strip on the
-**linen band** (a warm neutral with a faint pink cast, `--band-linen`), the
+**linen band** (a warm clay, `--band-linen`), the
 packages on the brand-wash band, and the stats row and testimonials on paper so
 the two tinted blocks never butt together.
 
 `--band-linen` carries its own dark value rather than leaning on an existing
-wash token, because the `+N` link on a glass day card is the binding constraint
-and several candidates failed it — see the rejected rows below.
+wash token. The band was deepened to `#EBD1C5` in D72; the surface that caps
+how far it can go is the **day-card header**, which is why `--card-quiet` moved
+from 50% to 62% opacity at the same time. At 50% the band could get no darker
+than `#EFD9CF`. The hard floor beyond that is `--ink-soft` on the band itself,
+which fails at `#E8CBBD` (4.43).
 
 A band changes what every translucent surface above it composites onto, so each
 one is measured again rather than inherited. The grounds below are the ribbon at
@@ -213,16 +216,12 @@ and the packages are green.
 | ink-faint on the brand-wash band | **4.69** | AA |
 | ink-on-glass under tinted glass over the brand-wash band | **4.69** | AA |
 | ink-faint on the dark brand-wash band | **4.65** | AA |
-| ink on the linen band | **15.63** | AAA |
-| ink-soft on the linen band | **5.81** | AA |
-| ink-faint on the linen band | **4.67** | AA |
-| ink-on-glass under glass over the linen band | **5.09** | AA |
-| brand under glass over the linen band | **5.12** | AA |
-| ink-on-glass on the day-card head over the linen band | **4.72** | AA |
-| ink-faint on the dark linen band | **5.60** | AA |
-| ink-on-glass under glass over the dark linen band | **5.19** | AA |
-| brand-lt under glass over the dark linen band | **4.63** | AA |
-| ink-on-glass on the dark day-card head over the linen band | **4.81** | AA |
+| ink on the linen band | **12.57** | AAA |
+| ink-soft on the linen band | **4.67** | AA |
+| ink-on-glass under glass over the linen band | **4.82** | AA |
+| ink-on-glass on the day-card head over the linen band | **5.15** | AA |
+| ink-on-glass under glass over the dark linen band | **5.02** | AA |
+| ink-on-glass on the dark day-card head over the linen band | **5.52** | AA |
 | brand-lt under glass over a citrus band (REJECTED) | **4.34** | FAIL |
 | ink-faint on a clay-rose band (REJECTED) | **4.48** | FAIL |
 | ink-on-glass under tinted glass over the dark brand-wash band | **4.66** | AA |

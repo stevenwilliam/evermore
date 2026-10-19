@@ -32,16 +32,20 @@
   /* Surfaces that sit OVER the signature ribbon, and the ink they take.
    * --ink-faint is the floor on an opaque card, but a translucent card lets
    * the ribbon's core stroke through and the floor drops to 3.23 there, so
-   * glass surfaces get their own, darker muted ink (D60). */
+   * glass surfaces get their own, darker muted ink (D60).
+   *
+   * --card-quiet went from 50% to 62% when the band got stronger (D72): the
+   * day-card header is the surface that runs out of contrast first, and at 50%
+   * it capped how dark the band could go at #EFD9CF. */
   --ink-on-glass: #454C48;
   --glass:      rgba(255, 255, 255, .50);
   --glass-tint: rgba(234, 241, 236, .50);
-  --card-quiet: rgba(240, 241, 237, .50);  /* resting day-card header: soft, not disabled, and still glass */
+  --card-quiet: rgba(240, 241, 237, .62);  /* resting day-card header: soft, not disabled, and still glass */
   /* The home body's bands. A warm neutral with a faint pink cast — raw linen,
    * not beige and not a tinted grey. It has its own dark value rather than
    * leaning on an existing wash token: the `+N` link on a glass day card is
    * the binding constraint and several candidates failed it (D67). */
-  --band-linen: #F7EBE6;
+  --band-linen: #EBD1C5;
 
   /* ---- Brand ---- */
   --brand:     #13543E;  /* 8.42 as text; white on it 8.88 */
@@ -149,8 +153,8 @@
     --ink-on-glass: #C3C9C5;
     --glass:      rgba(24, 28, 25, .50);
     --glass-tint: rgba(30, 36, 32, .50);
-    --card-quiet: rgba(32, 38, 34, .50);
-    --band-linen: #211B1A;
+    --card-quiet: rgba(32, 38, 34, .62);
+    --band-linen: #302724;
     --brand:     #5FD1A4;  /*  9.92 */
     --brand-hi:  #8FE3C1;
     --brand-wash:#173026;
@@ -177,8 +181,8 @@
   --ink-on-glass: #C3C9C5;
   --glass:      rgba(24, 28, 25, .50);
   --glass-tint: rgba(30, 36, 32, .50);
-  --card-quiet: rgba(32, 38, 34, .50);
-  --band-linen: #211B1A;
+  --card-quiet: rgba(32, 38, 34, .62);
+  --band-linen: #302724;
   --brand:     #5FD1A4;
   --brand-hi:  #8FE3C1;
   --brand-wash:#173026;
