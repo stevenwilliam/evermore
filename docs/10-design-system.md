@@ -244,7 +244,23 @@ stop reading. `--ctl-moon` is a fixed `#2F6690` and is never redefined.
 | white on the moon badge | **6.13** | AA |
 | info as a badge fill, dark theme (REJECTED) | **2.09** | FAIL |
 
-### 2.11 The WhatsApp float
+### 2.11 The cross, and the popular flag (D77)
+
+| Pairing | Ratio | Verdict |
+|---|---|---|
+| cross on the light package card | **3.90** | PASS 1.4.11 |
+| cross-lt on the dark package card | **3.85** | PASS 1.4.11 |
+| one red cross for both themes (REJECTED) | **1.07** | FAIL 1.4.11 |
+| white on the popular flag | **5.18** | AA |
+| the thumb's darkest stop on the popular flag | **3.37** | PASS 1.4.11 |
+
+`--cross` is the one mark on the site that **cannot** be pinned. The package
+card is a light green-grey in the light theme and a dark green in the dark one,
+and no single red clears 3:1 against both — the deep red that reads at 3.90 on
+the light card measures **1.07** on the dark one, which is invisible. It
+therefore flips with the theme, unlike every `--ctl-*` colour.
+
+### 2.12 The WhatsApp float
 
 | Pairing | Ratio | Verdict |
 |---|---|---|

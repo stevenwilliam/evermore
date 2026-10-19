@@ -239,6 +239,15 @@ CHECKS: list[tuple[str, str, str, dict]] = [
     ("brand as the perk tick on tinted glass", BRAND, "#ACC2B9", {"non_text": True}),
     ("brand-lt as the perk tick on dark tinted glass", BRAND_LT, "#35594A", {"non_text": True}),
 
+    # --- the "not included" cross and the popular flag (D77). The cross cannot
+    # be pinned: a deep red is 3.90 on the light package card and 1.20 on the
+    # dark one, so it flips with the theme. Both are icons: 1.4.11, 3:1.
+    ("cross on the light package card", "#A81E16", "#ACC2B9", {"non_text": True}),
+    ("cross-lt on the dark package card", "#F3A09A", "#35594A", {"non_text": True}),
+    ("one red cross for both themes (REJECTED)", "#A81E16", "#35594A", {"non_text": True}),
+    ("white on the popular flag", WHITE, "#C2410C", {}),
+    ("the thumb's darkest stop on the popular flag", "#FFC933", "#C2410C", {"non_text": True}),
+
     # --- the WhatsApp float
     ("WA teal on paper", "#128C7E", PAPER, {"non_text": True}),
     ("WA white glyph on the teal", WHITE, "#128C7E", {"non_text": True}),
@@ -326,6 +335,11 @@ RECORDED: dict[str, float] = {
     "info as a badge fill, dark theme (REJECTED)": 2.09,
     "brand as the perk tick on tinted glass": 4.72,
     "brand-lt as the perk tick on dark tinted glass": 4.16,
+    "cross on the light package card": 3.90,
+    "cross-lt on the dark package card": 3.85,
+    "one red cross for both themes (REJECTED)": 1.07,
+    "white on the popular flag": 5.18,
+    "the thumb's darkest stop on the popular flag": 3.37,
     "WA teal on paper": 3.92,
     "WA white glyph on the teal": 4.14,
 }

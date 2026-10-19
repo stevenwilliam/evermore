@@ -70,6 +70,10 @@
    * (D42): --info lightens to #8FB8DC in the dark theme, and a white glyph on
    * that measures 2.09 — so the moon takes its own fixed blue and is never
    * redefined below. White on each is 5.18 and 6.13. */
+  /* The "not included" mark. It cannot be pinned: a deep red reads at 3.90 on
+   * the light package card but 1.20 on the dark one, so it flips with the
+   * theme (D77). */
+  --cross: #A81E16;
   --ctl-sun:  #C2410C;
   --ctl-moon: #2F6690;
 
@@ -151,6 +155,7 @@
     --ink-soft:  #B4BBB6;  /*  9.55 */
     --ink-faint: #8E9691;  /*  6.16 */
     --ink-on-glass: #C3C9C5;
+    --cross: #F3A09A;
     --glass:      rgba(24, 28, 25, .50);
     --glass-tint: rgba(30, 36, 32, .50);
     --card-quiet: rgba(32, 38, 34, .62);
@@ -179,6 +184,7 @@
   --ink-soft:  #B4BBB6;
   --ink-faint: #8E9691;
   --ink-on-glass: #C3C9C5;
+  --cross: #F3A09A;
   --glass:      rgba(24, 28, 25, .50);
   --glass-tint: rgba(30, 36, 32, .50);
   --card-quiet: rgba(32, 38, 34, .62);

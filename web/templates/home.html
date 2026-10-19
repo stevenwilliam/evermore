@@ -137,6 +137,15 @@
       <h2>{{t .L "week.title"}}</h2>
     </div>
 
+    {{/* D76 — the photographs hang from a line, the way prints hang on a
+         drying string. The line is a real <svg>, not a background, because it
+         has to react to the pointer: brushing it makes it bob, and the pegs
+         let the whole row sway with it. */}}
+    <div class="weekrail">
+      <svg class="weekline" viewBox="0 0 1200 56" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path class="weekline-hit" d="M0 14 Q 600 44 1200 14"/>
+        <path class="weekline-ink" d="M0 14 Q 600 44 1200 14"/>
+      </svg>
     <div class="weekstrip">
       {{range .Week}}
       {{/* D75 — a polaroid, not a card: the photographs sit inside a white
@@ -189,6 +198,7 @@
       </figure>
       {{end}}
     </div>
+    </div>
   </div>
 
   {{/* A hairline between the strip and the figures below it. The two are
@@ -221,7 +231,7 @@
       {{range .Packages}}
       <article class="card">
         <div class="card-body">
-          {{if .IsFeatured}}<p><span class="ribbon-gold">Paling laris</span></p>{{end}}
+          {{if .IsFeatured}}<p class="card-flag">{{template "flagPopular" $.L}}</p>{{end}}
           <h3>{{.MealCredits}} {{t $.L "pkg.portions"}}</h3>
           <p class="meta">{{rupiah .PerMealIDR}} {{t $.L "pkg.per"}} &middot; {{printf (t $.L "pkg.valid") (printf "%d" .ValidityDays)}}</p>
           <div class="card-foot">

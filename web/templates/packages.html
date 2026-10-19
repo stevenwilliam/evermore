@@ -10,7 +10,7 @@
       {{range .Packages}}
       <article class="card">
         <div class="card-body">
-          {{if .IsFeatured}}<p class="card-flag"><span class="pill pill-warn">{{t $.L "cr.popular"}}</span></p>{{end}}
+          {{if .IsFeatured}}<p class="card-flag">{{template "flagPopular" $.L}}</p>{{end}}
           <h2 style="font-size:var(--text-xl)">{{.Name}}</h2>
           <p class="price">{{rupiah .PriceIDR}}</p>
           {{/* D74 — what the tier includes, as data from the package row, so
