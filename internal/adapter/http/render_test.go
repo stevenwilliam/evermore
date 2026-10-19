@@ -131,6 +131,12 @@ func fullPageData() pageData {
 			TotalQty: 2, Subtotal: 156000, DeliveryFee: 0, Total: 156000,
 			TaxRateBPS: 1100, Deliveries: 1,
 		},
+		Credits: &ordering.CreditQuote{
+			Lines: []ordering.CreditLine{{ScheduledMealID: id, MealName: "Test meal",
+				ServiceDate: now, SlotTime: "11.30", SlotPeriod: "lunch",
+				DietName: "Balanced", Qty: 2}},
+			Meals: 2, Balance: 12,
+		},
 		Payment: &payments.Instructions{OrderID: id, OrderNumber: "EVM-1", Status: "AWAITING_PAYMENT",
 			BankName: "BCA", AccountNumber: "123", AccountHolder: "PT Evermore", AmountIDR: 156000},
 		Dash: &DashboardView{DateLabel: "19 Oct 2026", MealsToday: 3, Deliveries: 4,

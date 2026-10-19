@@ -796,3 +796,51 @@ after cut-off refused.
   ledger's `customer_package` ownership are shaped so it is additive (§13.6).
 - No QRIS. `PaymentProvider` is an interface from day one with
   `ManualTransferProvider` as the only implementation (§10).
+
+---
+
+## Meals are bought with credits, not money (D86)
+
+Steven, 2026-10-19. This replaces every earlier pricing condition on a **meal**
+order. Three rules, and nothing else:
+
+1. **A customer buys meal credits as a package** (`/packages`). That is the
+   only money transaction in the meal flow.
+2. **Each meal on an order spends exactly one credit** — one for lunch, one for
+   dinner, whatever the meal contains. This is the existing D-32 rule, now the
+   only rule.
+3. **Each credit carries the lifespan of the package it came from.**
+   `customer_package.expires_at` is a date in Asia/Jakarta, set from the
+   package's `validity_days` when the purchase is activated.
+
+### What follows from it
+
+- A meal order moves **no rupiah**. `customer_order` is written with every
+  amount at zero and status **PAID** from the moment it is placed: the money
+  moved when the package was bought. There is no payment row, no transfer
+  suffix, no payment deadline and no payment step in the UI.
+- Tier pricing, the delivery fee and the tax split **do not apply to meal
+  orders**. They remain in the codebase for package purchases, which are still
+  bought with money.
+- **Credits are spent soonest-expiring first.** Any other order would quietly
+  forfeit credits that still had value, and the customer could not see why.
+- **A delivery may not be scheduled after the credit's package expires** (D-27,
+  already enforced by `credit.Redeem`). If the only credits a customer holds
+  expire before the service date, the order is refused.
+- **A shortfall refuses the whole order.** Nothing is half-spent: the balance is
+  read and the credits are taken inside one transaction, with
+  `SELECT … FOR UPDATE` on the packages, so two concurrent checkouts cannot
+  both spend the last credit.
+- The cut-off, kitchen routing and capacity rules are **unchanged**. A credit
+  order is still refused past the cut-off and still reserves kitchen capacity.
+
+### Where it is enforced
+
+| Rule | Enforced in |
+|---|---|
+| One credit per meal | `internal/domain/credit.Redeem` |
+| Balance never below zero | `credit.Redeem` + the row lock in `lockSpendablePackages` |
+| No delivery after expiry | `credit.Redeem` (D-27) |
+| Soonest-expiring first | `ordering.spendCredits` |
+| All-or-nothing | `ordering.CheckoutWithCredits`, one transaction |
+| Zero-money meal order | `customer_order` CHECKs: `base + tax = total` and `payment_amount = total + rounding` both hold at 0 |

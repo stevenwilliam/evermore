@@ -59,19 +59,27 @@
             <table>
               <caption class="visually-hidden">{{t .L "co.summary"}}</caption>
               <tbody>
-              {{range .Quote.Lines}}
-                <tr><th scope="row">{{.MealName}} · {{.Qty}}</th><td class="num">{{rupiah .LineTotal}}</td></tr>
+              {{/* Credits, not money (D86). There is no delivery fee, no tax and
+                   no total in rupiah on a meal order — the only thing this
+                   order spends is credits. */}}
+              {{range .Credits.Lines}}
+                <tr><th scope="row">{{.MealName}} &middot; {{.Qty}}</th>
+                    <td class="num">{{printf (t $.L "cart.credits") .Qty}}</td></tr>
               {{end}}
-                <tr><th scope="row">{{t .L "cart.shipping"}}</th><td class="num">{{rupiah .Quote.DeliveryFee}}</td></tr>
-                <tr><th scope="row">{{bps .Quote.TaxRateBPS}} {{t .L "cart.vat"}}</th><td class="num">{{rupiah .Quote.Tax.Tax}}</td></tr>
-                <tr><th scope="row"><strong>{{t .L "cart.total"}}</strong></th><td class="num"><strong>{{rupiah .Quote.Total}}</strong></td></tr>
+                <tr><th scope="row">{{t .L "cart.balance"}}</th>
+                    <td class="num">{{printf (t .L "cart.credits") .Credits.Balance}}</td></tr>
+                <tr><th scope="row"><strong>{{t .L "cart.thisorder"}}</strong></th>
+                    <td class="num"><strong>{{printf (t .L "cart.credits") .Credits.Meals}}</strong></td></tr>
               </tbody>
             </table>
           </div>
+          <p class="meta" style="margin-top:var(--space-4)">{{printf (t .L "co.credits.note") .Credits.Meals}}</p>
           <p style="margin-top:var(--space-5)">
-            <button class="btn btn-solid" type="submit" {{if not .Addresses}}disabled aria-disabled="true"{{end}}>{{t .L "co.pay"}}</button>
+            <button class="btn btn-solid" type="submit"
+                    {{if or (not .Addresses) .Credits.Shortfall}}disabled aria-disabled="true"{{end}}>{{t .L "co.place"}}</button>
           </p>
-          {{if not .Addresses}}<p class="btn-reason">{{t .L "co.blocked"}}</p>{{end}}
+          {{if not .Addresses}}<p class="btn-reason">{{t .L "co.blocked"}}</p>
+          {{else if .Credits.Shortfall}}<p class="btn-reason">{{printf (t .L "cart.short") .Credits.Shortfall}} <a href="/packages">{{t .L "cart.buycredits"}}</a>.</p>{{end}}
         </div>
       </aside>
     </form>

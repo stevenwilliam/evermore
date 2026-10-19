@@ -16,6 +16,7 @@ import (
 	"github.com/stevenwilliam/evermore/internal/app/auth"
 	"github.com/stevenwilliam/evermore/internal/app/ordering"
 	"github.com/stevenwilliam/evermore/internal/app/payments"
+	"github.com/stevenwilliam/evermore/internal/domain/credit"
 	"github.com/stevenwilliam/evermore/internal/domain/money"
 	"github.com/stevenwilliam/evermore/internal/domain/order"
 	"github.com/stevenwilliam/evermore/internal/platform/apierror"
@@ -165,28 +166,21 @@ func (h *AppHandler) Cart(c *gin.Context) {
 		return
 	}
 
-	// An anonymous visitor still gets a priced cart, using the retail scope,
-	// so they can see what it costs before registering.
+	// D86 — a basket costs CREDITS, not rupiah. An anonymous visitor still
+	// sees what it will cost them in credits; the balance is simply zero
+	// until they sign in, which is also the honest answer.
 	custID, ok := CustomerIDOf(c)
 	if !ok {
-		custID, err = h.anyRetailCustomer(ctx)
-		if err != nil {
-			h.render(c, "app-cart", http.StatusOK, d)
-			return
-		}
 		d.Anonymous = true
 	}
 
-	quote, err := h.orders.Quote(ctx, custID, items)
+	cq, err := h.orders.CreditQuoteFor(ctx, custID, items)
 	if err != nil {
 		d.QuoteError = quoteMessage(err)
 		h.render(c, "app-cart", http.StatusOK, d)
 		return
 	}
-	d.Quote = quote
-	if tiers, err := h.repo.TierPrices(ctx, "balanced", time.Now().In(h.cfg.Location)); err == nil {
-		d.Tiers = tiers
-	}
+	d.Credits = cq
 	h.render(c, "app-cart", http.StatusOK, d)
 }
 
@@ -212,13 +206,13 @@ func (h *AppHandler) Checkout(c *gin.Context) {
 	d := h.base(c, params, "cart", "Pengiriman — Evermore", "Konfirmasi alamat dan jam antar.")
 	d.NoIndex = true
 
-	quote, err := h.orders.Quote(ctx, custID, items)
+	cq, err := h.orders.CreditQuoteFor(ctx, custID, items)
 	if err != nil {
 		d.QuoteError = quoteMessage(err)
 		h.render(c, "app-checkout", http.StatusOK, d)
 		return
 	}
-	d.Quote = quote
+	d.Credits = cq
 	if d.Addresses, err = h.addresses(ctx, custID); err != nil {
 		Fail(c, apierror.Internal(err))
 		return
@@ -258,7 +252,7 @@ func (h *AppHandler) PlaceOrder(c *gin.Context) {
 		key = uuid.NewString()
 	}
 
-	orderID, _, err := h.orders.Checkout(ctx, ordering.CheckoutInput{
+	_, _, err = h.orders.CheckoutWithCredits(ctx, ordering.CheckoutInput{
 		CustomerID: custID, AddressID: addressID, Items: items,
 		CourierNote: note, IdempotencyKey: key,
 	})
@@ -267,8 +261,10 @@ func (h *AppHandler) PlaceOrder(c *gin.Context) {
 		return
 	}
 
+	// No payment step: the money moved when the package was bought, so the
+	// order is already PAID and the customer goes straight to their orders.
 	writeCart(c, nil, h.cfg.IsProduction()) // the cart is now an order
-	c.Redirect(http.StatusSeeOther, "/app/payment/"+orderID.String())
+	c.Redirect(http.StatusSeeOther, "/app/orders")
 }
 
 // BuyPackage places an order for a single credit package.
@@ -543,6 +539,14 @@ func quoteMessage(err error) string {
 // checkoutError maps a checkout failure onto the JSON error model.
 func checkoutError(err error) error {
 	switch {
+	case errors.Is(err, ordering.ErrNoCredits):
+		// A refusal, never a partial spend: the whole order is rejected and
+		// the balance is untouched (D86).
+		return apierror.Conflict(apierror.CodeInsufficientCredit,
+			"You do not have enough credits for this order. Buy a package to top up.")
+	case errors.Is(err, credit.ErrPackageExpired):
+		return apierror.Conflict(apierror.CodeInsufficientCredit,
+			"Your credits expire before that delivery date.")
 	case errors.Is(err, ordering.ErrPastCutOff):
 		return apierror.Conflict(apierror.CodePastCutOff,
 			"The cut-off for one of those dates has passed.")
@@ -553,7 +557,7 @@ func checkoutError(err error) error {
 		return apierror.NotFound("Address not found.")
 	case errors.Is(err, ordering.ErrPackageNotForSale):
 		return apierror.Conflict(apierror.CodeMenuNotPublished,
-			"Paket itu sudah tidak dijual.")
+			"That package is no longer for sale.")
 	case errors.Is(err, ordering.ErrNoPackagePrice):
 		// Never guess a price (02-business-rules §5.1): the purchase is
 		// blocked and the customer is told, rather than charged a default.
@@ -561,10 +565,10 @@ func checkoutError(err error) error {
 			"Package pricing is not available for your account yet. Message us on WhatsApp.")
 	case errors.Is(err, ordering.ErrMealNotPublished):
 		return apierror.Conflict(apierror.CodeMenuNotPublished,
-			"Menu itu belum terbit atau sudah ditarik.")
+			"That menu is not published, or has been withdrawn.")
 	case errors.Is(err, ordering.ErrPackageNotForSale):
 		return apierror.Conflict(apierror.CodeMenuNotPublished,
-			"Paket itu sudah tidak dijual.")
+			"That package is no longer for sale.")
 	case errors.Is(err, ordering.ErrNoPackagePrice):
 		// Never guess a price (02-business-rules §5.1): the purchase is
 		// blocked and the customer is told, rather than charged a default.
@@ -572,7 +576,7 @@ func checkoutError(err error) error {
 			"Package pricing is not available for your account yet. Message us on WhatsApp.")
 	case strings.Contains(err.Error(), "ADDRESS_NOT_SERVICEABLE"):
 		return apierror.Conflict(apierror.CodeNotServiceable,
-			"Alamat ini di luar wilayah antar kami.")
+			"This address is outside our delivery area.")
 	case strings.Contains(err.Error(), "PRICE_NOT_CONFIGURED"):
 		return apierror.Conflict(apierror.CodePriceNotConfigured,
 			"Harga belum diatur untuk menu ini.")

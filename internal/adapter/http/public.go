@@ -158,6 +158,7 @@ var funcs = template.FuncMap{
 	"role":      roleLabel,
 	"tierRange": tierRange,
 	"telDigits": telDigits,
+	"sub":       func(a, b int) int { return a - b },
 	"bps":       bps,
 	"duration":  duration,
 	"isodate":   isodate,
@@ -348,6 +349,7 @@ type pageData struct {
 	Anonymous  bool
 	Next       string
 	Quote      *ordering.Quote
+	Credits    *ordering.CreditQuote
 	QuoteError string
 	Addresses  []AddressView
 	Allergens  []AllergenView
