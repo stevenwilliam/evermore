@@ -186,43 +186,45 @@ sitting directly behind the type.
 ### 2.9 The banded home body (D65)
 
 The home body runs on three grounds rather than one: the week strip on the
-**fresh band** (a pale citrus, `--band-fresh`), the packages on the brand-wash
-band, and the stats row and testimonials on paper so the two tinted blocks
-never butt together.
+**linen band** (a warm neutral with a faint pink cast, `--band-linen`), the
+packages on the brand-wash band, and the stats row and testimonials on paper so
+the two tinted blocks never butt together.
 
-`--band-fresh` is its own token rather than `--accent-wash` because that token's
-dark value (`#2A3318`) is too light: the `+N` link on a glass day card measures
-**4.34** over it. The band's dark value is `#1A1F13`, where the same link
-measures 4.60.
+`--band-linen` carries its own dark value rather than leaning on an existing
+wash token, because the `+N` link on a glass day card is the binding constraint
+and several candidates failed it — see the rejected rows below.
 
 A band changes what every translucent surface above it composites onto, so each
 one is measured again rather than inherited. The grounds below are the ribbon at
 its darkest **on that band**, seen through the relevant card.
 
-**The dark theme decided the layout.** `--brand` — the `+N` link on a day card —
-measures **4.39** on glass over a green band and fails, and 4.34 over a citrus
-band built from `--accent-wash`. It clears at **4.60** over `--band-fresh`.
-That is why the week strip is citrus and the packages are green, and why the
-band needed a dark value of its own.
+**The dark theme decided the layout, and narrowed the palette.** `--brand` —
+the `+N` link on a day card — measures **4.39** on glass over a green band and
+**4.34** over a citrus band built from `--accent-wash`; both fail. It clears at
+**4.63** over `--band-linen`. On the light side, two otherwise appealing warm
+candidates were ruled out by `--ink-faint` sitting directly on the band: clay
+rose at **4.48** and a sand-rose at 4.39. That is why the week strip is linen
+and the packages are green.
 
 | Pairing | Ratio | Verdict |
 |---|---|---|
 | ink on the brand-wash band | **15.70** | AAA |
 | ink-soft on the brand-wash band | **5.84** | AA |
 | ink-faint on the brand-wash band | **4.69** | AA |
-| ink on the fresh band | **16.95** | AAA |
-| ink-soft on the fresh band | **6.30** | AA |
-| ink-faint on the fresh band | **5.06** | AA |
-| ink-on-glass under glass over the fresh band | **5.20** | AA |
-| brand under glass over the fresh band | **5.23** | AA |
-| ink-on-glass on the day-card head over the fresh band | **4.82** | AA |
 | ink-on-glass under tinted glass over the brand-wash band | **4.69** | AA |
 | ink-faint on the dark brand-wash band | **4.65** | AA |
-| ink-faint on the dark fresh band | **5.54** | AA |
-| ink-on-glass under glass over the dark fresh band | **5.15** | AA |
-| brand-lt under glass over the dark fresh band | **4.60** | AA |
-| ink-on-glass on the dark day-card head over the fresh band | **4.78** | AA |
-| brand-lt under glass over the dark citrus-wash band (REJECTED) | **4.34** | FAIL |
+| ink on the linen band | **15.63** | AAA |
+| ink-soft on the linen band | **5.81** | AA |
+| ink-faint on the linen band | **4.67** | AA |
+| ink-on-glass under glass over the linen band | **5.09** | AA |
+| brand under glass over the linen band | **5.12** | AA |
+| ink-on-glass on the day-card head over the linen band | **4.72** | AA |
+| ink-faint on the dark linen band | **5.60** | AA |
+| ink-on-glass under glass over the dark linen band | **5.19** | AA |
+| brand-lt under glass over the dark linen band | **4.63** | AA |
+| ink-on-glass on the dark day-card head over the linen band | **4.81** | AA |
+| brand-lt under glass over a citrus band (REJECTED) | **4.34** | FAIL |
+| ink-faint on a clay-rose band (REJECTED) | **4.48** | FAIL |
 | ink-on-glass under tinted glass over the dark brand-wash band | **4.66** | AA |
 
 ### 2.10 The WhatsApp float
